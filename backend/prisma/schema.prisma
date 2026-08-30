@@ -1,0 +1,200 @@
+// JorJek database schema — owned by CS3 (task tracker #1).
+// The Prisma schema language is the same regardless of whether the app
+// code around it is JavaScript or TypeScript — nothing here changes for
+// the JS stack. Phase 2 models (SessionRequest, SessionRating) are
+// included now so there's no breaking migration later, but nothing
+// writes to them until Phase 2 starts.
+// See JorJek_Project_Scope.pdf for what's actually in scope for the demo.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDENT
+  PROFESSOR
+}
+
+enum PostType {
+  QUESTION
+  OFFER_TO_TEACH
+  RESOURCE
+}
+
+enum VoteValue {
+  UP
+  DOWN
+}
+
+model User {
+  id           String   @id @default(uuid())
+  cadtEmail    String   @unique
+  passwordHash String
+  displayName  String
+  role         Role     @default(STUDENT)
+  karma        Int      @default(0) // Phase 1: derived from upvotes, see karma.service.js
+  createdAt    DateTime @default(now())
+
+  posts         Post[]
+  comments      Comment[]
+  votes         Vote[]
+  followedTags  TagFollow[]
+  notifications Notification[]
+  reportsFiled   Report[] @relation("ReportsFiled")
+  reportsAgainst Report[] @relation("ReportsAgainst")
+
+  // Phase 2 — not active, see README
+  sessionRequestsSent     SessionRequest[] @relation("Requester")
+  sessionRequestsReceived SessionRequest[] @relation("Mentor")
+}
+
+model Tag {
+  id      String      @id @default(uuid())
+  name    String      @unique
+  posts   PostTag[]
+  follows TagFollow[]
+}
+
+model TagFollow {
+  userId String
+  tagId  String
+  user   User @relation(fields: [userId], references: [id])
+  tag    Tag  @relation(fields: [tagId], references: [id])
+
+  @@id([userId, tagId])
+}
+
+model Post {
+  id        String    @id @default(uuid())
+  authorId  String
+  type      PostType
+  title     String
+  body      String
+  createdAt DateTime  @default(now())
+
+  author   User      @relation(fields: [authorId], references: [id])
+  tags     PostTag[]
+  comments Comment[]
+  votes    Vote[]
+  reports  Report[]
+
+  // Phase 2
+  sessionRequests SessionRequest[]
+}
+
+model PostTag {
+  postId String
+  tagId  String
+  post   Post @relation(fields: [postId], references: [id])
+  tag    Tag  @relation(fields: [tagId], references: [id])
+
+  @@id([postId, tagId])
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  postId    String
+  authorId  String
+  parentId  String?
+  body      String
+  createdAt DateTime @default(now())
+
+  post    Post      @relation(fields: [postId], references: [id])
+  author  User      @relation(fields: [authorId], references: [id])
+  parent  Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies Comment[] @relation("CommentReplies")
+  votes   Vote[]
+  reports Report[]
+
+  // Phase 2 — "Request a Session" hangs off a helpful comment
+  sessionRequests SessionRequest[]
+}
+
+model Vote {
+  id        String    @id @default(uuid())
+  userId    String
+  value     VoteValue
+  postId    String?
+  commentId String?
+  createdAt DateTime  @default(now())
+
+  user    User     @relation(fields: [userId], references: [id])
+  post    Post?    @relation(fields: [postId], references: [id])
+  comment Comment? @relation(fields: [commentId], references: [id])
+
+  @@unique([userId, postId])
+  @@unique([userId, commentId])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String   // "reply" | "upvote" | "session_request" (Phase 2) | "report_resolved"
+  payload   Json
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Report {
+  id           String   @id @default(uuid())
+  reporterId   String
+  targetUserId String?
+  postId       String?
+  commentId    String?
+  reason       String
+  createdAt    DateTime @default(now())
+
+  reporter   User     @relation("ReportsFiled", fields: [reporterId], references: [id])
+  targetUser User?    @relation("ReportsAgainst", fields: [targetUserId], references: [id])
+  post       Post?    @relation(fields: [postId], references: [id])
+  comment    Comment? @relation(fields: [commentId], references: [id])
+}
+
+// ─────────────────────────────────────────────────────────
+// PHASE 2 — modeled now, not built yet. Keep the UI's
+// "Request a Session" button disabled ("Coming Soon") until
+// these are wired up. See JorJek_Project_Scope.pdf, Section 4.
+// ─────────────────────────────────────────────────────────
+
+enum SessionStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  COMPLETED
+  CANCELLED
+}
+
+model SessionRequest {
+  id            String        @id @default(uuid())
+  requesterId   String
+  mentorId      String
+  postId        String?
+  commentId     String?
+  proposedTimes Json
+  meetingLink   String?
+  status        SessionStatus @default(PENDING)
+  createdAt     DateTime      @default(now())
+
+  requester User            @relation("Requester", fields: [requesterId], references: [id])
+  mentor    User            @relation("Mentor", fields: [mentorId], references: [id])
+  post      Post?           @relation(fields: [postId], references: [id])
+  comment   Comment?        @relation(fields: [commentId], references: [id])
+  rating    SessionRating?
+}
+
+model SessionRating {
+  id               String   @id @default(uuid())
+  sessionRequestId String   @unique
+  stars            Int
+  feedback         String?
+  createdAt        DateTime @default(now())
+
+  sessionRequest SessionRequest @relation(fields: [sessionRequestId], references: [id])
+}
