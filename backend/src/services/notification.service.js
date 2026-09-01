@@ -1,5 +1,6 @@
 const { prisma } = require("../config/db");
 const { env } = require("../config/env");
+const { getIO } = require("../lib/socket");
 
 /**
  * TN2 — task tracker #9 "Decide + scaffold notification delivery approach
@@ -18,8 +19,12 @@ async function notify(userId, type, payload) {
   });
 
   if (env.notificationTransport === "websocket") {
-    // TODO(TN2): emit over the socket.io room for this userId.
-    // io.to(userId).emit("notification", notification)
+    const io = getIO();
+    // io can be null very briefly during server startup, or if this runs
+    // in a test/script context with no server booted — guard rather than crash.
+    if (io) {
+      io.to(userId).emit("notification", notification);
+    }
   }
 
   return notification;
