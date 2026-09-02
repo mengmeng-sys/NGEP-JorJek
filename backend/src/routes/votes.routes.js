@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const { prisma } = require("../config/db");
+const { supabase } = require("../config/db");
 const { requireAuth } = require("../middleware/auth.middleware");
 const { recalculateKarma } = require("../services/karma.service");
 const { notify } = require("../services/notification.service");
@@ -11,26 +11,45 @@ votesRouter.post("/vote", requireAuth, async (req, res, next) => {
   try {
     const { postId, commentId, value } = req.body;
 
-    const vote = await prisma.vote.upsert({
-      where: postId
-        ? { userId_postId: { userId: req.userId, postId } }
-        : { userId_commentId: { userId: req.userId, commentId } },
-      update: { value },
-      create: { userId: req.userId, postId, commentId, value },
-    });
+    const { data: vote, error: voteError } = postId
+      ? await supabase
+        .from("votes")
+        .upsert(
+          { user_id: req.userId, post_id: postId, comment_id: null, value },
+          { onConflict: "user_id, post_id"}
+        )
+        .select()
+        .single()
+      : await supabase
+        .from("votes")
+        .upsert(
+          { user_id: req.userId, comment_id: commentId, post_id: null, value },
+          { onConflict: "user_id, comment_id" }
+        )
+        .select()
+        .single();
+      if (voteError) throw voteError;
 
-    const authorId = postId
-      ? (await prisma.post.findUnique({ where: { id: postId } }))?.authorId
-      : (await prisma.comment.findUnique({ where: { id: commentId } }))?.authorId;
+      let authorId = null;
 
-    if (authorId) {
-      await recalculateKarma(authorId);
-      if (value === "UP" && authorId !== req.userId) {
-        await notify(authorId, "upvote", { postId, commentId });
+      if (postid) {
+        const { data: post, error } = await supabase.from("posts").select("author_id").eq("id", postId).maybeSingle();
+        if (error) throw error;
+        authorId = post?.author_id ?? null;
+      } else {
+        const { data: comment, error } = await supabase.from("comments").select("author_id").eq("id", commentId).maybeSingle();
+        if (error) throw error;
+        authorId = comment?.author_id ?? null;
       }
-    }
 
-    res.json(vote);
+      if (authorId) {
+        await recalculateKarma(authorId);
+        if (value === "UP" && authorId !== req.userId) {
+          await notify(authorId, "upvote", { postId, commentId });
+        }
+      }
+
+      res.json(vote);
   } catch (err) {
     next(err);
   }
