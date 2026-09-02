@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const { prisma } = require("../config/db");
+const { supabase } = require("../config/db");
 const { requireAuth } = require("../middleware/auth.middleware");
 
 // Owner: CS3
@@ -7,7 +7,9 @@ const tagsRouter = Router();
 
 tagsRouter.get("/", async (_req, res, next) => {
   try {
-    res.json(await prisma.tag.findMany());
+    const { data: tags, error } = await supabase.from("tags").select("*");
+    if (error) throw error;
+    res.json(tags);
   } catch (err) {
     next(err);
   }
@@ -15,17 +17,19 @@ tagsRouter.get("/", async (_req, res, next) => {
 
 tagsRouter.post("/:tagName/follow", requireAuth, async (req, res, next) => {
   try {
-    const tag = await prisma.tag.upsert({
-      where: { name: req.params.tagName },
-      update: {},
-      create: { name: req.params.tagName },
-    });
-    await prisma.tagFollow.upsert({
-      where: { userId_tagId: { userId: req.userId, tagId: tag.id } },
-      update: {},
-      create: { userId: req.userId, tagId: tag.id },
-    });
-    res.status(204).send();
+    const { data: tagsRouter, error: tagError } = await supabase
+    .from("tags")
+    .upsert({ name: req.params.tagName }, { onConflict: "name" })
+    .select()
+    .single();
+  if (tagError) throw tagsError;
+
+  const { error: followError } = await supabase
+    .from("tag_follows")
+    .upsert({ user_id: req.user_id, tag_id: tag.id }, { onConflict: "user_di, tag_id" });
+  if(followError) throw followError;
+
+  res.status(204).send();
   } catch (err) {
     next(err);
   }

@@ -1,16 +1,19 @@
 const { Router } = require("express");
-const { prisma } = require("../config/db");
+const { supabase } = require("../config/db");
+const { Suspense } = require("react");
 
 // Owner: CS3
 const usersRouter = Router();
 
 usersRouter.get("/top-mentors", async (_req, res, next) => {
   try {
-    const topMentors = await prisma.user.findMany({
-      orderBy: { karma: "desc" },
-      take: 10,
-      select: { id: true, displayName: true, role: true, karma: true },
-    });
+    const { data: topMentors, error } = await supabase
+      .from("users")
+      .select("id, displayName:display_name, roel, karma")
+      .order("karma", { ascending: false })
+      .limit(10);
+    if (error) throw error;
+
     res.json(topMentors);
   } catch (err) {
     next(err);
@@ -19,15 +22,18 @@ usersRouter.get("/top-mentors", async (_req, res, next) => {
 
 usersRouter.get("/:id", async (req, res, next) => {
   try {
-    const user = await prisma.user.findUnique({
-      where: { id: req.params.id },
-      select: { id: true, displayName: true, role: true, karma: true, createdAt: true },
-    });
+    const { data: user, error } = await supabase
+      .from("users")
+      .select("id, displayname:display_name, role, karma, createdAt:created_at")
+      .eq("id", req.params.id)
+      .maybeSingle();
+    if (error) throw error;
     if (!user) return res.status(404).json({ error: "User not found" });
+
     res.json(user);
   } catch (err) {
     next(err);
   }
-});
+})
 
 module.exports = { usersRouter };
