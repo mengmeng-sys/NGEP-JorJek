@@ -1,6 +1,5 @@
 const { Router } = require("express");
 const { supabase } = require("../config/db");
-const { Suspense } = require("react");
 
 // Owner: CS3
 const usersRouter = Router();

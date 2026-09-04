@@ -1,8 +1,6 @@
 const { Router } = require("express");
 const { supabase } = require("../config/db");
 const { requireAuth } = require("../middleware/auth.middleware");
-const { Suspense } = require("react");
-
 // Owner: CS3 (schema/data) + TN2
 const postsRouter = Router();
 
