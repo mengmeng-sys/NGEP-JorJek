@@ -10,7 +10,7 @@ function requireCadtEmail(req, res, next) {
     env.studentEmailDomain.toLowerCase(),
   ];
   if (!normalized || !allowed.some((d) => normalized.endsWith(d))) {
-    return res.status(400).json({ error: `Signup requires a ${env.cadtEmailDomain} email` });
+    return res.status(400).json({ error: "Invalid Credentials" });
   }
   next();
 }
