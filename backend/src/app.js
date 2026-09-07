@@ -11,11 +11,13 @@ const { reportsRouter } = require("./routes/reports.routes");
 const { usersRouter } = require("./routes/users.routes");
 const { sessionsRouter } = require("./routes/sessions.routes");
 const { errorHandler } = require("./middleware/errorHandler");
+const { logger } = require("./middleware/logger.middleware");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(logger);
 
 app.get("/health", (_req, res) => res.json({ ok: true }));
 
