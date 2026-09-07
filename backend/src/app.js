@@ -10,6 +10,7 @@ const { searchRouter } = require("./routes/search.routes");
 const { reportsRouter } = require("./routes/reports.routes");
 const { usersRouter } = require("./routes/users.routes");
 const { sessionsRouter } = require("./routes/sessions.routes");
+const { adminRouter } = require("./routes/admin.routes");
 const { errorHandler } = require("./middleware/errorHandler");
 
 const app = express();
@@ -29,6 +30,10 @@ app.use("/search", searchRouter);
 app.use("/reports", reportsRouter);
 app.use("/users", usersRouter);
 app.use("/sessions", sessionsRouter); // Phase 2 stub — see routes/sessions.routes.js
+
+// JorJek Admin Dashboard (SRS v1.0.0) — own mount path per the SRS API
+// reference endpoints (GET /api/admin/reports, POST /api/admin/users/:id/action).
+app.use("/api/admin", adminRouter);
 
 app.use(errorHandler);
 

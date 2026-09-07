@@ -1,20 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 
 export function AuthModal({ isOpen, onClose, initialTab = 'register' }) {
   const [activeTab, setActiveTab] = useState(initialTab); // 'register' or 'login'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { login } = useAuth();
+  const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const { login, signup } = useAuth();
+
+  useEffect(() => {
+    if (isOpen) {
+      setActiveTab(initialTab);
+      setEmail('');
+      setPassword('');
+      setError('');
+      setSubmitting(false);
+    }
+  }, [isOpen, initialTab]);
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (login) {
-      login({ displayName: email.split('@')[0] || 'User', email });
+    setError('');
+    setSubmitting(true);
+    try {
+      if (activeTab === 'login') {
+        await login(email, password);
+      } else {
+        await signup(email, password, email.split('@')[0] || 'User');
+      }
+      onClose();
+    } catch (err) {
+      setError(err.message || 'Something went wrong. Please try again.');
+    } finally {
+      setSubmitting(false);
     }
-    onClose();
+  };
+
+  const switchTab = (tab) => {
+    setActiveTab(tab);
+    setError('');
   };
 
   return (
@@ -25,6 +52,7 @@ export function AuthModal({ isOpen, onClose, initialTab = 'register' }) {
         <div className="flex items-center justify-between px-7 pt-6 pb-2">
           <span className="text-2xl font-black text-[#FF4F00] tracking-tight">jorjek.</span>
           <button 
+            type="button"
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 transition-colors p-1"
           >
@@ -38,7 +66,7 @@ export function AuthModal({ isOpen, onClose, initialTab = 'register' }) {
         <div className="flex border-b border-gray-100 px-7 mt-2">
           <button
             type="button"
-            onClick={() => setActiveTab('register')}
+            onClick={() => switchTab('register')}
             className={`flex-1 py-3 text-sm font-bold border-b-2 transition-colors ${
               activeTab === 'register'
                 ? 'text-gray-900 border-[#FF4F00]'
@@ -49,7 +77,7 @@ export function AuthModal({ isOpen, onClose, initialTab = 'register' }) {
           </button>
           <button
             type="button"
-            onClick={() => setActiveTab('login')}
+            onClick={() => switchTab('login')}
             className={`flex-1 py-3 text-sm font-bold border-b-2 transition-colors ${
               activeTab === 'login'
                 ? 'text-gray-900 border-[#FF4F00]'
@@ -98,12 +126,17 @@ export function AuthModal({ isOpen, onClose, initialTab = 'register' }) {
             />
           </div>
 
+          {error && (
+            <p className="mt-3 text-xs font-semibold text-red-600">{error}</p>
+          )}
+
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full mt-5 py-3 rounded-xl font-bold text-sm text-white bg-[#FF9E79] hover:bg-[#FF4F00] transition-colors shadow-sm"
+            disabled={submitting}
+            className="w-full mt-5 py-3 rounded-xl font-bold text-sm text-white bg-[#FF9E79] hover:bg-[#FF4F00] transition-colors shadow-sm disabled:opacity-60"
           >
-            {activeTab === 'register' ? 'Create Account' : 'Log In'}
+            {submitting ? 'Please wait…' : activeTab === 'register' ? 'Create Account' : 'Log In'}
           </button>
 
           {/* Bottom Switch Link */}
@@ -113,7 +146,7 @@ export function AuthModal({ isOpen, onClose, initialTab = 'register' }) {
                 Already have an account?{' '}
                 <button
                   type="button"
-                  onClick={() => setActiveTab('login')}
+                  onClick={() => switchTab('login')}
                   className="font-bold text-[#FF4F00] hover:underline"
                 >
                   Log in
@@ -124,7 +157,7 @@ export function AuthModal({ isOpen, onClose, initialTab = 'register' }) {
                 New to jorjek.?{' '}
                 <button
                   type="button"
-                  onClick={() => setActiveTab('register')}
+                  onClick={() => switchTab('register')}
                   className="font-bold text-[#FF4F00] hover:underline"
                 >
                   Register

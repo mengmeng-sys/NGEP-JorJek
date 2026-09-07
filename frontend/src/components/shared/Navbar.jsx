@@ -6,7 +6,7 @@ import { CreatePostModal } from '@/components/post/CreatePostModal';
 import { AuthModal } from '@/components/auth/AuthModal';
 
 export default function Navbar() {
-  const { user, logout } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
   const navigate = useNavigate();
   
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
@@ -70,7 +70,12 @@ export default function Navbar() {
                 <button className="flex items-center justify-center h-10 w-10 bg-[#111827] text-white text-sm font-bold rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-gray-800 transition-all">
                   {user.displayName ? user.displayName.charAt(0).toUpperCase() : "U"}
                 </button>
-                <div className="absolute right-0 mt-2 w-28 bg-white border border-gray-200 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="absolute right-0 mt-2 w-36 bg-white border border-gray-200 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
+                  {isAdmin && (
+                    <Link to="/admin" className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                      Admin Dashboard
+                    </Link>
+                  )}
                   <button onClick={logout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50">
                     Logout
                   </button>

@@ -10,6 +10,12 @@ import SearchPage from "@/pages/SearchPage";
 import NotificationsPage from "@/pages/NotificationsPage";
 import ExplorePage from "@/pages/ExplorePage";
 import SavedPage from "@/pages/SavedPage";
+import AdminLayout from "@/pages/admin/AdminLayout";
+import AdminOverviewPage from "@/pages/admin/AdminOverviewPage";
+import UserDirectoryPage from "@/pages/admin/UserDirectoryPage";
+import ModerationFeedPage from "@/pages/admin/ModerationFeedPage";
+import MentorPipelinePage from "@/pages/admin/MentorPipelinePage";
+import TagsTopicsPage from "@/pages/admin/TagsTopicsPage";
 
 export default function App() {
   return (
@@ -29,6 +35,15 @@ export default function App() {
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/explore" element={<ExplorePage />} />
           <Route path="/saved" element={<SavedPage />} />
+
+          {/* JorJek Admin Dashboard (SRS v1.0.0) */}
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminOverviewPage />} />
+            <Route path="users" element={<UserDirectoryPage />} />
+            <Route path="moderation" element={<ModerationFeedPage />} />
+            <Route path="mentors" element={<MentorPipelinePage />} />
+            <Route path="tags" element={<TagsTopicsPage />} />
+          </Route>
         </Routes>
     </div>
   );
