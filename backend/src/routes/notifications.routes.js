@@ -8,15 +8,15 @@ const notificationsRouter = Router();
 // Frontend polls this on an interval when NOTIFICATION_TRANSPORT=polling.
 notificationsRouter.get("/", requireAuth, async (req, res, next) => {
   try {
-    const { data: notification, erro } = await supabase
-      .from("notfications")
+    const { data: notification, error } = await supabase
+      .from("notifications")
       .select("*")
       .eq("user_id", req.userId)
       .order("created_at", { ascending: false })
       .limit(50);
     if (error) throw error;
 
-    res.json(notifications);
+    res.json(notification);
   } catch (err) {
     next(err);
   }
@@ -25,7 +25,7 @@ notificationsRouter.get("/", requireAuth, async (req, res, next) => {
 notificationsRouter.post("/:id/read", requireAuth, async (req, res, next) => {
   try {
     const { error } = await supabase
-      .from("notfications")
+      .from("notifications")
       .update({ read: true })
       .eq("id", req.params.id)
       .eq("user_id", req.userId);

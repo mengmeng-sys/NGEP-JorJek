@@ -17,19 +17,19 @@ tagsRouter.get("/", async (_req, res, next) => {
 
 tagsRouter.post("/:tagName/follow", requireAuth, async (req, res, next) => {
   try {
-    const { data: tagsRouter, error: tagError } = await supabase
-    .from("tags")
-    .upsert({ name: req.params.tagName }, { onConflict: "name" })
-    .select()
-    .single();
-  if (tagError) throw tagsError;
+    const { data: tag, error: tagError } = await supabase
+      .from("tags")
+      .upsert({ name: req.params.tagName }, { onConflict: "name" })
+      .select()
+      .single();
+    if (tagError) throw tagError;
 
-  const { error: followError } = await supabase
-    .from("tag_follows")
-    .upsert({ user_id: req.user_id, tag_id: tag.id }, { onConflict: "user_di, tag_id" });
-  if(followError) throw followError;
+    const { error: followError } = await supabase
+      .from("tag_follows")
+      .upsert({ user_id: req.userId, tag_id: tag.id }, { onConflict: "user_id,tag_id" });
+    if (followError) throw followError;
 
-  res.status(204).send();
+    res.status(204).send();
   } catch (err) {
     next(err);
   }

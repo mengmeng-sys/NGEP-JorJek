@@ -1,6 +1,5 @@
 const { Router } = require("express");
 const { supabase } = require("../config/db");
-const { Suspense } = require("react");
 
 // Owner: CS3
 const usersRouter = Router();
@@ -9,7 +8,7 @@ usersRouter.get("/top-mentors", async (_req, res, next) => {
   try {
     const { data: topMentors, error } = await supabase
       .from("users")
-      .select("id, displayName:display_name, roel, karma")
+      .select("id, displayName:display_name, role, karma")
       .order("karma", { ascending: false })
       .limit(10);
     if (error) throw error;
@@ -24,7 +23,7 @@ usersRouter.get("/:id", async (req, res, next) => {
   try {
     const { data: user, error } = await supabase
       .from("users")
-      .select("id, displayname:display_name, role, karma, createdAt:created_at")
+      .select("id, displayName:display_name, role, karma, createdAt:created_at")
       .eq("id", req.params.id)
       .maybeSingle();
     if (error) throw error;
@@ -34,6 +33,6 @@ usersRouter.get("/:id", async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-})
+});
 
 module.exports = { usersRouter };

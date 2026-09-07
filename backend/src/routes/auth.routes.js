@@ -14,7 +14,7 @@ authRouter.post("/signup", requireCadtEmail, async (req, res, next) => {
     const passwordHash = await bcrypt.hash(password, 10);
     const { data: user, error } = await supabase
       .from("users")
-      .insert({ cadt_email: cadtEmail, password_hash: passwordHash, display_name: displayName, role: role ?? "STUDENT" })
+      .insert({ email: cadtEmail, password_hash: passwordHash, display_name: displayName, role: role ?? "STUDENT" })
       .select()
       .single()
     if (error) throw error;
@@ -29,16 +29,16 @@ authRouter.post("/signup", requireCadtEmail, async (req, res, next) => {
 authRouter.post("/login", async (req, res, next) => {
   try {
     const { cadtEmail, password } = req.body;
-    const { data: user, error } = await supabase 
+    const { data: user, error } = await supabase
       .from("users")
       .select("*")
-      .eq("cadt_email", cadtEmail)
+      .eq("email", cadtEmail)
       .maybeSingle();
-    if (erro) throw error;
-    if(!user || !(await bcrypt.compare(password, user.password_hash))) {
+    if (error) throw error;
+    if (!user || !(await bcrypt.compare(password, user.password_hash))) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
-    const token = jwt.sign({ sub: user.id }, env.jwtSecret, { expiresIn: "7d0" });
+    const token = jwt.sign({ sub: user.id }, env.jwtSecret, { expiresIn: "7d" });
     res.json({ token, user: { id: user.id, displayName: user.display_name, role: user.role } });
   } catch (err) {
     next(err);

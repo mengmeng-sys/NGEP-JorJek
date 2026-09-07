@@ -5,7 +5,7 @@ const env = {
   supabaseUrl: process.env.SUPABASE_URL ?? "",
   supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY ?? "",
   jwtSecret: process.env.JWT_SECRET ?? "",
-  cadtEmailDomain: process.env.CADT_EMAIL_DOMAIN ?? "@cadt.edu.kh",
+  cadtEmailDomain: process.env.CADT_EMAIL_DOMAIN ?? "@student.cadt.edu.kh",
   notificationTransport: process.env.NOTIFICATION_TRANSPORT ?? "polling", // "polling" | "websocket"
 };
 

@@ -1,7 +1,6 @@
 const { Router } = require("express");
 const { supabase } = require("../config/db");
 const { requireAuth } = require("../middleware/auth.middleware");
-const { Suspense } = require("react");
 
 // Owner: CS3 (schema/data) + TN2
 const postsRouter = Router();
@@ -20,7 +19,7 @@ postsRouter.get("/", async (req, res, next) => {
       // unfiltered left-join embed — same gotcha as karma.service.js.
       query = supabase
         .from("posts")
-        .select("*, author:users(*), tags:post_tags!inner(tag:tags!inner(*), vote(*)")
+        .select("*, author:users(*), tags:post_tags!inner(tag:tags!inner(*)), votes(*)")
         .eq("tags.tag.name", String(tag))
         .order("created_at", { ascending: false });
     }
@@ -30,7 +29,7 @@ postsRouter.get("/", async (req, res, next) => {
 
     res.json(posts);
   } catch (err) {
-    next (err);
+    next(err);
   }
 });
 
@@ -72,21 +71,22 @@ postsRouter.post("/", requireAuth, async (req, res, next) => {
     if (fetchError) throw fetchError;
 
     res.status(201).json(postWithTags);
-    } catch (err) {
-      next(err);
-    }
+  } catch (err) {
+    next(err);
+  }
 });
+
 postsRouter.get("/:id", async (req, res, next) => {
   try {
     const { data: post, error } = await supabase
       .from("posts")
       .select(
-        "*, authro:users(*), tags:post_tags(tag:tags(*)), comments(*, author:users(*), votes(*)), votes(*)"
+        "*, author:users(*), tags:post_tags(tag:tags(*)), comments(*, author:users(*), votes(*)), votes(*)"
       )
       .eq("id", req.params.id)
       .maybeSingle();
     if (error) throw error;
-    if (!post) return res.status(404).json({ error: "Post not found "});
+    if (!post) return res.status(404).json({ error: "Post not found" });
 
     res.json(post);
   } catch (err) {

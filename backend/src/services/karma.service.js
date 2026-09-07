@@ -10,12 +10,12 @@ async function recalculateKarma(userId) {
   const [postResult, commentResult] = await Promise.all([
     supabase
       .from("votes")
-      .select("*, post!inner(author_id", { count: "exact", head: true })
+      .select("*, posts!inner(author_id)", { count: "exact", head: true })
       .eq("value", "UP")
       .eq("posts.author_id", userId),
     supabase
       .from("votes")
-      .select("*, comments!inner(author_id", { count: "exact", head: true })
+      .select("*, comments!inner(author_id)", { count: "exact", head: true })
       .eq("value", "UP")
       .eq("comments.author_id", userId),
   ]);

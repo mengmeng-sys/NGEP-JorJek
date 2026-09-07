@@ -13,43 +13,43 @@ votesRouter.post("/vote", requireAuth, async (req, res, next) => {
 
     const { data: vote, error: voteError } = postId
       ? await supabase
-        .from("votes")
-        .upsert(
-          { user_id: req.userId, post_id: postId, comment_id: null, value },
-          { onConflict: "user_id, post_id"}
-        )
-        .select()
-        .single()
+          .from("votes")
+          .upsert(
+            { user_id: req.userId, post_id: postId, comment_id: null, value },
+            { onConflict: "user_id,post_id" }
+          )
+          .select()
+          .single()
       : await supabase
-        .from("votes")
-        .upsert(
-          { user_id: req.userId, comment_id: commentId, post_id: null, value },
-          { onConflict: "user_id, comment_id" }
-        )
-        .select()
-        .single();
-      if (voteError) throw voteError;
+          .from("votes")
+          .upsert(
+            { user_id: req.userId, comment_id: commentId, post_id: null, value },
+            { onConflict: "user_id,comment_id" }
+          )
+          .select()
+          .single();
+    if (voteError) throw voteError;
 
-      let authorId = null;
+    let authorId = null;
 
-      if (postid) {
-        const { data: post, error } = await supabase.from("posts").select("author_id").eq("id", postId).maybeSingle();
-        if (error) throw error;
-        authorId = post?.author_id ?? null;
-      } else {
-        const { data: comment, error } = await supabase.from("comments").select("author_id").eq("id", commentId).maybeSingle();
-        if (error) throw error;
-        authorId = comment?.author_id ?? null;
+    if (postId) {
+      const { data: post, error } = await supabase.from("posts").select("author_id").eq("id", postId).maybeSingle();
+      if (error) throw error;
+      authorId = post?.author_id ?? null;
+    } else {
+      const { data: comment, error } = await supabase.from("comments").select("author_id").eq("id", commentId).maybeSingle();
+      if (error) throw error;
+      authorId = comment?.author_id ?? null;
+    }
+
+    if (authorId) {
+      await recalculateKarma(authorId);
+      if (value === "UP" && authorId !== req.userId) {
+        await notify(authorId, "upvote", { postId, commentId });
       }
+    }
 
-      if (authorId) {
-        await recalculateKarma(authorId);
-        if (value === "UP" && authorId !== req.userId) {
-          await notify(authorId, "upvote", { postId, commentId });
-        }
-      }
-
-      res.json(vote);
+    res.json(vote);
   } catch (err) {
     next(err);
   }

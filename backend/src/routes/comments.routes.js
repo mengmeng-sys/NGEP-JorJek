@@ -22,7 +22,7 @@ commentsRouter.post("/posts/:postId/comments", requireAuth, async (req, res, nex
       .single();
     if (commentError) throw commentError;
 
-    const { data: post, error, postError } = await supabase
+    const { data: post, error: postError } = await supabase
       .from("posts")
       .select("id, author_id")
       .eq("id", req.params.postId)
@@ -32,8 +32,8 @@ commentsRouter.post("/posts/:postId/comments", requireAuth, async (req, res, nex
     if (post && post.author_id !== req.userId) {
       await notify(post.author_id, "reply", { postId: post.id, commentId: comment.id });
     }
-    res.status(201).json(comment);
 
+    res.status(201).json(comment);
   } catch (err) {
     next(err);
   }
