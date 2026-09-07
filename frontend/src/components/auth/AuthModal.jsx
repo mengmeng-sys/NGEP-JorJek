@@ -5,6 +5,7 @@ export function AuthModal({ isOpen, onClose, initialTab = 'register' }) {
   const [activeTab, setActiveTab] = useState(initialTab); // 'register' or 'login'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [displayName, setDisplayName] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const { login, signup } = useAuth();
@@ -14,6 +15,7 @@ export function AuthModal({ isOpen, onClose, initialTab = 'register' }) {
       setActiveTab(initialTab);
       setEmail('');
       setPassword('');
+      setDisplayName('');
       setError('');
       setSubmitting(false);
     }
@@ -29,7 +31,7 @@ export function AuthModal({ isOpen, onClose, initialTab = 'register' }) {
       if (activeTab === 'login') {
         await login(email, password);
       } else {
-        await signup(email, password, email.split('@')[0] || 'User');
+        await signup(email, password, displayName);
       }
       onClose();
     } catch (err) {
@@ -108,6 +110,16 @@ export function AuthModal({ isOpen, onClose, initialTab = 'register' }) {
 
           {/* Form Inputs */}
           <div className="space-y-3">
+            {activeTab === 'register' && (
+              <input
+                type="text"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                placeholder="Username"
+                required
+                className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-800 placeholder-gray-400 outline-none focus:bg-white focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all"
+              />
+            )}
             <input
               type="email"
               value={email}

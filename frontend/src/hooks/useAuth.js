@@ -34,10 +34,10 @@ export function AuthProvider({ children }) {
     return me;
   }
 
-  async function signup(cadtEmail, password, displayName, role = "STUDENT") {
+  async function signup(cadtEmail, password, displayName) {
     const { token } = await apiFetch("/auth/signup", {
       method: "POST",
-      body: JSON.stringify({ cadtEmail, password, displayName, role }),
+      body: JSON.stringify({ cadtEmail, password, displayName }),
     });
     localStorage.setItem("jorjek_token", token);
     const me = await apiFetch("/users/me");

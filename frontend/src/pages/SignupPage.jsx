@@ -10,7 +10,6 @@ export default function SignupPage() {
   const [cadtEmail, setCadtEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
-  const [role, setRole] = useState("STUDENT");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -19,7 +18,7 @@ export default function SignupPage() {
     setError("");
     setSubmitting(true);
     try {
-      await signup(cadtEmail, password, displayName, role);
+      await signup(cadtEmail, password, displayName);
       navigate("/");
     } catch (err) {
       setError(err.message || "Could not create account.");
@@ -62,16 +61,6 @@ export default function SignupPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-
-        <label className="block text-sm font-semibold text-gray-700 mb-1">I am a…</label>
-        <select
-          className="mb-4 w-full bg-[#FAFAFA] border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-800 outline-none focus:bg-white focus:border-orange-500"
-          value={role}
-          onChange={(e) => setRole(e.target.value)}
-        >
-          <option value="STUDENT">Student</option>
-          <option value="PROFESSOR">Professor</option>
-        </select>
 
         {error && <p className="text-xs font-semibold text-red-600 mb-3">{error}</p>}
 

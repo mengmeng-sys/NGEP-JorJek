@@ -10,10 +10,11 @@ const authRouter = Router();
 
 authRouter.post("/signup", requireCadtEmail, async (req, res, next) => {
   try {
-    const { cadtEmail, password, displayName, role } = req.body;
+    const { cadtEmail, password, displayName } = req.body;
     const passwordHash = await bcrypt.hash(password, 10);
+    const role = cadtEmail.toLowerCase().endsWith(env.studentEmailDomain.toLowerCase()) ? "STUDENT" : "PROFESSOR";
     const user = await prisma.user.create({
-      data: { cadtEmail, passwordHash, displayName, role: role ?? "STUDENT" },
+      data: { cadtEmail, passwordHash, displayName, role },
     });
     const token = jwt.sign({ sub: user.id }, env.jwtSecret, { expiresIn: "7d" });
     res.status(201).json({ token, user: { id: user.id, displayName: user.displayName, role: user.role } });

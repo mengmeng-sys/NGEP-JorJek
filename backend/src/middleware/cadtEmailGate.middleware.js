@@ -4,7 +4,12 @@ const { env } = require("../config/env");
 // Used only on the signup route, not on every request.
 function requireCadtEmail(req, res, next) {
   const email = req.body && req.body.cadtEmail;
-  if (!email || !email.toLowerCase().endsWith(env.cadtEmailDomain.toLowerCase())) {
+  const normalized = email && email.toLowerCase();
+  const allowed = [
+    env.cadtEmailDomain.toLowerCase(),
+    env.studentEmailDomain.toLowerCase(),
+  ];
+  if (!normalized || !allowed.some((d) => normalized.endsWith(d))) {
     return res.status(400).json({ error: `Signup requires a ${env.cadtEmailDomain} email` });
   }
   next();
