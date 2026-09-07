@@ -10,6 +10,7 @@ import SearchPage from "@/pages/SearchPage";
 import NotificationsPage from "@/pages/NotificationsPage";
 import ExplorePage from "@/pages/ExplorePage";
 import SavedPage from "@/pages/SavedPage";
+import SettingsPage from "@/pages/SettingsPage";
 
 export default function App() {
   return (
@@ -29,6 +30,7 @@ export default function App() {
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/explore" element={<ExplorePage />} />
           <Route path="/saved" element={<SavedPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
         </Routes>
     </div>
   );
