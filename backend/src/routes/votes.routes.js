@@ -7,6 +7,34 @@ const { notify } = require("../services/notification.service");
 const votesRouter = Router();
 
 // GET /vote/post/:postId -- READ all votes for a post
+
+/**
+ * @swagger
+ * /vote/post/{postId}:
+ *   get:
+ *     summary: List votes for a post
+ *     description: Returns all votes on a post (newest first) plus the computed score.
+ *     tags: [Votes]
+ *     parameters:
+ *       - in: path
+ *         name: postId
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *         description: Post UUID
+ *     responses:
+ *       200:
+ *         description: Votes + computed score
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/VoteScore"
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Error"
+ */
 votesRouter.get("/vote/post/:postId", async (req, res, next) => {
   try {
     const { data: votes, error } = await supabase
@@ -25,6 +53,34 @@ votesRouter.get("/vote/post/:postId", async (req, res, next) => {
 });
 
 // GET /vote/comment/:commentId -- READ all votes for a comment
+
+/**
+ * @swagger
+ * /vote/comment/{commentId}:
+ *   get:
+ *     summary: List votes for a comment
+ *     description: Returns all votes on a comment (newest first) plus the computed score.
+ *     tags: [Votes]
+ *     parameters:
+ *       - in: path
+ *         name: commentId
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *         description: Comment UUID
+ *     responses:
+ *       200:
+ *         description: Votes + computed score
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/VoteScore"
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Error"
+ */
 votesRouter.get("/vote/comment/:commentId", async (req, res, next) => {
   try {
     const { data: votes, error } = await supabase
@@ -43,6 +99,49 @@ votesRouter.get("/vote/comment/:commentId", async (req, res, next) => {
 });
 
 // GET /vote/me -- READ current user's vote on a post or comment
+
+/**
+ * @swagger
+ * /vote/me:
+ *   get:
+ *     summary: Get my vote on a target
+ *     description: |
+ *       Returns the current user's vote for a post or comment. Pass exactly one of `postId` or `commentId`.
+ *       Returns `null` if the user hasn't voted on the target.
+ *     tags: [Votes]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: postId
+ *         schema: { type: string, format: uuid }
+ *         description: Post UUID (mutually exclusive with `commentId`)
+ *       - in: query
+ *         name: commentId
+ *         schema: { type: string, format: uuid }
+ *         description: Comment UUID (mutually exclusive with `postId`)
+ *     responses:
+ *       200:
+ *         description: The user's vote, or null
+ *         content:
+ *           application/json:
+ *             schema:
+ *               oneOf:
+ *                 - $ref: "#/components/schemas/Vote"
+ *                 - type: "null"
+ *       400:
+ *         description: Provide postId or commentId query param
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Error"
+ *       401:
+ *         description: Missing or invalid token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Error"
+ */
 votesRouter.get("/vote/me", requireAuth, async (req, res, next) => {
   try {
     const { postId, commentId } = req.query;
@@ -66,6 +165,62 @@ votesRouter.get("/vote/me", requireAuth, async (req, res, next) => {
 });
 
 // POST /vote -- CREATE/UPDATE vote (upsert), triggers karma recalc + notification
+
+/**
+ * @swagger
+ * /vote:
+ *   post:
+ *     summary: Cast or change a vote
+ *     description: |
+ *       Creates a vote, or updates the value if the user already voted on that target (upsert).
+ *       Passing `value: "DOWN"` stores `-1`, otherwise `1`. Recalculates the target author's karma,
+ *       and sends an "upvote" notification when someone else upvotes your content.
+ *     tags: [Votes]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [value]
+ *             properties:
+ *               postId:
+ *                 type: string
+ *                 format: uuid
+ *                 description: Target post (mutually exclusive with `commentId`)
+ *                 example: 9f2c7a1d-4b6e-4f88-9f19-4f3723b3e1a0
+ *               commentId:
+ *                 type: string
+ *                 format: uuid
+ *                 description: Target comment (mutually exclusive with `postId`)
+ *                 example: 4f8e0c1a-9b2c-4d5e-8f67-1234567890ab
+ *               value:
+ *                 type: string
+ *                 enum: [UP, DOWN]
+ *                 description: Vote direction
+ *                 example: UP
+ *     responses:
+ *       200:
+ *         description: The created/updated vote
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Vote"
+ *       400:
+ *         description: Invalid request (no target specified)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Error"
+ *       401:
+ *         description: Missing or invalid token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Error"
+ */
 votesRouter.post("/vote", requireAuth, async (req, res, next) => {
   try {
     const { postId, commentId, value } = req.body;
@@ -130,6 +285,47 @@ votesRouter.post("/vote", requireAuth, async (req, res, next) => {
 });
 
 // DELETE /vote -- DELETE a vote (unvote)
+
+/**
+ * @swagger
+ * /vote:
+ *   delete:
+ *     summary: Remove my vote (unvote)
+ *     description: Deletes the current user's vote on a post or comment. Recalculates the target author's karma.
+ *     tags: [Votes]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               postId:
+ *                 type: string
+ *                 format: uuid
+ *                 description: Target post (mutually exclusive with `commentId`)
+ *               commentId:
+ *                 type: string
+ *                 format: uuid
+ *                 description: Target comment (mutually exclusive with `postId`)
+ *     responses:
+ *       204:
+ *         description: Vote removed
+ *       400:
+ *         description: Provide postId or commentId
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Error"
+ *       401:
+ *         description: Missing or invalid token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Error"
+ */
 votesRouter.delete("/vote", requireAuth, async (req, res, next) => {
   try {
     const { postId, commentId } = req.body;

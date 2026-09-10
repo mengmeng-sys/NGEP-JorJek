@@ -33,6 +33,63 @@ function userSafe(row) {
 }
 
 // ─── POST /auth/signup ────────────────────────────────────────────────
+
+/**
+ * @swagger
+ * /auth/signup:
+ *   post:
+ *     summary: Create a new account
+ *     description: >
+ *       Registers a new user with a CADT student email. Sends a 6-digit OTP to the email.
+ *       `role` defaults to `STUDENT`. Returns JWT tokens — email verification is recommended but tokens are issued immediately.
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [cadtEmail, password]
+ *             properties:
+ *               cadtEmail:
+ *                 type: string
+ *                 format: email
+ *                 description: Must end with `@student.cadt.edu.kh`
+ *                 example: dara@student.cadt.edu.kh
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 minLength: 6
+ *                 description: At least 6 characters
+ *                 example: secret123
+ *               displayName:
+ *                 type: string
+ *                 example: Dara Chan
+ *               role:
+ *                 type: string
+ *                 enum: [STUDENT, MENTOR]
+ *                 default: STUDENT
+ *                 example: STUDENT
+ *     responses:
+ *       201:
+ *         description: Account created — tokens + safe user object returned
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/AuthResponse"
+ *       400:
+ *         description: Invalid request (bad email / weak password)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Error"
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Error"
+ */
 authRouter.post("/signup", requireCadtEmail, async (req, res, next) => {
   try {
     const { cadtEmail, password, displayName, role } = req.body;
@@ -74,6 +131,50 @@ authRouter.post("/signup", requireCadtEmail, async (req, res, next) => {
 });
 
 // ─── POST /auth/login ─────────────────────────────────────────────────
+
+/**
+ * @swagger
+ * /auth/login:
+ *   post:
+ *     summary: Sign in with CADT email + password
+ *     description: Authenticates a user and returns JWT access + refresh tokens along with a safe user object.
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [cadtEmail, password]
+ *             properties:
+ *               cadtEmail:
+ *                 type: string
+ *                 format: email
+ *                 example: dara@student.cadt.edu.kh
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: secret123
+ *     responses:
+ *       200:
+ *         description: Logged in — tokens + safe user object
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/AuthResponse"
+ *       401:
+ *         description: Invalid credentials
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Error"
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Error"
+ */
 authRouter.post("/login", async (req, res, next) => {
   try {
     const { cadtEmail, password } = req.body;
@@ -97,6 +198,54 @@ authRouter.post("/login", async (req, res, next) => {
 });
 
 // ─── POST /auth/refresh ───────────────────────────────────────────────
+
+/**
+ * @swagger
+ * /auth/refresh:
+ *   post:
+ *     summary: Exchange a refresh token for new tokens
+ *     description: >
+ *       Validates the current refresh token against the user's `token_version` and issues a new access + refresh token pair.
+ *       Fails with 401 if the token was revoked (e.g. after logout or password reset).
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [refreshToken]
+ *             properties:
+ *               refreshToken:
+ *                 type: string
+ *                 example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *     responses:
+ *       200:
+ *         description: New token pair issued
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *                 refreshToken:
+ *                   type: string
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *       400:
+ *         description: Missing refresh token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Error"
+ *       401:
+ *         description: Invalid, expired, or revoked refresh token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Error"
+ */
 authRouter.post("/refresh", async (req, res, next) => {
   try {
     const { refreshToken } = req.body;
@@ -131,6 +280,36 @@ authRouter.post("/refresh", async (req, res, next) => {
 });
 
 // ─── POST /auth/logout ────────────────────────────────────────────────
+
+/**
+ * @swagger
+ * /auth/logout:
+ *   post:
+ *     summary: Log out (revoke all refresh tokens)
+ *     description: >
+ *       Increments the user's `token_version`, invalidating every previously-issued refresh token for that user.
+ *       Uses an RPC (`increment_token_version`) with a manual fallback if the RPC is missing.
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Logged out successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Logged out successfully
+ *       401:
+ *         description: Missing or invalid token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Error"
+ */
 authRouter.post("/logout", requireAuth, async (req, res, next) => {
   try {
     // Try the RPC first (atomic increment)
@@ -152,6 +331,36 @@ authRouter.post("/logout", requireAuth, async (req, res, next) => {
 });
 
 // ─── GET /auth/me ─────────────────────────────────────────────────────
+
+/**
+ * @swagger
+ * /auth/me:
+ *   get:
+ *     summary: Get the current user's profile
+ *     description: Returns the authenticated user's full profile from the JWT-derived user ID.
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Current user profile
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/UserSafe"
+ *       401:
+ *         description: Missing or invalid token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Error"
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Error"
+ */
 authRouter.get("/me", requireAuth, async (req, res, next) => {
   try {
     const { data: user, error } = await supabase
@@ -178,6 +387,52 @@ authRouter.get("/me", requireAuth, async (req, res, next) => {
 });
 
 // ─── POST /auth/resend-otp ────────────────────────────────────────────
+
+/**
+ * @swagger
+ * /auth/resend-otp:
+ *   post:
+ *     summary: Resend a verification OTP
+ *     description: >
+ *       Generates a new 6-digit OTP and emails it to the user's CADT address. Only works for accounts
+ *       that are not yet email-verified.
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [cadtEmail]
+ *             properties:
+ *               cadtEmail:
+ *                 type: string
+ *                 format: email
+ *                 example: dara@student.cadt.edu.kh
+ *     responses:
+ *       200:
+ *         description: OTP sent to the email address
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: OTP sent
+ *       400:
+ *         description: Email already verified, or missing email
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Error"
+ *       404:
+ *         description: No account found with this email
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Error"
+ */
 authRouter.post("/resend-otp", async (req, res, next) => {
   try {
     const { cadtEmail } = req.body;
@@ -218,6 +473,56 @@ authRouter.post("/resend-otp", async (req, res, next) => {
 });
 
 // ─── POST /auth/verify-email ──────────────────────────────────────────
+
+/**
+ * @swagger
+ * /auth/verify-email:
+ *   post:
+ *     summary: Verify your email with an OTP
+ *     description: >
+ *       Confirms the 6-digit OTP sent to the user's email. On success, marks the account as email-verified
+ *       and clears the stored OTP. OTPs expire after 10 minutes.
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [cadtEmail, otp]
+ *             properties:
+ *               cadtEmail:
+ *                 type: string
+ *                 format: email
+ *                 example: dara@student.cadt.edu.kh
+ *               otp:
+ *                 type: string
+ *                 description: 6-digit code from the email
+ *                 example: "482913"
+ *     responses:
+ *       200:
+ *         description: Email verified (or already verified)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Email verified successfully
+ *       400:
+ *         description: Invalid or expired OTP
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Error"
+ *       404:
+ *         description: No account found with this email
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Error"
+ */
 authRouter.post("/verify-email", async (req, res, next) => {
   try {
     const { cadtEmail, otp } = req.body;
@@ -260,6 +565,40 @@ authRouter.post("/verify-email", async (req, res, next) => {
 });
 
 // ─── POST /auth/forgot-password ───────────────────────────────────────
+
+/**
+ * @swagger
+ * /auth/forgot-password:
+ *   post:
+ *     summary: Request a password-reset OTP
+ *     description: >
+ *       Sends a 6-digit OTP to the account's email for password reset. Always returns the same generic
+ *       message whether or not the account exists (anti-enumeration).
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [cadtEmail]
+ *             properties:
+ *               cadtEmail:
+ *                 type: string
+ *                 format: email
+ *                 example: dara@student.cadt.edu.kh
+ *     responses:
+ *       200:
+ *         description: Generic success message (account may or may not exist)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: If an account exists, an OTP has been sent
+ */
 authRouter.post("/forgot-password", async (req, res, next) => {
   try {
     const { cadtEmail } = req.body;
@@ -297,6 +636,61 @@ authRouter.post("/forgot-password", async (req, res, next) => {
 });
 
 // ─── POST /auth/reset-password ────────────────────────────────────────
+
+/**
+ * @swagger
+ * /auth/reset-password:
+ *   post:
+ *     summary: Reset your password with an OTP
+ *     description: >
+ *       Verifies the reset OTP and sets a new password. Also resets `token_version` to 0,
+ *       invalidating all existing sessions/refresh tokens for the account.
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [cadtEmail, otp, newPassword]
+ *             properties:
+ *               cadtEmail:
+ *                 type: string
+ *                 format: email
+ *                 example: dara@student.cadt.edu.kh
+ *               otp:
+ *                 type: string
+ *                 description: 6-digit code from the email
+ *                 example: "482913"
+ *               newPassword:
+ *                 type: string
+ *                 format: password
+ *                 minLength: 6
+ *                 example: newsecret123
+ *     responses:
+ *       200:
+ *         description: Password reset — please log in again
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Password reset successfully — please log in
+ *       400:
+ *         description: Invalid/expired OTP or weak password
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Error"
+ *       404:
+ *         description: No account found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Error"
+ */
 authRouter.post("/reset-password", async (req, res, next) => {
   try {
     const { cadtEmail, otp, newPassword } = req.body;
