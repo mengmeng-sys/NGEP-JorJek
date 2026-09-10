@@ -4,7 +4,7 @@ const { requireAuth } = require("../middleware/auth.middleware");
 
 const usersRouter = Router();
 
-const USER_SAFE = "id,email,display_name,role,bio,karma,created_at";
+const USER_SAFE = "id,email,display_name,role,bio,karma,email_verified,created_at";
 
 // GET /users -- READ all users (paginated)
 usersRouter.get("/", async (req, res, next) => {

@@ -88,7 +88,7 @@ postsRouter.post("/", requireAuth, async (req, res, next) => {
 
     const { data: postWithTags, error: fetchError } = await supabase
       .from("posts")
-      .select("*, author:users(${USER_SAFE}), tags:post_tags(tag:skill_tags(*))")
+      .select(`*, author:users(${USER_SAFE}), tags:post_tags(tag:skill_tags(*))`)
       .eq("id", post.id)
       .single();
     if (fetchError) throw fetchError;
@@ -127,7 +127,7 @@ postsRouter.patch("/:id", requireAuth, async (req, res, next) => {
       .from("posts")
       .update(updates)
       .eq("id", req.params.id)
-      .select("*, author:users(${USER_SAFE}), tags:post_tags(tag:skill_tags(*))")
+      .select(`*, author:users(${USER_SAFE}), tags:post_tags(tag:skill_tags(*))`)
       .single();
     if (error) throw error;
 
