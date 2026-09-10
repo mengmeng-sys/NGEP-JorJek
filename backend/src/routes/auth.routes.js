@@ -35,7 +35,7 @@ authRouter.post("/login", async (req, res, next) => {
       .eq("email", cadtEmail)
       .maybeSingle();
     if (error) throw error;
-    if (!user || !(await bcrypt.compare(password, user.password_hash))) {
+    if(!user || !(await bcrypt.compare(password, user.password_hash))) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
     const token = jwt.sign({ sub: user.id }, env.jwtSecret, { expiresIn: "7d" });

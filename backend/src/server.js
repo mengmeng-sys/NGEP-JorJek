@@ -2,6 +2,7 @@ const http = require("http");
 const { Server: SocketIOServer } = require("socket.io");
 const { app } = require("./app");
 const { env } = require("./config/env");
+const { setIO } = require("./lib/socket");
 
 const server = http.createServer(app);
 
@@ -11,6 +12,7 @@ const io = new SocketIOServer(server, { cors: { origin: "*" } });
 io.on("connection", (socket) => {
   socket.on("join", (userId) => socket.join(userId));
 });
+setIO(io); // makes this instance reachable from notification.service.js
 
 server.listen(env.port, () => {
   console.log(`JorJek backend listening on http://localhost:${env.port}`);

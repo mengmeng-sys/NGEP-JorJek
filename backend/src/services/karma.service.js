@@ -11,12 +11,12 @@ async function recalculateKarma(userId) {
     supabase
       .from("votes")
       .select("*, posts!inner(author_id)", { count: "exact", head: true })
-      .eq("value", "UP")
+      .eq("value", 1)
       .eq("posts.author_id", userId),
     supabase
       .from("votes")
       .select("*, comments!inner(author_id)", { count: "exact", head: true })
-      .eq("value", "UP")
+      .eq("value", 1)
       .eq("comments.author_id", userId),
   ]);
   if (postResult.error) throw postResult.error;

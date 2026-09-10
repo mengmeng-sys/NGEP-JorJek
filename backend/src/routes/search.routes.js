@@ -7,18 +7,18 @@ const searchRouter = Router();
 searchRouter.get("/", async (req, res, next) => {
   try {
     const q = String(req.query.q ?? "");
-
+    
     const { data: posts, error } = await supabase
       .from("posts")
       .select("*")
       .or(`title.ilike.%${q}%,body.ilike.%${q}%`)
-      .limit(20);
+      .limit(20)
 
     if (error) throw error;
 
-    res.json(posts);
+    res.json(posts)
   } catch (err) {
-    next(err);
+    next (err);
   }
 });
 
