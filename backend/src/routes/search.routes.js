@@ -11,7 +11,7 @@ searchRouter.get("/", async (req, res, next) => {
     const { data: posts, error } = await supabase
       .from("posts")
       .select("*")
-      .or(`title.ilke.%${q}%,body.ilike.%${q}%`)
+      .or(`title.ilike.%${q}%,body.ilike.%${q}%`)
       .limit(20)
 
     if (error) throw error;
