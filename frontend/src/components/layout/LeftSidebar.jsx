@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink, useSearchParams, useNavigate } from 'react-router-dom';
+import { NavLink, Link, useSearchParams, useNavigate } from 'react-router-dom';
 
 export function LeftSidebar({ savedCount = 1 }) {
   const [searchParams] = useSearchParams();
@@ -17,7 +17,6 @@ export function LeftSidebar({ savedCount = 1 }) {
 
   const handleTagClick = (tag) => {
     if (activeTag === tag) {
-      // Toggle off filter
       navigate('/');
     } else {
       navigate(`/?tag=${encodeURIComponent(tag)}`);
@@ -77,22 +76,6 @@ export function LeftSidebar({ savedCount = 1 }) {
         </nav>
       </div>
 
-      {/* Featured Topic Banner */}
-      <div className="bg-gradient-to-br from-[#1E1B4B] to-[#311042] rounded-2xl p-4 text-white shadow-sm flex items-center justify-between">
-        <div>
-          <span className="text-[10px] uppercase font-bold text-gray-300 tracking-wider block mb-1">
-            Featured Topic
-          </span>
-          <h4 className="text-sm font-bold leading-tight">System Design</h4>
-          <p className="text-xs text-gray-400 font-medium">& Architecture</p>
-        </div>
-        <div className="w-10 h-10 bg-purple-600/30 border border-purple-500/40 rounded-xl flex items-center justify-center">
-          <svg className="w-5 h-5 text-purple-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-          </svg>
-        </div>
-      </div>
-
       {/* Skill Tags Section */}
       <div>
         <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-3 px-4">
@@ -117,6 +100,17 @@ export function LeftSidebar({ savedCount = 1 }) {
             );
           })}
         </div>
+      </div>
+
+      {/* Compact Left Sidebar Footer */}
+      <div className="pt-6 border-t border-gray-200 px-3 text-[11px] text-gray-400 space-y-2">
+        <div className="flex flex-wrap gap-x-3 gap-y-1 font-medium">
+          <Link to="/about" className="hover:text-gray-700 transition-colors">About Us</Link>
+          <Link to="/contact" className="hover:text-gray-700 transition-colors">Contact</Link>
+          <Link to="/privacy" className="hover:text-gray-700 transition-colors">Privacy</Link>
+          <Link to="/terms" className="hover:text-gray-700 transition-colors">Terms</Link>
+        </div>
+        <p className="text-[10px] text-gray-400">© 2026 JorJek Campus. All rights reserved.</p>
       </div>
     </aside>
   );

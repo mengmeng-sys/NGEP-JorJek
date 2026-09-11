@@ -12,7 +12,7 @@ function CommentThread({ comment }) {
   const [voteState, setVoteState] = useState(comment.initialVoted || 0);
   const [voteCount, setVoteCount] = useState(comment.votes);
 
-  // Active reply target: null (closed), 'main' (replying to comment author), or replyId (replying to nested user)
+  // Active reply target
   const [replyingToUser, setReplyingToUser] = useState(null);
   const [replyText, setReplyText] = useState('');
   const [replies, setReplies] = useState(comment.replies || []);
@@ -250,7 +250,6 @@ function NestedReply({ reply, onReplyClick }) {
 
   return (
     <div>
-      {/* Sub-reply Header */}
       <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-2">
           <div className="h-6 w-6 bg-[#111827] text-white font-bold flex items-center justify-center rounded-full text-[10px]">
@@ -269,7 +268,6 @@ function NestedReply({ reply, onReplyClick }) {
           <span className="text-gray-400 text-[11px] ml-1">{reply.timestamp}</span>
         </div>
 
-        {/* Warning Icon for Replies */}
         <button
           onClick={() => setIsReported(!isReported)}
           title="Report reply"
@@ -283,7 +281,6 @@ function NestedReply({ reply, onReplyClick }) {
         </button>
       </div>
 
-      {/* Sub-reply Body & Mention */}
       <div className="pl-8 text-xs text-gray-700 leading-relaxed">
         <p>
           {reply.replyingTo && (
@@ -292,7 +289,6 @@ function NestedReply({ reply, onReplyClick }) {
           {reply.text}
         </p>
 
-        {/* Sub-reply Actions Row (Upvote/Downvote + Reply Button) */}
         <div className="flex items-center gap-3 pt-2 text-gray-500 font-medium">
           <div className="flex items-center gap-1 bg-gray-50 px-1.5 py-0.5 rounded border border-gray-100">
             <button
@@ -335,8 +331,37 @@ function NestedReply({ reply, onReplyClick }) {
 export default function PostDetailPage() {
   const { id } = useParams();
 
-  const [postVoteState, setPostVoteState] = useState(0);
+  // Post Interaction States
+  const [postVoteState, setPostVoteState] = useState(0); // 1, -1, or 0
   const [postVoteCount, setPostVoteCount] = useState(124);
+  const [isSaved, setIsSaved] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
+
+  const handlePostUpvote = () => {
+    if (postVoteState === 1) {
+      setPostVoteState(0);
+      setPostVoteCount(postVoteCount - 1);
+    } else {
+      setPostVoteCount(postVoteCount + (postVoteState === -1 ? 2 : 1));
+      setPostVoteState(1);
+    }
+  };
+
+  const handlePostDownvote = () => {
+    if (postVoteState === -1) {
+      setPostVoteState(0);
+      setPostVoteCount(postVoteCount + 1);
+    } else {
+      setPostVoteCount(postVoteCount - (postVoteState === 1 ? 2 : 1));
+      setPostVoteState(-1);
+    }
+  };
+
+  const handleShare = () => {
+    navigator.clipboard.writeText(window.location.href);
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 2000);
+  };
 
   const commentsData = [
     {
@@ -349,11 +374,9 @@ export default function PostDetailPage() {
       initialVoted: 0,
       isLong: true,
       body: (
-        <>
-          <p>
-            Great question! The three-table join is straightforward — just chain another JOIN. The more important question is whether you need a materialized view. For a dashboard that reads frequently but updates rarely, materialization can cut query time significantly:...
-          </p>
-        </>
+        <p>
+          Great question! The three-table join is straightforward — just chain another JOIN. The more important question is whether you need a materialized view. For a dashboard that reads frequently but updates rarely, materialization can cut query time significantly.
+        </p>
       ),
       replies: [
         {
@@ -400,7 +423,7 @@ export default function PostDetailPage() {
 
   return (
     <ThreeColumnLayout>
-      <Link to="/" className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 mb-4 font-medium transition-colors">
+      <Link to="/" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 mb-4 font-medium transition-colors">
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
         </svg>
@@ -444,21 +467,82 @@ export default function PostDetailPage() {
           </div>
         </div>
 
-        <div className="flex items-center gap-6 px-6 py-3 border-t border-gray-100 text-gray-500 text-sm font-medium">
-          <div className="flex items-center gap-1.5 bg-gray-50 px-2 py-1 rounded-lg border border-gray-100">
-            <button onClick={() => setPostVoteCount(postVoteCount + 1)} className="p-1 text-gray-400 hover:text-orange-500">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+        {/* Post Bottom Controls: Votes + Comments + Share + Save */}
+        <div className="flex items-center justify-between px-6 py-3 border-t border-gray-100 text-gray-500 text-sm font-medium">
+          <div className="flex items-center gap-5">
+            {/* Voting Capsule */}
+            <div className="flex items-center gap-1.5 bg-gray-50 px-2 py-1 rounded-xl border border-gray-100">
+              <button 
+                onClick={handlePostUpvote} 
+                className={`p-1 rounded hover:bg-gray-200 transition-colors ${
+                  postVoteState === 1 ? 'text-[#FF4F00]' : 'text-gray-400'
+                }`}
+                title="Upvote"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                </svg>
+              </button>
+
+              <span className={`text-xs font-bold ${
+                postVoteState === 1 ? 'text-[#FF4F00]' : postVoteState === -1 ? 'text-blue-500' : 'text-gray-700'
+              }`}>
+                {postVoteCount}
+              </span>
+
+              <button 
+                onClick={handlePostDownvote} 
+                className={`p-1 rounded hover:bg-gray-200 transition-colors ${
+                  postVoteState === -1 ? 'text-blue-500' : 'text-gray-400'
+                }`}
+                title="Downvote"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Comments Count */}
+            <div className="flex items-center gap-1.5 text-xs text-gray-500 font-semibold">
+              <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
               </svg>
+              <span>3 comments</span>
+            </div>
+
+            {/* Share Button */}
+            <button
+              type="button"
+              onClick={handleShare}
+              className="flex items-center gap-1.5 text-xs font-semibold hover:text-gray-800 transition-colors"
+            >
+              <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+              </svg>
+              <span>{isCopied ? 'Copied!' : 'Share'}</span>
             </button>
-            <span className="text-xs font-bold text-gray-700">{postVoteCount}</span>
-            <button onClick={() => setPostVoteCount(postVoteCount - 1)} className="p-1 text-gray-400 hover:text-blue-500">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+
+            {/* Save Button */}
+            <button
+              type="button"
+              onClick={() => setIsSaved(!isSaved)}
+              className={`flex items-center gap-1.5 text-xs font-semibold transition-colors ${
+                isSaved ? 'text-[#FF4F00] font-bold' : 'hover:text-gray-800'
+              }`}
+            >
+              <svg
+                className="w-4 h-4"
+                fill={isSaved ? 'currentColor' : 'none'}
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
               </svg>
+              <span>Save</span>
             </button>
           </div>
-          <span>3 comments</span>
         </div>
       </div>
 
