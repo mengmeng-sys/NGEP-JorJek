@@ -7,6 +7,43 @@ const postsRouter = Router();
 const USER_SAFE = "id,email,display_name,role,bio,karma,created_at";
 
 // GET /posts -- READ list (optional ?tag= filter, pagination)
+
+/**
+ * @swagger
+ * /posts:
+ *   get:
+ *     summary: List posts (paginated)
+ *     description: |
+ *       Returns a paginated list of posts, newest first. Each post includes author, tags, and votes.
+ *       Pass `?tag=<name>` to filter posts by tag name.
+ *     tags: [Posts]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, minimum: 1, default: 1 }
+ *         description: Page number (1-based)
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, minimum: 1, maximum: 50, default: 20 }
+ *         description: Number of posts per page (max 50)
+ *       - in: query
+ *         name: tag
+ *         schema: { type: string }
+ *         description: Filter posts by skill-tag name (e.g. `JavaScript`)
+ *     responses:
+ *       200:
+ *         description: Paginated list of posts
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/PostList"
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Error"
+ */
 postsRouter.get("/", async (req, res, next) => {
   try {
     const { tag } = req.query;
@@ -39,6 +76,34 @@ postsRouter.get("/", async (req, res, next) => {
 });
 
 // GET /posts/:id -- READ single post (with author, tags, comments, votes)
+
+/**
+ * @swagger
+ * /posts/{id}:
+ *   get:
+ *     summary: Get a single post
+ *     description: Returns one post with its author, tags, comments (incl. comment authors + votes), and votes.
+ *     tags: [Posts]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *         description: Post UUID
+ *     responses:
+ *       200:
+ *         description: The requested post
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Post"
+ *       404:
+ *         description: Post not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Error"
+ */
 postsRouter.get("/:id", async (req, res, next) => {
   try {
     const { data: post, error } = await supabase
@@ -58,6 +123,62 @@ postsRouter.get("/:id", async (req, res, next) => {
 });
 
 // POST /posts -- CREATE post (with tag upsert + join)
+
+/**
+ * @swagger
+ * /posts:
+ *   post:
+ *     summary: Create a post
+ *     description: |
+ *       Creates a new post. `type` defaults to `question`. Tag names are upserted (created if missing, by slug)
+ *       and linked to the post via the join table.
+ *     tags: [Posts]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [title, body]
+ *             properties:
+ *               type:
+ *                 type: string
+ *                 enum: [question, article, discussion]
+ *                 default: question
+ *                 example: question
+ *               title:
+ *                 type: string
+ *                 example: How do I paginate in PostgreSQL?
+ *               body:
+ *                 type: string
+ *                 example: I'm running a query that returns too many rows...
+ *               tagNames:
+ *                 type: array
+ *                 items: { type: string }
+ *                 description: Tag names to attach (case-insensitive, created on the fly)
+ *                 example: ["PostgreSQL", "SQL"]
+ *     responses:
+ *       201:
+ *         description: Post created (with author + tags)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Post"
+ *       400:
+ *         description: Invalid request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Error"
+ *       401:
+ *         description: Missing or invalid token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Error"
+ */
 postsRouter.post("/", requireAuth, async (req, res, next) => {
   try {
     const { type, title, body, tagNames } = req.body;
@@ -100,6 +221,71 @@ postsRouter.post("/", requireAuth, async (req, res, next) => {
 });
 
 // PATCH /posts/:id -- UPDATE post (author only)
+
+/**
+ * @swagger
+ * /posts/{id}:
+ *   patch:
+ *     summary: Update a post (author only)
+ *     description: Updates editable fields of the post. Only the original author can update it.
+ *     tags: [Posts]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *         description: Post UUID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 example: Updated post title
+ *               body:
+ *                 type: string
+ *                 example: Updated body text
+ *               type:
+ *                 type: string
+ *                 enum: [question, article, discussion]
+ *                 example: article
+ *     responses:
+ *       200:
+ *         description: Updated post
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Post"
+ *       400:
+ *         description: No fields to update
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Error"
+ *       401:
+ *         description: Missing or invalid token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Error"
+ *       403:
+ *         description: You can only edit your own posts
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Error"
+ *       404:
+ *         description: Post not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Error"
+ */
 postsRouter.patch("/:id", requireAuth, async (req, res, next) => {
   try {
     const { data: existing, error: findError } = await supabase
@@ -138,6 +324,44 @@ postsRouter.patch("/:id", requireAuth, async (req, res, next) => {
 });
 
 // DELETE /posts/:id -- DELETE post (author only)
+
+/**
+ * @swagger
+ * /posts/{id}:
+ *   delete:
+ *     summary: Delete a post (author only)
+ *     description: Permanently deletes a post. Only the original author can delete it.
+ *     tags: [Posts]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *         description: Post UUID
+ *     responses:
+ *       204:
+ *         description: Post deleted
+ *       401:
+ *         description: Missing or invalid token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Error"
+ *       403:
+ *         description: You can only delete your own posts
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Error"
+ *       404:
+ *         description: Post not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Error"
+ */
 postsRouter.delete("/:id", requireAuth, async (req, res, next) => {
   try {
     const { data: existing, error: findError } = await supabase
