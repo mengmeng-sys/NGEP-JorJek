@@ -5,29 +5,19 @@ import { MainContent } from './MainContent';
 
 export function ThreeColumnLayout({ children }) {
   return (
-    // w-full instead of max-w-7xl forces the layout to span the entire screen width
     <div className="w-full px-6 lg:px-10 py-6">
-      
-      {/* 
-        Using a 12-column grid:
-        - Left Sidebar takes 2 columns (compact & near the left edge)
-        - Main Content takes 7 columns (much wider for your posts)
-        - Right Sidebar takes 3 columns (near the right edge)
-      */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
-        {/* Left Sidebar (2 cols) */}
-        <div className="hidden lg:block lg:col-span-2">
+        {/* Sticky Left Sidebar */}
+        <div className="hidden lg:block lg:col-span-2 sticky top-[4.5rem] h-[calc(100vh-5.5rem)] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           <LeftSidebar />
         </div>
 
-        {/* Center Main Content (7 cols) */}
-        <div className="col-span-1 lg:col-span-7">
-          <MainContent>{children}</MainContent>
-        </div>
+        {/* Scrollable Center Main Content */}
+        <MainContent>{children}</MainContent>
 
-        {/* Right Sidebar (3 cols) */}
-        <div className="hidden lg:block lg:col-span-3">
+        {/* Sticky Right Sidebar */}
+        <div className="hidden lg:block lg:col-span-3 sticky top-[4.5rem] h-[calc(100vh-5.5rem)] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden pb-6">
           <RightSidebar />
         </div>
 
