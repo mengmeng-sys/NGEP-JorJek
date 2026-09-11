@@ -10,14 +10,15 @@
     "lint": "eslint src"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.115.0",
     "@tailwindcss/vite": "^4.3.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^7.18.3",
+    "react-router-dom": "^6.26.0",
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.1",
-    "vite": "^8.2.2"
+    "vite": "^5.4.0"
   }
 }

@@ -1,4 +1,4 @@
-const { prisma } = require("../config/db");
+const { supabase } = require("../config/db");
 const { env } = require("../config/env");
 const { getIO } = require("../lib/socket");
 
@@ -14,9 +14,12 @@ const { getIO } = require("../lib/socket");
  * fallback keeps working even once websockets are added.
  */
 async function notify(userId, type, payload) {
-  const notification = await prisma.notification.create({
-    data: { userId, type, payload },
-  });
+  const { data: notification, error } = await supabase
+    .from("notifications")
+    .insert({ user_id: userId, type, payload })
+    .select()
+    .single();
+  if (error) throw error;
 
   if (env.notificationTransport === "websocket") {
     const io = getIO();
