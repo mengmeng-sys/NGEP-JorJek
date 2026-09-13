@@ -43,7 +43,7 @@ searchRouter.get("/", async (req, res, next) => {
     
     const { data: posts, error } = await supabase
       .from("posts")
-      .select("*")
+      .select(`*, author:users!posts_author_id_fkey(id,display_name,role,karma), tags:post_tags(tag:skill_tags(*)), comments:comments(id), votes(*)`)
       .or(`title.ilike.%${q}%,body.ilike.%${q}%`)
       .limit(20)
 

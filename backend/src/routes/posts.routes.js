@@ -1,10 +1,22 @@
 const { Router } = require("express");
 const { supabase } = require("../config/db");
-const { requireAuth } = require("../middleware/auth.middleware");
+const { requireAuth, optionalAuth } = require("../middleware/auth.middleware");
+const { requireVerifiedEmail } = require("../middleware/verifiedEmail.middleware");
 
 const postsRouter = Router();
 
 const USER_SAFE = "id,email,display_name,role,bio,karma,created_at";
+
+// Fetch the set of post ids the current user has saved (empty when anonymous).
+async function savedIdsFor(userId) {
+  if (!userId) return [];
+  const { data, error } = await supabase
+    .from("saved_posts")
+    .select("post_id")
+    .eq("user_id", userId);
+  if (error) throw error;
+  return data ? data.map((row) => row.post_id) : [];
+}
 
 // GET /posts -- READ list (optional ?tag= filter, pagination)
 
@@ -44,7 +56,7 @@ const USER_SAFE = "id,email,display_name,role,bio,karma,created_at";
  *             schema:
  *               $ref: "#/components/schemas/Error"
  */
-postsRouter.get("/", async (req, res, next) => {
+postsRouter.get("/", optionalAuth, async (req, res, next) => {
   try {
     const { tag } = req.query;
     const page = Math.max(1, Number(req.query.page) || 1);
@@ -53,14 +65,14 @@ postsRouter.get("/", async (req, res, next) => {
 
     let query = supabase
       .from("posts")
-      .select(`*, author:users(${USER_SAFE}), tags:post_tags(tag:skill_tags(*)), votes(*)`, { count: "exact" })
+      .select(`*, author:users!posts_author_id_fkey(${USER_SAFE}), tags:post_tags(tag:skill_tags(*)), comments:comments(id), votes(*)`, { count: "exact" })
       .order("created_at", { ascending: false })
       .range(from, from + limit - 1);
 
     if (tag) {
       query = supabase
         .from("posts")
-        .select(`*, author:users(${USER_SAFE}), tags:post_tags!inner(tag:skill_tags!inner(*)), votes(*)`, { count: "exact" })
+        .select(`*, author:users!posts_author_id_fkey(${USER_SAFE}), tags:post_tags!inner(tag:skill_tags!inner(*)), comments:comments(id), votes(*)`, { count: "exact" })
         .eq("tags.tag.name", String(tag))
         .order("created_at", { ascending: false })
         .range(from, from + limit - 1);
@@ -69,7 +81,13 @@ postsRouter.get("/", async (req, res, next) => {
     const { data: posts, error, count } = await query;
     if (error) throw error;
 
-    res.json({ posts, page, limit, total: count });
+    const saved = await savedIdsFor(req.userId);
+    res.json({
+      posts: posts.map((p) => ({ ...p, isSaved: saved.includes(p.id) })),
+      page,
+      limit,
+      total: count,
+    });
   } catch (err) {
     next(err);
   }
@@ -104,19 +122,20 @@ postsRouter.get("/", async (req, res, next) => {
  *             schema:
  *               $ref: "#/components/schemas/Error"
  */
-postsRouter.get("/:id", async (req, res, next) => {
+postsRouter.get("/:id", optionalAuth, async (req, res, next) => {
   try {
     const { data: post, error } = await supabase
       .from("posts")
       .select(
-        `*, author:users(${USER_SAFE}), tags:post_tags(tag:skill_tags(*)), comments(*, author:users(${USER_SAFE}), votes(*)), votes(*)`
+        `*, author:users!posts_author_id_fkey(${USER_SAFE}), tags:post_tags(tag:skill_tags(*)), comments(*, author:users(${USER_SAFE}), votes(*)), votes(*)`
       )
       .eq("id", req.params.id)
       .maybeSingle();
     if (error) throw error;
     if (!post) return res.status(404).json({ error: "Post not found" });
 
-    res.json(post);
+    const saved = await savedIdsFor(req.userId);
+    res.json({ ...post, isSaved: saved.includes(post.id) });
   } catch (err) {
     next(err);
   }
@@ -179,7 +198,7 @@ postsRouter.get("/:id", async (req, res, next) => {
  *             schema:
  *               $ref: "#/components/schemas/Error"
  */
-postsRouter.post("/", requireAuth, async (req, res, next) => {
+postsRouter.post("/", requireAuth, requireVerifiedEmail, async (req, res, next) => {
   try {
     const { type, title, body, tagNames } = req.body;
 
@@ -209,7 +228,7 @@ postsRouter.post("/", requireAuth, async (req, res, next) => {
 
     const { data: postWithTags, error: fetchError } = await supabase
       .from("posts")
-      .select(`*, author:users(${USER_SAFE}), tags:post_tags(tag:skill_tags(*))`)
+      .select(`*, author:users!posts_author_id_fkey(${USER_SAFE}), tags:post_tags(tag:skill_tags(*))`)
       .eq("id", post.id)
       .single();
     if (fetchError) throw fetchError;
@@ -286,7 +305,7 @@ postsRouter.post("/", requireAuth, async (req, res, next) => {
  *             schema:
  *               $ref: "#/components/schemas/Error"
  */
-postsRouter.patch("/:id", requireAuth, async (req, res, next) => {
+postsRouter.patch("/:id", requireAuth, requireVerifiedEmail, async (req, res, next) => {
   try {
     const { data: existing, error: findError } = await supabase
       .from("posts")
@@ -299,21 +318,49 @@ postsRouter.patch("/:id", requireAuth, async (req, res, next) => {
       return res.status(403).json({ error: "You can only edit your own posts" });
     }
 
-    const { title, body, type } = req.body;
+    const { title, body, type, tagNames } = req.body;
     const updates = {};
     if (title !== undefined) updates.title = title;
     if (body !== undefined) updates.body = body;
     if (type !== undefined) updates.type = type.toLowerCase();
 
-    if (Object.keys(updates).length === 0) {
+    if (Object.keys(updates).length === 0 && tagNames === undefined) {
       return res.status(400).json({ error: "No fields to update" });
+    }
+
+    if (Object.keys(updates).length > 0) {
+      const { error } = await supabase
+        .from("posts")
+        .update(updates)
+        .eq("id", req.params.id)
+        .select("id");
+      if (error) throw error;
+    }
+
+    if (Array.isArray(tagNames)) {
+      const names = tagNames.map((n) => String(n).trim().replace(/^#/, "")).filter(Boolean);
+      await supabase.from("post_tags").delete().eq("post_id", req.params.id);
+      if (names.length > 0) {
+        const { data: tags, error: tagsError } = await supabase
+          .from("skill_tags")
+          .upsert(
+            names.map((name) => ({ slug: name.toLowerCase().replace(/\s+/g, "-"), name })),
+            { onConflict: "slug" }
+          )
+          .select();
+        if (tagsError) throw tagsError;
+
+        const { error: joinError } = await supabase
+          .from("post_tags")
+          .insert(tags.map((tag) => ({ post_id: req.params.id, tag_id: tag.id })));
+        if (joinError) throw joinError;
+      }
     }
 
     const { data: post, error } = await supabase
       .from("posts")
-      .update(updates)
+      .select(`*, author:users!posts_author_id_fkey(${USER_SAFE}), tags:post_tags(tag:skill_tags(*)), comments:comments(id), votes(*)`)
       .eq("id", req.params.id)
-      .select(`*, author:users(${USER_SAFE}), tags:post_tags(tag:skill_tags(*))`)
       .single();
     if (error) throw error;
 
@@ -362,7 +409,7 @@ postsRouter.patch("/:id", requireAuth, async (req, res, next) => {
  *             schema:
  *               $ref: "#/components/schemas/Error"
  */
-postsRouter.delete("/:id", requireAuth, async (req, res, next) => {
+postsRouter.delete("/:id", requireAuth, requireVerifiedEmail, async (req, res, next) => {
   try {
     const { data: existing, error: findError } = await supabase
       .from("posts")
@@ -376,6 +423,93 @@ postsRouter.delete("/:id", requireAuth, async (req, res, next) => {
     }
 
     const { error } = await supabase.from("posts").delete().eq("id", req.params.id);
+    if (error) throw error;
+
+    res.status(204).send();
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /posts/:id/save -- SAVE a post to the current user's bookmarks
+
+/**
+ * @swagger
+ * /posts/{id}/save:
+ *   post:
+ *     summary: Save a post to bookmarks
+ *     description: Adds the post to the current user's saved list (idempotent upsert).
+ *     tags: [Posts]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *         description: Post UUID
+ *     responses:
+ *       204:
+ *         description: Post saved
+ *       401:
+ *         description: Missing or invalid token
+ *       403:
+ *         description: Email not verified
+ *       404:
+ *         description: Post not found
+ */
+postsRouter.post("/:id/save", requireAuth, requireVerifiedEmail, async (req, res, next) => {
+  try {
+    const { data: post } = await supabase
+      .from("posts")
+      .select("id")
+      .eq("id", req.params.id)
+      .maybeSingle();
+    if (!post) return res.status(404).json({ error: "Post not found" });
+
+    const { error } = await supabase
+      .from("saved_posts")
+      .upsert({ user_id: req.userId, post_id: post.id }, { onConflict: "user_id, post_id" });
+    if (error) throw error;
+
+    res.status(204).send();
+  } catch (err) {
+    next(err);
+  }
+});
+
+// DELETE /posts/:id/save -- UN-SAVE a post from the current user's bookmarks
+
+/**
+ * @swagger
+ * /posts/{id}/save:
+ *   delete:
+ *     summary: Remove a post from bookmarks
+ *     description: Removes the post from the current user's saved list (idempotent).
+ *     tags: [Posts]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *         description: Post UUID
+ *     responses:
+ *       204:
+ *         description: Post removed from bookmarks
+ *       401:
+ *         description: Missing or invalid token
+ *       403:
+ *         description: Email not verified
+ */
+postsRouter.delete("/:id/save", requireAuth, requireVerifiedEmail, async (req, res, next) => {
+  try {
+    const { error } = await supabase
+      .from("saved_posts")
+      .delete()
+      .eq("user_id", req.userId)
+      .eq("post_id", req.params.id);
     if (error) throw error;
 
     res.status(204).send();

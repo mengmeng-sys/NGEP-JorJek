@@ -1,15 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '@/context/AuthContext';
 
 export function PrivacyTab() {
+  const { user, updateUserProfile } = useAuth();
+
   const [privacySettings, setPrivacySettings] = useState({
     showProfileToGuests: true,
     allowDirectRequests: true,
     showOnlineStatus: false,
     receiveEmailNotifications: true,
   });
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  // Load the user's saved settings whenever the auth user is available.
+  useEffect(() => {
+    if (!user?.id) return;
+    setPrivacySettings({
+      showProfileToGuests: user.showProfileToGuests ?? true,
+      allowDirectRequests: user.allowDirectRequests ?? true,
+      showOnlineStatus: user.showOnlineStatus ?? false,
+      receiveEmailNotifications: user.receiveEmailNotifications ?? true,
+    });
+  }, [user?.id, user?.showProfileToGuests, user?.allowDirectRequests, user?.showOnlineStatus, user?.receiveEmailNotifications]);
 
   const togglePrivacy = (key) => {
+    setSaved(false);
     setPrivacySettings((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const handleSave = async () => {
+    if (!user?.id) return;
+    setSaving(true);
+    setSaved(false);
+    try {
+      await updateUserProfile(privacySettings);
+      setSaved(true);
+    } catch (err) {
+      alert(err?.message || 'Could not save your privacy settings. Please try again.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const toggles = [
@@ -93,12 +124,24 @@ export function PrivacyTab() {
       </div>
 
       {/* Action Footer */}
-      <div className="pt-5 sm:pt-6 mt-2 border-t border-gray-100 flex justify-end">
+      <div className="pt-5 sm:pt-6 mt-2 border-t border-gray-100 flex items-center justify-end gap-3">
+        {saved && (
+          <span className="text-[11px] font-bold text-emerald-600 flex items-center gap-1">
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+            Saved
+          </span>
+        )}
         <button
           type="button"
-          className="w-full sm:w-auto bg-[#FF4F00] hover:bg-[#E64700] text-white font-bold text-xs px-6 py-3 sm:py-2.5 rounded-xl transition-all shadow-xs cursor-pointer active:scale-98 text-center"
+          onClick={handleSave}
+          disabled={saving}
+          className={`w-full sm:w-auto bg-[#FF4F00] hover:bg-[#E64700] text-white font-bold text-xs px-6 py-3 sm:py-2.5 rounded-xl transition-all shadow-xs text-center active:scale-98 ${
+            saving ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'
+          }`}
         >
-          Save Changes
+          {saving ? 'Saving…' : 'Save Changes'}
         </button>
       </div>
     </div>

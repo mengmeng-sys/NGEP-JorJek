@@ -1,38 +1,56 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from "react";
+import { postsApi } from "@/lib/api";
+import { getApiErrorMessage } from "@/lib/apiClient";
 
-export function usePosts() {
+/**
+ * Fetch the post feed from the backend.
+ *
+ * @param {Object} options
+ * @param {string} [options.tag]    filter by a single tag (used by TagFeedPage)
+ * @param {number} [options.page]
+ * @param {number} [options.limit]
+ */
+export function usePosts({ tag, page = 1, limit = 50 } = {}) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [total, setTotal] = useState(0);
+  const requestedRef = useRef(null);
 
-  useEffect(() => {
-    setPosts([
-      {
-        id: 1,
-        author: "Kwame Mensah",
-        role: "Student",
-        title: "How do I implement a CREATE VIEW statement for a multi-table database dashboard?",
-        content: "I am working on a university group presentation and need help joining the user account table with the favorites list. Our schema has three relations and I can't figure out which join order reduces the query cost.",
-        tags: ["SQL"],
-        timestamp: "3h ago",
-        upvotes: 124,
-        comments: 14,
-        hasUpvoted: false
-      },
-      {
-        id: 2,
-        author: "Lena Brandt",
-        role: "Student",
-        title: "Best practices for memory management in C++ — when to use smart pointers vs raw?",
-        content: "I keep running into segfaults in my data structures assignment when I mix unique_ptr and raw pointers. Looking for a clear mental model on ownership semantics before my exam next week.",
-        tags: ["C++"],
-        timestamp: "5h ago",
-        upvotes: 211,
-        comments: 29,
-        hasUpvoted: true
-      }
-    ]);
-    setLoading(false);
+  const currentUserId = (() => {
+    try {
+      const raw = localStorage.getItem("jorjek_auth_user");
+      return raw ? JSON.parse(raw).id : null;
+    } catch {
+      return null;
+    }
+  })();
+
+  const load = useCallback(async () => {
+    const key = `${tag ?? ""}|${page}|${limit}`;
+    if (requestedRef.current === key) return;
+    requestedRef.current = key;
+
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await postsApi.list({ tag, page, limit, currentUserId });
+      setPosts(data.posts);
+      setTotal(data.total);
+    } catch (err) {
+      setError(getApiErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  }, [tag, page, limit, currentUserId]);
+
+  const updatePost = useCallback((updated) => {
+    setPosts((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
   }, []);
 
-  return { posts, loading };
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  return { posts, loading, error, total, refresh: load, updatePost };
 }

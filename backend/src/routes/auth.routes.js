@@ -29,7 +29,17 @@ function otpExpiry() {
 }
 
 function userSafe(row) {
-  return { id: row.id, email: row.email, displayName: row.display_name, role: row.role, emailVerified: row.email_verified };
+  return {
+    id: row.id,
+    email: row.email,
+    displayName: row.display_name,
+    role: row.role,
+    emailVerified: row.email_verified,
+    showProfileToGuests: row.show_profile_to_guests ?? true,
+    allowDirectRequests: row.allow_direct_requests ?? true,
+    showOnlineStatus: row.show_online_status ?? false,
+    receiveEmailNotifications: row.receive_email_notifications ?? true,
+  };
 }
 
 // ─── POST /auth/signup ────────────────────────────────────────────────
@@ -365,7 +375,7 @@ authRouter.get("/me", requireAuth, async (req, res, next) => {
   try {
     const { data: user, error } = await supabase
       .from("users")
-      .select("id,email,display_name,role,bio,karma,email_verified,created_at")
+      .select("id,email,display_name,role,bio,karma,email_verified,show_profile_to_guests,allow_direct_requests,show_online_status,receive_email_notifications,created_at")
       .eq("id", req.userId)
       .maybeSingle();
     if (error) throw error;
@@ -379,6 +389,10 @@ authRouter.get("/me", requireAuth, async (req, res, next) => {
       bio: user.bio,
       karma: user.karma,
       emailVerified: user.email_verified,
+      showProfileToGuests: user.show_profile_to_guests,
+      allowDirectRequests: user.allow_direct_requests,
+      showOnlineStatus: user.show_online_status,
+      receiveEmailNotifications: user.receive_email_notifications,
       createdAt: user.created_at,
     });
   } catch (err) {

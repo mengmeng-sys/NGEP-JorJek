@@ -2,7 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { NavLink, Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { CreatePostModal } from '@/components/post/CreatePostModal';
 import { useAuth } from '@/context/AuthContext';
-import { apiFetch } from "@/lib/apiClient";
+import { notificationsApi, postsApi } from "@/lib/api";
+import { getApiErrorMessage } from "@/lib/apiClient";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -32,7 +33,7 @@ export default function Navbar() {
     }
 
     const fetchNotifications = () => {
-      apiFetch("/notifications")
+      notificationsApi.list()
         .then((data) => {
           if (Array.isArray(data)) setNotifications(data);
         })
@@ -65,22 +66,30 @@ export default function Navbar() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleMarkAllRead = () => {
+  const handleMarkAllRead = async () => {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    try {
+      await notificationsApi.markAllRead();
+    } catch {
+      /* silent */
+    }
   };
 
-  const handleNotificationClick = (notif) => {
+  const handleNotificationClick = async (notif) => {
     setNotifications((prev) =>
       prev.map((n) => (n.id === notif.id ? { ...n, read: true } : n))
     );
     setIsNotificationsOpen(false);
-    navigate(notif.link);
+    if (!notif.read) {
+      notificationsApi.markRead(notif.id).catch(() => {});
+    }
+    if (notif.link) navigate(notif.link);
   };
 
   const handleSearchSubmit = (e) => {
     if (e.key === 'Enter' && searchQuery.trim()) {
       setIsMobileSearchOpen(false);
-      navigate(`/?tag=${encodeURIComponent(searchQuery.trim().replace(/^#/, ''))}`);
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
     }
   };
 
@@ -549,8 +558,19 @@ export default function Navbar() {
       <CreatePostModal
         isOpen={isPostModalOpen}
         onClose={() => setIsPostModalOpen(false)}
-        onPublish={(postPayload) => {
-          console.log('Publishing post:', postPayload);
+        onPublish={async (postPayload) => {
+          try {
+            const created = await postsApi.create({
+              type: postPayload.type || 'question',
+              title: postPayload.title,
+              content: postPayload.details ?? postPayload.content,
+              tags: postPayload.tags || [],
+            });
+            setIsPostModalOpen(false);
+            navigate(`/posts/${created.id}`);
+          } catch (err) {
+            alert(getApiErrorMessage(err));
+          }
         }}
       />
     </>

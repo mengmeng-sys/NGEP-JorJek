@@ -10,6 +10,7 @@ const { notificationsRouter } = require("./routes/notifications.routes");
 const { searchRouter } = require("./routes/search.routes");
 const { reportsRouter } = require("./routes/reports.routes");
 const { usersRouter } = require("./routes/users.routes");
+const { savedRouter } = require("./routes/saved.routes");
 const { sessionsRouter } = require("./routes/sessions.routes");
 const { errorHandler } = require("./middleware/errorHandler");
 const { logger } = require("./middleware/logger.middleware");
@@ -82,6 +83,7 @@ app.use("/notifications", notificationsRouter);
 app.use("/search", searchRouter);
 app.use("/reports", reportsRouter);
 app.use("/users", usersRouter);
+app.use("/saved", savedRouter);
 
 app.use(errorHandler);
 

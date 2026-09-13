@@ -1,6 +1,7 @@
 const { Router } = require("express");
 const { supabase } = require("../config/db");
 const { requireAuth } = require("../middleware/auth.middleware");
+const { requireVerifiedEmail } = require("../middleware/verifiedEmail.middleware");
 
 const reportsRouter = Router();
 
@@ -165,7 +166,7 @@ reportsRouter.get("/:id", requireAuth, async (req, res, next) => {
  *             schema:
  *               $ref: "#/components/schemas/Error"
  */
-reportsRouter.post("/", requireAuth, async (req, res, next) => {
+reportsRouter.post("/", requireAuth, requireVerifiedEmail, async (req, res, next) => {
   try {
     const { postId, commentId, targetUserId, reason } = req.body;
 

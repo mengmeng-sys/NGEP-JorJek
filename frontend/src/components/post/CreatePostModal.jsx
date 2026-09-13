@@ -3,6 +3,11 @@ import React, { useState, useRef, useEffect } from 'react';
 export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null }) {
   const isEditing = Boolean(initialData);
 
+  // Tracks where the pointer went DOWN. A click-drag to select text can end on
+  // the overlay even when it started inside the modal; only close the modal if
+  // the interaction began on the overlay itself.
+  const pointerOrigin = useRef("panel");
+
   const [title, setTitle] = useState('');
   const [details, setDetails] = useState('');
   const [isMentoringEnabled, setIsMentoringEnabled] = useState(false);
@@ -173,10 +178,14 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
   return (
     <div
       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-gray-950/70 backdrop-blur-xs animate-in fade-in duration-150"
-      onClick={onClose}
+      onMouseDown={() => { pointerOrigin.current = "overlay"; }}
+      onTouchStart={() => { pointerOrigin.current = "overlay"; }}
+      onClick={() => { if (pointerOrigin.current === "overlay") onClose(); }}
     >
       <div
         onClick={(e) => e.stopPropagation()}
+        onMouseDown={() => { pointerOrigin.current = "panel"; }}
+        onTouchStart={() => { pointerOrigin.current = "panel"; }}
         className="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col h-[92vh] sm:h-auto sm:max-h-[88vh] animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200"
       >
         {/* Header */}

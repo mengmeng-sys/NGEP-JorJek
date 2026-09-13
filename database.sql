@@ -14,6 +14,10 @@ create table public.users (
   role text not null default 'STUDENT' check (role in ('STUDENT', 'PROFESSOR')),
   bio text,
   karma integer not null default 0,
+  show_profile_to_guests boolean not null default true,
+  allow_direct_requests boolean not null default true,
+  show_online_status boolean not null default false,
+  receive_email_notifications boolean not null default true,
   created_at timestamptz not null default now()
 );
  
@@ -92,6 +96,16 @@ create table public.tag_follows (
   tag_id uuid not null references public.skill_tags(id) on delete cascade,
   created_at timestamptz not null default now(),
   primary key (user_id, tag_id)
+);
+ 
+-- ---------------------------------------------------------
+-- saved_posts — each user's bookmarked posts
+-- ---------------------------------------------------------
+create table public.saved_posts (
+  user_id uuid not null references public.users(id) on delete cascade,
+  post_id uuid not null references public.posts(id) on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (user_id, post_id)
 );
  
 -- ---------------------------------------------------------

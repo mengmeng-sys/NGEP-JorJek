@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { apiFetch } from "@/lib/apiClient";
+import { notificationsApi } from "@/lib/api";
 
 /**
  * TN2: transport is decided by NOTIFICATION_TRANSPORT on the backend
@@ -12,7 +12,7 @@ export function NotificationBell() {
 
   useEffect(() => {
     const poll = () =>
-      apiFetch("/notifications").then((ns) => setCount(ns.filter((n) => !n.read).length));
+      notificationsApi.list().then((ns) => setCount(ns.filter((n) => !n.read).length));
     poll();
     const id = setInterval(poll, 5000);
     return () => clearInterval(id);
