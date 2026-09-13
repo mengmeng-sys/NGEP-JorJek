@@ -1,21 +1,31 @@
 import { useEffect, useState } from "react";
-import { apiFetch } from "@/lib/apiClient";
+import { notificationsApi } from "@/lib/api";
 import { ThreeColumnLayout } from "@/components/layout/ThreeColumnLayout";
+import { getApiErrorMessage } from "@/lib/apiClient";
 
 export default function NotificationsPage() {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    apiFetch("/notifications")
-      .then((data) => setNotifications(Array.isArray(data) ? data : []))
-      .catch((err) => console.error("Failed to load notifications:", err))
-      .finally(() => setLoading(false));
+    load();
   }, []);
+
+  async function load() {
+    setLoading(true);
+    try {
+      const data = await notificationsApi.list();
+      setNotifications(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Failed to load notifications:", err);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   const markAsRead = async (id) => {
     try {
-      await apiFetch(`/notifications/${id}/read`, { method: "PATCH" });
+      await notificationsApi.markRead(id);
       setNotifications((prev) =>
         prev.map((n) => (n.id === id ? { ...n, read: true } : n))
       );
@@ -24,17 +34,39 @@ export default function NotificationsPage() {
     }
   };
 
+  const markAllRead = async () => {
+    try {
+      await notificationsApi.markAllRead();
+      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    } catch (err) {
+      alert(getApiErrorMessage(err));
+    }
+  };
+
+  const unreadCount = notifications.filter((n) => !n.read).length;
+
   return (
     <ThreeColumnLayout>
       <div className="bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 shadow-xs">
-        <div className="flex items-center justify-between border-b border-gray-100 pb-4 mb-6">
+        <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-4 mb-6">
           <div>
             <h1 className="text-xl font-bold text-gray-900">Notifications</h1>
             <p className="text-xs text-gray-500 mt-0.5">Stay updated on your coursework, replies, and sessions.</p>
           </div>
-          <span className="text-xs font-bold text-[#FF4F00] bg-orange-50 px-2.5 py-1 rounded-lg">
-            {notifications.filter((n) => !n.read).length} Unread
-          </span>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {unreadCount > 0 && (
+              <button
+                type="button"
+                onClick={markAllRead}
+                className="text-[11px] font-bold text-[#FF4F00] hover:underline cursor-pointer"
+              >
+                Mark all read
+              </button>
+            )}
+            <span className="text-xs font-bold text-[#FF4F00] bg-orange-50 px-2.5 py-1 rounded-lg">
+              {unreadCount} Unread
+            </span>
+          </div>
         </div>
 
         {loading ? (

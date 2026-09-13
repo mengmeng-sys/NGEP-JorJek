@@ -1,12 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 import { GeneralTab } from '@/components/settings/GeneralTab';
 import { MentoringDashboardTab } from '@/components/settings/MentoringDashboardTab';
 import { MentoringPreferencesTab } from '@/components/settings/MentoringPreferencesTab';
 import { PrivacyTab } from '@/components/settings/PrivacyTab';
+import { postsApi } from '@/lib/api';
 
 export default function SettingsPage() {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('general');
+  const [postCount, setPostCount] = useState(0);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    let cancelled = false;
+    postsApi.list({ limit: 100 })
+      .then((data) => {
+        if (!cancelled) {
+          setPostCount(data.posts.filter((p) => p.userId === user.id).length);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id]);
 
   const navigationItems = [
     {
@@ -72,11 +91,11 @@ export default function SettingsPage() {
         <div className="bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
           <div className="flex items-center gap-5">
             <div className="w-16 h-16 rounded-full bg-[#111827] text-white text-xl font-bold flex items-center justify-center flex-shrink-0 shadow-sm">
-              YO
+              {user?.initials || 'YO'}
             </div>
             <div>
-              <h1 className="text-xl font-bold text-gray-900 leading-tight">Yola Osei</h1>
-              <p className="text-sm text-gray-500 mt-0.5">yola.osei@cadt.edu.kh</p>
+              <h1 className="text-xl font-bold text-gray-900 leading-tight">{user?.displayName || 'Student'}</h1>
+              <p className="text-sm text-gray-500 mt-0.5">{user?.email || ''}</p>
               <div className="flex items-center gap-2 mt-2">
                 <span className="w-2 h-2 rounded-full bg-emerald-500" />
                 <span className="text-xs font-semibold text-gray-600">Available for Sessions</span>
@@ -86,15 +105,15 @@ export default function SettingsPage() {
 
           <div className="flex items-center divide-x divide-gray-100 self-stretch md:self-auto justify-around md:justify-end gap-2 md:gap-0 pt-4 md:pt-0 border-t md:border-t-0 border-gray-100">
             <div className="px-6 text-center">
-              <span className="text-2xl font-bold text-gray-900 block leading-tight">142</span>
+              <span className="text-2xl font-bold text-gray-900 block leading-tight">{user?.karma ?? 0}</span>
               <span className="text-xs text-gray-400 font-medium">Campus Karma</span>
             </div>
             <div className="px-6 text-center">
-              <span className="text-2xl font-bold text-gray-900 block leading-tight">12</span>
+              <span className="text-2xl font-bold text-gray-900 block leading-tight">{postCount}</span>
               <span className="text-xs text-gray-400 font-medium">Posts Created</span>
             </div>
             <div className="px-6 text-center">
-              <span className="text-2xl font-bold text-gray-900 block leading-tight">5</span>
+              <span className="text-2xl font-bold text-gray-900 block leading-tight">0</span>
               <span className="text-xs text-gray-400 font-medium">Sessions Done</span>
             </div>
           </div>

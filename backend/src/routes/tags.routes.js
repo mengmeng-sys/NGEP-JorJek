@@ -1,6 +1,7 @@
 const { Router } = require("express");
 const { supabase } = require("../config/db");
 const { requireAuth } = require("../middleware/auth.middleware");
+const { requireVerifiedEmail } = require("../middleware/verifiedEmail.middleware");
 
 const tagsRouter = Router();
 
@@ -210,7 +211,7 @@ tagsRouter.get("/:id/posts", async (req, res, next) => {
 
     const { data: posts, error } = await supabase
       .from("posts")
-      .select(`*, author:users(id,display_name,role,karma)`)
+      .select(`*, author:users!posts_author_id_fkey(id,display_name,role,karma)`)
       .in("id", supabase.rpc ? [] : [])
       .order("created_at", { ascending: false })
       .range(from, from + limit - 1);
@@ -228,7 +229,7 @@ tagsRouter.get("/:id/posts", async (req, res, next) => {
     const postIds = postTags.map((pt) => pt.post_id);
     const { data: tagPosts, error: postsError } = await supabase
       .from("posts")
-      .select(`*, author:users(id,display_name,role,karma), votes(*)`)
+      .select(`*, author:users!posts_author_id_fkey(id,display_name,role,karma), comments:comments(id), votes(*)`)
       .in("id", postIds)
       .order("created_at", { ascending: false });
     if (postsError) throw postsError;
@@ -437,7 +438,7 @@ tagsRouter.delete("/:id", requireAuth, async (req, res, next) => {
  *             schema:
  *               $ref: "#/components/schemas/Error"
  */
-tagsRouter.post("/:tagName/follow", requireAuth, async (req, res, next) => {
+tagsRouter.post("/:tagName/follow", requireAuth, requireVerifiedEmail, async (req, res, next) => {
   try {
     const { data: tag, error: tagError } = await supabase
       .from("skill_tags")
@@ -493,7 +494,7 @@ tagsRouter.post("/:tagName/follow", requireAuth, async (req, res, next) => {
  *             schema:
  *               $ref: "#/components/schemas/Error"
  */
-tagsRouter.delete("/:tagName/unfollow", requireAuth, async (req, res, next) => {
+tagsRouter.delete("/:tagName/unfollow", requireAuth, requireVerifiedEmail, async (req, res, next) => {
   try {
     const { data: tag, error: tagError } = await supabase
       .from("skill_tags")

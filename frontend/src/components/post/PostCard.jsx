@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import { votesApi, reportsApi, postsApi } from '@/lib/api';
 
 export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
   const navigate = useNavigate();
@@ -42,12 +43,14 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleUpvote = (e) => {
+  const handleUpvote = async (e) => {
     e.stopPropagation();
     if (!user) {
       navigate('/auth/login');
       return;
     }
+    const prevState = voteState;
+    const prevCount = voteCount;
     if (voteState === 1) {
       setVoteState(0);
       setVoteCount((prev) => prev - 1);
@@ -55,14 +58,27 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
       setVoteCount((prev) => prev + (voteState === -1 ? 2 : 1));
       setVoteState(1);
     }
+    try {
+      if (prevState === 1) {
+        await votesApi.remove({ postId: post.id });
+      } else {
+        await votesApi.cast({ postId: post.id }, 1);
+      }
+    } catch {
+      setVoteState(prevState);
+      setVoteCount(prevCount);
+      alert('Could not update your vote. Please try again.');
+    }
   };
 
-  const handleDownvote = (e) => {
+  const handleDownvote = async (e) => {
     e.stopPropagation();
     if (!user) {
       navigate('/auth/login');
       return;
     }
+    const prevState = voteState;
+    const prevCount = voteCount;
     if (voteState === -1) {
       setVoteState(0);
       setVoteCount((prev) => prev + 1);
@@ -70,17 +86,36 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
       setVoteCount((prev) => prev - (voteState === 1 ? 2 : 1));
       setVoteState(-1);
     }
+    try {
+      if (prevState === -1) {
+        await votesApi.remove({ postId: post.id });
+      } else {
+        await votesApi.cast({ postId: post.id }, -1);
+      }
+    } catch {
+      setVoteState(prevState);
+      setVoteCount(prevCount);
+      alert('Could not update your vote. Please try again.');
+    }
   };
 
-  const handleSaveToggle = (e) => {
+  const handleSaveToggle = async (e) => {
     e.stopPropagation();
     if (!user) {
       navigate('/auth/login');
       return;
     }
     const updated = !isSaved;
+    const prev = isSaved;
     setIsSaved(updated);
     if (onToggleSave) onToggleSave(post.id, updated);
+    try {
+      if (updated) await postsApi.save(post.id);
+      else await postsApi.unsave(post.id);
+    } catch {
+      setIsSaved(prev);
+      alert('Could not update saved posts. Please try again.');
+    }
   };
 
   const handleDelete = (e) => {
@@ -95,11 +130,20 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
     if (onEdit) onEdit(post);
   };
 
-  const handleReport = (e) => {
+  const handleReport = async (e) => {
     e.stopPropagation();
-    setIsReported(true);
     setIsMenuOpen(false);
-    alert('Thank you. This post has been flagged for moderator review.');
+    if (!user) {
+      navigate('/auth/login');
+      return;
+    }
+    try {
+      await reportsApi.create({ postId: post.id, reason: 'User-reported from the feed' });
+      setIsReported(true);
+      alert('Thank you. This post has been flagged for moderator review.');
+    } catch {
+      alert('Could not submit the report. Please try again.');
+    }
   };
 
   const handleCopyLink = (e) => {

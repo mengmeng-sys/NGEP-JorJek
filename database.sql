@@ -95,6 +95,16 @@ create table public.tag_follows (
 );
  
 -- ---------------------------------------------------------
+-- saved_posts — each user's bookmarked posts
+-- ---------------------------------------------------------
+create table public.saved_posts (
+  user_id uuid not null references public.users(id) on delete cascade,
+  post_id uuid not null references public.posts(id) on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (user_id, post_id)
+);
+ 
+-- ---------------------------------------------------------
 -- notifications
 -- ---------------------------------------------------------
 create table public.notifications (

@@ -1,24 +1,39 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { ThreeColumnLayout } from '@/components/layout/ThreeColumnLayout';
 import { PostCard } from '@/components/post/PostCard';
+import { savedApi } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
 
 export default function SavedPage() {
-  const [savedPosts, setSavedPosts] = useState([
-    {
-      id: 1,
-      author: 'Kwame Mensah',
-      role: 'STUDENT',
-      tags: ['SQL'],
-      timestamp: '3h ago',
-      title: 'How do I implement a CREATE VIEW statement for a multi-table database dashboard?',
-      content:
-        "I am working on a university group presentation and need help joining the user account table with the favorites list. Our schema has three relations and I can't figure out which join order reduces the query cost.",
-      upvotes: 124,
-      comments: 14,
-      isSaved: true,
-    },
-  ]);
+  const navigate = useNavigate();
+  const { user, isLoading: authLoading } = useAuth();
+
+  const [savedPosts, setSavedPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  const loadSaved = useCallback(async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const data = await savedApi.list(user?.id);
+      setSavedPosts(data.posts);
+    } catch (err) {
+      setError(err?.message || 'Could not load your saved posts.');
+    } finally {
+      setLoading(false);
+    }
+  }, [user?.id]);
+
+  useEffect(() => {
+    if (authLoading) return;
+    if (!user) {
+      navigate('/auth/login');
+      return;
+    }
+    loadSaved();
+  }, [authLoading, user, navigate, loadSaved]);
 
   const handleToggleSave = (postId) => {
     setSavedPosts((prev) => prev.filter((p) => p.id !== postId));
@@ -27,7 +42,7 @@ export default function SavedPage() {
   return (
     <ThreeColumnLayout>
       <div className="w-full space-y-4 sm:space-y-5">
-        
+
         {/* Responsive Header Banner */}
         <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-4 sm:p-5 shadow-xs">
           <div className="flex items-center gap-2.5 sm:gap-3">
@@ -49,8 +64,25 @@ export default function SavedPage() {
           </div>
         </div>
 
-        {/* Saved Feed vs Empty State */}
-        {savedPosts.length === 0 ? (
+        {loading ? (
+          <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-8 sm:p-14 flex flex-col items-center justify-center text-center shadow-xs min-h-[360px] sm:min-h-[400px]">
+            <div className="w-8 h-8 border-[3px] border-orange-200 border-t-[#FF4F00] rounded-full animate-spin mb-4" />
+            <p className="text-xs text-gray-400 font-semibold">Loading your saved posts…</p>
+          </div>
+        ) : error ? (
+          <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-8 sm:p-14 flex flex-col items-center justify-center text-center shadow-xs min-h-[360px] sm:min-h-[400px]">
+            <p className="text-xs text-red-600 font-semibold bg-red-50 border border-red-100 rounded-lg px-3 py-2 mb-5">
+              {error}
+            </p>
+            <button
+              type="button"
+              onClick={loadSaved}
+              className="w-full sm:w-auto bg-[#FF4F00] hover:bg-[#E64700] text-white font-bold text-xs px-6 py-3 sm:py-2.5 rounded-xl transition-all shadow-xs cursor-pointer active:scale-98"
+            >
+              Try again
+            </button>
+          </div>
+        ) : savedPosts.length === 0 ? (
           <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-8 sm:p-14 flex flex-col items-center justify-center text-center shadow-xs min-h-[360px] sm:min-h-[400px]">
             <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-orange-50/70 border border-orange-100 text-[#FF4F00] flex items-center justify-center mb-4">
               <svg

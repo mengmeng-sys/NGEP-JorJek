@@ -1,133 +1,196 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { authApi, usersApi } from "@/lib/api";
+import { normalizeUser, handleFrom, initialsFrom } from "@/lib/adapters";
 
 const AuthContext = createContext(null);
 
+/** Legacy constant kept for compatibility; real auth no longer falls back to it. */
 export const DEFAULT_CADT_USER = {
-  id: 'usr_cadt_01',
-  displayName: 'Srun Vireak',
-  handle: 'srunvireak',
-  initials: 'SV',
-  email: 'srun.vireak@student.cadt.edu.kh',
-  role: 'STUDENT',
-  department: 'Computer Science & Software Engineering',
-  gender: 'Male',
-  dateOfBirth: '2004-05-14',
+  id: "usr_cadt_01",
+  displayName: "Srun Vireak",
+  handle: "srunvireak",
+  initials: "SV",
+  email: "srun.vireak@student.cadt.edu.kh",
+  role: "STUDENT",
+  department: "Computer Science & Software Engineering",
+  gender: "Male",
+  dateOfBirth: "2004-05-14",
   karma: 142,
-  interests: ['#C++', '#SQL', '#Machine Learning'],
+  interests: ["#C++", "#SQL", "#Machine Learning"],
   isAvailableForMentoring: true,
 };
 
+function persistedUserOrDefault() {
+  try {
+    const saved = localStorage.getItem("jorjek_auth_user");
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed && typeof parsed === "object") return parsed;
+    }
+  } catch {
+    localStorage.removeItem("jorjek_auth_user");
+  }
+  return null;
+}
+
+// Merge computed metadata (initials/handle) derived from the real display name.
+function withUserMeta(user) {
+  if (!user) return null;
+  const name = user.displayName || user.display_name || "CADT Student";
+  return {
+    ...user,
+    displayName: name,
+    initials: user.initials || initialsFrom(name),
+    handle: user.handle || handleFrom(name),
+  };
+}
+
 export function AuthProvider({ children }) {
-  // Read clean JSON from localStorage; fallback to null so guest flow works as expected
-  const [user, setUser] = useState(() => {
+  const [user, setUser] = useState(() => withUserMeta(persistedUserOrDefault()));
+  const [isLoading, setIsLoading] = useState(true);
+
+  const persist = useCallback((nextUser) => {
     try {
-      const saved = localStorage.getItem('jorjek_auth_user');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (parsed && typeof parsed === 'object') return parsed;
-      }
+      if (nextUser) localStorage.setItem("jorjek_auth_user", JSON.stringify(nextUser));
+      else localStorage.removeItem("jorjek_auth_user");
     } catch {
-      localStorage.removeItem('jorjek_auth_user');
+      /* ignore quota errors */
     }
-    return null;
-  });
+  }, []);
 
-  const [isLoading, setIsLoading] = useState(false);
+  const storeSession = useCallback((data) => {
+    if (data?.token) localStorage.setItem("jorjek_token", data.token);
+    if (data?.refreshToken) localStorage.setItem("jorjek_refresh_token", data.refreshToken);
+  }, []);
 
-  // Synchronize with persistent storage on state transitions
+  const clearSession = useCallback(() => {
+    localStorage.removeItem("jorjek_token");
+    localStorage.removeItem("jorjek_refresh_token");
+    localStorage.removeItem("jorjek_auth_user");
+  }, []);
+
+  // Hydrate the account when a token already exists.
   useEffect(() => {
-    try {
-      if (user) {
-        localStorage.setItem('jorjek_auth_user', JSON.stringify(user));
-      } else {
-        localStorage.removeItem('jorjek_auth_user');
-      }
-    } catch (err) {
-      console.error('Failed to sync auth state to localStorage:', err);
+    let cancelled = false;
+    const token = localStorage.getItem("jorjek_token");
+
+    if (!token) {
+      setIsLoading(false);
+      return;
     }
-  }, [user]);
 
-  // Compute initials and normalized handle from display name
-  const computeUserMetadata = (userData = {}) => {
-    const rawName = userData.displayName || userData.username || 'CADT Student';
-    const words = rawName.trim().split(/\s+/).filter(Boolean);
-    const initials = words.length > 1
-      ? `${words[0][0]}${words[words.length - 1][0]}`.toUpperCase()
-      : (words[0] ? words[0].slice(0, 2).toUpperCase() : 'SV');
+    authApi
+      .me()
+      .then((me) => {
+        if (cancelled) return;
+        const hydrated = withUserMeta(me);
+        setUser(hydrated);
+        persist(hydrated);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        clearSession();
+        setUser(null);
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false);
+      });
 
-    const handle = userData.handle || rawName.toLowerCase().replace(/[^a-z0-9]/g, '') || 'cadtuser';
-
-    return {
-      displayName: rawName,
-      initials,
-      handle,
+    return () => {
+      cancelled = true;
     };
-  };
+  }, [clearSession, persist]);
 
-  // Login handler
-  const login = (userData = {}) => {
-    const computedMeta = computeUserMetadata(userData);
-
-    const authenticatedUser = {
-      ...DEFAULT_CADT_USER,
-      ...userData,
-      ...computedMeta,
+  // The axios interceptor broadcasts this when a refresh fails (token revoked
+  // or expired) — bounce the UI back to the logged-out state immediately.
+  useEffect(() => {
+    const onSessionExpired = () => {
+      clearSession();
+      setUser(null);
     };
+    window.addEventListener("jorjek:session-expired", onSessionExpired);
+    return () => window.removeEventListener("jorjek:session-expired", onSessionExpired);
+  }, [clearSession]);
 
-    setUser(authenticatedUser);
-    try {
-      localStorage.setItem('jorjek_auth_user', JSON.stringify(authenticatedUser));
-    } catch (err) {
-      console.error('Storage write error:', err);
-    }
-    return authenticatedUser;
+  const login = async (cadtEmail, password) => {
+    const data = await authApi.login(cadtEmail, password);
+    storeSession(data);
+    const nextUser = withUserMeta(normalizeUser(data.user));
+    setUser(nextUser);
+    persist(nextUser);
+    return nextUser;
   };
 
-  // Onboarding completion handler
-  const completeSignup = (signupData = {}, selectedInterests = []) => {
-    const computedMeta = computeUserMetadata(signupData);
-
-    const newUser = {
-      ...DEFAULT_CADT_USER,
-      ...signupData,
-      ...computedMeta,
-      interests: selectedInterests.length > 0 ? selectedInterests : DEFAULT_CADT_USER.interests,
-    };
-
-    setUser(newUser);
-    try {
-      localStorage.setItem('jorjek_auth_user', JSON.stringify(newUser));
-    } catch (err) {
-      console.error('Storage write error:', err);
-    }
-    return newUser;
+  const signupEmail = async (payload) => {
+    const data = await authApi.signup(payload);
+    storeSession(data);
+    const nextUser = withUserMeta(normalizeUser(data.user));
+    setUser(nextUser);
+    persist(nextUser);
+    return data;
   };
 
-  // Logout handler
-  const logout = () => {
-    setUser(null);
+  const verifyEmail = async (cadtEmail, otp) => {
+    const result = await authApi.verifyEmail(cadtEmail, otp);
+    // The signup flow already holds tokens; re-fetch so the cached user's
+    // emailVerified reflects the server state after a successful verify.
     try {
-      localStorage.removeItem('jorjek_auth_user');
-    } catch (err) {
-      console.error('Storage removal error:', err);
+      const me = await authApi.me();
+      const nextUser = withUserMeta(normalizeUser(me));
+      setUser(nextUser);
+      persist(nextUser);
+    } catch {
+      /* best effort — the account is verified server-side regardless */
+    }
+    return result;
+  };
+
+  const resendOtp = (cadtEmail) => authApi.resendOtp(cadtEmail);
+
+  const forgotPassword = (cadtEmail) => authApi.forgotPassword(cadtEmail);
+
+  const resetPassword = (cadtEmail, otp, newPassword) =>
+    authApi.resetPassword(cadtEmail, otp, newPassword);
+
+  const logout = async () => {
+    try {
+      await authApi.logout();
+    } catch {
+      /* best effort */
+    } finally {
+      clearSession();
+      setUser(null);
     }
   };
 
-  // Profile patcher
-  const updateUserProfile = (updatedFields = {}) => {
-    setUser((prev) => {
-      if (!prev) return null;
-      const merged = { ...prev, ...updatedFields };
-      if (updatedFields.displayName) {
-        Object.assign(merged, computeUserMetadata(merged));
-      }
-      try {
-        localStorage.setItem('jorjek_auth_user', JSON.stringify(merged));
-      } catch (err) {
-        console.error('Storage patch error:', err);
-      }
-      return merged;
-    });
+  // Compatibility alias — log the user in with an already-fetched row.
+  const completeSignup = (userData = {}, _selectedInterests = []) => {
+    const nextUser = withUserMeta(normalizeUser(userData));
+    if (nextUser?.id) {
+      setUser(nextUser);
+      persist(nextUser);
+    }
+    return nextUser;
+  };
+
+  const updateUserProfile = async (updatedFields = {}) => {
+    if (!user?.id) return null;
+
+    const optimistic = withUserMeta({ ...user, ...updatedFields });
+    setUser(optimistic);
+    persist(optimistic);
+
+    try {
+      const updated = await usersApi.update(user.id, updatedFields);
+      const merged = withUserMeta(normalizeUser(updated));
+      setUser(merged || optimistic);
+      persist(merged || optimistic);
+      return merged || optimistic;
+    } catch {
+      setUser(user);
+      persist(user);
+      throw new Error("Could not update your profile. Please try again.");
+    }
   };
 
   return (
@@ -141,6 +204,11 @@ export function AuthProvider({ children }) {
         logout,
         completeSignup,
         updateUserProfile,
+        signupEmail,
+        verifyEmail,
+        resendOtp,
+        forgotPassword,
+        resetPassword,
       }}
     >
       {children}
@@ -151,7 +219,7 @@ export function AuthProvider({ children }) {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };

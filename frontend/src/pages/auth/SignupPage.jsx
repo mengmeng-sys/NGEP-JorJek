@@ -1,23 +1,25 @@
 import React, { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 
 export default function SignupPage() {
   const navigate = useNavigate();
+  const { signupEmail } = useAuth();
 
   const [username, setUsername] = useState('');
-  const [dob, setDob] = useState('');
-  const [gender, setGender] = useState('Male');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [emailError, setEmailError] = useState('');
+  const [submitError, setSubmitError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
-  // Domain restriction validator
+  // Domain restriction validator — mirrors the backend's CADT_EMAIL_DOMAIN gate.
   const validateEmailDomain = (val) => {
     setEmail(val);
-    const domainRegex = /@(student\.cadt\.edu\.kh|cadt\.edu\.kh)$/i;
+    const domainRegex = /@student\.cadt\.edu\.kh$/i;
     if (val && !domainRegex.test(val)) {
-      setEmailError('Email must end with @student.cadt.edu.kh or @cadt.edu.kh');
+      setEmailError('Email must end with @student.cadt.edu.kh');
     } else {
       setEmailError('');
     }
@@ -33,19 +35,32 @@ export default function SignupPage() {
 
   const isPasswordStrong = Object.values(passwordCriteria).every(Boolean);
   const isValidEmail = Boolean(email) && !emailError;
-  const isFormValid = isPasswordStrong && isValidEmail && Boolean(username.trim()) && Boolean(dob);
+  const isFormValid = isPasswordStrong && isValidEmail && Boolean(username.trim());
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
     if (!isFormValid) return;
-
-    navigate('/auth/verify-otp', {
-      state: {
-        email,
-        from: 'signup',
-        userMeta: { username, dob, gender },
-      },
-    });
+    setSubmitError('');
+    setSubmitting(true);
+    try {
+      await signupEmail({
+        displayName: username.trim(),
+        cadtEmail: email.trim(),
+        password,
+        role: 'STUDENT',
+      });
+      navigate('/auth/verify-otp', {
+        state: {
+          email,
+          from: 'signup',
+          userMeta: { username },
+        },
+      });
+    } catch (err) {
+      setSubmitError(err?.message || 'We could not create your account. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -84,45 +99,6 @@ export default function SignupPage() {
               placeholder="e.g. Srun Vireak"
               className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs text-gray-900 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs"
             />
-          </div>
-
-          {/* DOB & Gender: Stacks on ultra-small screens, side-by-side on sm+ */}
-          <div className="grid grid-cols-1 xs:grid-cols-2 gap-3">
-            <div>
-              <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">
-                Date of Birth
-              </label>
-              <input
-                type="date"
-                required
-                value={dob}
-                onChange={(e) => setDob(e.target.value)}
-                className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl px-3 py-2.5 text-xs text-gray-900 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs"
-              />
-            </div>
-
-            <div>
-              <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">
-                Gender
-              </label>
-              <div className="relative">
-                <select
-                  value={gender}
-                  onChange={(e) => setGender(e.target.value)}
-                  className="w-full appearance-none bg-[#FAFAFA] border border-gray-200 rounded-xl px-3 py-2.5 pr-8 text-xs font-semibold text-gray-800 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs cursor-pointer"
-                >
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
-                  <option value="Prefer not to say">Prefer not to say</option>
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-gray-400">
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* Email with CADT restriction */}
@@ -189,16 +165,22 @@ export default function SignupPage() {
             </div>
           </div>
 
+          {submitError && (
+            <p className="text-[11px] text-red-600 font-semibold bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+              {submitError}
+            </p>
+          )}
+
           <button
             type="submit"
-            disabled={!isFormValid}
+            disabled={!isFormValid || submitting}
             className={`w-full text-xs font-bold py-3 sm:py-3.5 rounded-xl transition-all shadow-xs mt-2 ${
-              isFormValid
+              isFormValid && !submitting
                 ? 'bg-[#FF4F00] hover:bg-[#E64700] text-white cursor-pointer active:scale-98'
                 : 'bg-orange-200 text-white/90 cursor-not-allowed'
             }`}
           >
-            Continue to Verification
+            {submitting ? 'Creating account…' : 'Continue to Verification'}
           </button>
         </form>
 

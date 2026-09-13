@@ -1,12 +1,52 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavLink, Link, useSearchParams, useNavigate } from 'react-router-dom';
+import { tagsApi, savedApi } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
 
-export function LeftSidebar({ savedCount = 1 }) {
+export function LeftSidebar({ savedCount }) {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { user, isLoading: authLoading } = useAuth();
   const activeTag = searchParams.get('tag');
 
-  const skillTags = ['C++', 'SQL', 'Java', 'Machine Learning', 'Figma'];
+  const fallbackTags = [];
+  const [skillTags, setSkillTags] = useState(fallbackTags);
+  const [fetchedCount, setFetchedCount] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (authLoading || !user) {
+      setFetchedCount(null);
+      return;
+    }
+    savedApi
+      .count()
+      .then((count) => {
+        if (!cancelled) setFetchedCount(count);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [user, authLoading]);
+
+  const displayCount = savedCount ?? fetchedCount ?? 0;
+
+  useEffect(() => {
+    let cancelled = false;
+    tagsApi
+      .list()
+      .then((data) => {
+        const backendTags = Array.isArray(data?.tags)
+          ? data.tags.map((t) => String(t.name || t.slug || '').replace(/^#/, '')).filter(Boolean)
+          : [];
+        if (!cancelled && backendTags.length > 0) setSkillTags(backendTags);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const getNavLinkClass = ({ isActive }) =>
     `flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-bold transition-colors ${
@@ -67,9 +107,9 @@ export function LeftSidebar({ savedCount = 1 }) {
               </svg>
               <span>Saved</span>
             </div>
-            {savedCount > 0 && (
+            {displayCount > 0 && (
               <span className="w-5 h-5 bg-[#FF4F00] text-white text-[11px] font-bold rounded-full flex items-center justify-center">
-                {savedCount}
+                {displayCount}
               </span>
             )}
           </NavLink>
@@ -83,7 +123,7 @@ export function LeftSidebar({ savedCount = 1 }) {
         </p>
         <div className="flex flex-col space-y-1">
           {skillTags.map((tag) => {
-            const isSelected = activeTag === tag;
+            const isSelected = activeTag != null && activeTag.toLowerCase() === tag.toLowerCase();
             return (
               <button
                 key={tag}

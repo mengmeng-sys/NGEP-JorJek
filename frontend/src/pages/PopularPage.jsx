@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabaseClient';
 import { ThreeColumnLayout } from '@/components/layout/ThreeColumnLayout';
 import { PostCard } from '@/components/post/PostCard';
+import { postsApi } from '@/lib/api';
 
 export default function PopularPage() {
   const [timeframe, setTimeframe] = useState('week'); // 'today' | 'week' | 'all'
@@ -12,71 +12,20 @@ export default function PopularPage() {
     async function fetchPopularPosts() {
       setLoading(true);
       try {
-        let query = supabase
-          .from('posts')
-          .select('*, profiles(display_name, role)')
-          .order('upvotes', { ascending: false });
+        const all = await postsApi.list({ limit: 100 });
+        const now = Date.now();
+        const cutoff =
+          timeframe === 'today' ? now - 24 * 60 * 60 * 1000 : now - 7 * 24 * 60 * 60 * 1000;
 
-        if (timeframe === 'today') {
-          const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-          query = query.gte('created_at', yesterday);
-        } else if (timeframe === 'week') {
-          const lastWeek = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-          query = query.gte('created_at', lastWeek);
-        }
+        const filtered = (timeframe === 'all' ? all.posts : all.posts.filter((p) => {
+          const created = new Date(p.createdAt || 0).getTime();
+          return created >= cutoff;
+        }));
 
-        const { data, error } = await query;
-
-        if (error || !data || data.length === 0) {
-          setPosts([
-            {
-              id: 201,
-              author: 'Lena Brandt',
-              role: 'STUDENT',
-              tags: ['C++'],
-              timestamp: '5h ago',
-              title: 'Best practices for memory management in C++ — when to use smart pointers vs raw?',
-              content:
-                'I keep running into segfaults in my data structures assignment when I mix unique_ptr and raw pointers. Looking for a clear mental model on ownership semantics before my exam next week.',
-              upvotes: 211,
-              hasUpvoted: true,
-              comments: 29,
-              isSaved: false,
-            },
-            {
-              id: 202,
-              author: 'Kwame Mensah',
-              role: 'STUDENT',
-              tags: ['SQL'],
-              timestamp: '3h ago',
-              title: 'How do I implement a CREATE VIEW statement for a multi-table database dashboard?',
-              content:
-                "I am working on a university group presentation and need help joining the user account table with the favorites list. Our schema has three relations and I can't figure out which join order reduces the query cost.",
-              upvotes: 124,
-              hasUpvoted: false,
-              comments: 14,
-              isSaved: true,
-            },
-            {
-              id: 203,
-              author: 'Nadia Osei',
-              role: 'STUDENT',
-              tags: ['Figma'],
-              timestamp: '1d ago',
-              title: 'Design System component architecture for multi-device responsive dashboards',
-              content:
-                'Sharing my open component kit designed for university student portals. It includes tokens for light/dark mode and responsive breakpoints ready for Tailwind CSS export.',
-              upvotes: 98,
-              hasUpvoted: false,
-              comments: 19,
-              isSaved: false,
-            },
-          ]);
-        } else {
-          setPosts(data);
-        }
+        setPosts(filtered.sort((a, b) => (b.upvotes || 0) - (a.upvotes || 0)));
       } catch (err) {
         console.error('Failed to load popular feed:', err);
+        setPosts([]);
       } finally {
         setLoading(false);
       }
@@ -94,11 +43,11 @@ export default function PopularPage() {
   return (
     <ThreeColumnLayout>
       <div className="w-full space-y-3.5 sm:space-y-4">
-        
+
         {/* Popular Header Banner */}
         <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-4 sm:p-5 shadow-xs">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 sm:gap-4">
-            
+
             {/* Title & Icon Group */}
             <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
               <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center text-[#FF4F00] flex-shrink-0">

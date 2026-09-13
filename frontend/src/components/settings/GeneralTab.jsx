@@ -1,11 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '@/context/AuthContext';
 
 export function GeneralTab() {
-  const [displayName, setDisplayName] = useState('Yola Osei');
-  const [role, setRole] = useState('Student');
-  const [bio, setBio] = useState(
-    'Computer Science student passionate about database architecture and systems programming.'
+  const { user, updateUserProfile } = useAuth();
+
+  const [displayName, setDisplayName] = useState(user?.displayName || '');
+  const [role, setRole] = useState(
+    user?.role === 'PROFESSOR' || user?.role === 'MENTOR' ? 'Professor' : 'Student'
   );
+  const [bio, setBio] = useState(user?.bio || '');
+  const [saving, setSaving] = useState(false);
+  const [status, setStatus] = useState('');
+
+  useEffect(() => {
+    if (user) {
+      setDisplayName(user.displayName || '');
+      setRole(user.role === 'PROFESSOR' || user.role === 'MENTOR' ? 'Professor' : 'Student');
+      setBio(user.bio || '');
+    }
+  }, [user?.displayName, user?.bio, user?.role]);
+
+  const roleLabelToValue = (label) => (label === 'Professor' ? 'PROFESSOR' : 'STUDENT');
+
+  const handleSave = async () => {
+    setSaving(true);
+    setStatus('');
+    try {
+      await updateUserProfile({
+        displayName: displayName.trim(),
+        bio: bio.trim(),
+        role: roleLabelToValue(role),
+      });
+      setStatus('Changes saved successfully.');
+    } catch (err) {
+      setStatus(err?.message || 'Could not save changes. Please try again.');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <div className="w-full">
@@ -21,7 +53,7 @@ export function GeneralTab() {
       <div className="flex flex-col sm:flex-row sm:items-center gap-3.5 sm:gap-4 mb-6 sm:mb-8 p-3.5 sm:p-0 bg-gray-50/70 sm:bg-transparent rounded-xl border border-gray-100 sm:border-0">
         <div className="flex items-center gap-3.5">
           <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#111827] text-white font-black flex items-center justify-center text-xs sm:text-sm shadow-xs flex-shrink-0">
-            YO
+            {user?.initials || 'YO'}
           </div>
           <div className="sm:hidden">
             <span className="text-xs font-bold text-gray-900 block leading-tight">Profile Photo</span>
@@ -32,6 +64,7 @@ export function GeneralTab() {
         <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
           <button
             type="button"
+            onClick={() => alert('Profile picture upload is coming soon.')}
             className="flex-1 sm:flex-initial border border-[#FF4F00] text-[#FF4F00] hover:bg-orange-50 font-bold text-xs px-3.5 sm:px-4 py-2 rounded-xl transition-all shadow-2xs text-center cursor-pointer active:scale-98"
           >
             Change Picture
@@ -69,7 +102,7 @@ export function GeneralTab() {
             <input
               type="email"
               disabled
-              value="yola.osei@cadt.edu.kh"
+              value={user?.email || ''}
               className="w-full border border-gray-200 bg-gray-50/90 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm text-gray-500 cursor-not-allowed pr-10 shadow-2xs"
             />
             <svg
@@ -126,13 +159,21 @@ export function GeneralTab() {
           />
         </div>
 
+        {status && (
+          <p className="text-[11px] font-semibold bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-gray-600">
+            {status}
+          </p>
+        )}
+
         {/* Save Footer Button */}
         <div className="pt-3 sm:pt-4 border-t border-gray-100 flex justify-end">
           <button
             type="button"
-            className="w-full sm:w-auto bg-[#FF4F00] hover:bg-[#E64700] text-white font-bold text-xs px-6 py-3 sm:py-2.5 rounded-xl transition-all shadow-xs cursor-pointer active:scale-98 text-center"
+            onClick={handleSave}
+            disabled={saving}
+            className="w-full sm:w-auto bg-[#FF4F00] hover:bg-[#E64700] text-white font-bold text-xs px-6 py-3 sm:py-2.5 rounded-xl transition-all shadow-xs cursor-pointer active:scale-98 text-center disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            Save Changes
+            {saving ? 'Saving…' : 'Save Changes'}
           </button>
         </div>
       </div>

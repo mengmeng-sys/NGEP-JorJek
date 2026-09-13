@@ -1,65 +1,88 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { ThreeColumnLayout } from '@/components/layout/ThreeColumnLayout';
 import { CreatePostModal } from '@/components/post/CreatePostModal';
 import { DeletePostModal } from '@/components/post/DeletePostModal';
 import { useAuth } from '@/context/AuthContext';
+import { postsApi, commentsApi, votesApi, reportsApi } from '@/lib/api';
+import { buildCommentTree, initialsFrom } from '@/lib/adapters';
+import { getApiErrorMessage } from '@/lib/apiClient';
 
 // Subcomponent for handling each individual comment thread
-function CommentThread({ comment }) {
+function CommentThread({ comment, postId, currentUser, onRefresh }) {
+  const navigate = useNavigate();
   const [isExpanded, setIsExpanded] = useState(false);
-  const [showAllReplies, setShowAllReplies] = useState(true);
   const [isReported, setIsReported] = useState(false);
 
   // Voting state for parent comment
-  const [voteState, setVoteState] = useState(comment.initialVoted || 0);
+  const [voteState, setVoteState] = useState(comment.myVote || 0);
   const [voteCount, setVoteCount] = useState(comment.votes || 0);
 
   // Active reply target
   const [replyingToUser, setReplyingToUser] = useState(null);
   const [replyText, setReplyText] = useState('');
+  const [submittingReply, setSubmittingReply] = useState(false);
   const [replies, setReplies] = useState(comment.replies || []);
 
-  const handleUpvote = () => {
-    if (voteState === 1) {
+  const handleVote = async (value) => {
+    if (!currentUser) {
+      navigate('/auth/login');
+      return;
+    }
+    const prevState = voteState;
+    const prevCount = voteCount;
+    if (voteState === value) {
       setVoteState(0);
-      setVoteCount((prev) => prev - 1);
+      setVoteCount((prev) => prev - value);
     } else {
-      setVoteCount((prev) => prev + (voteState === -1 ? 2 : 1));
-      setVoteState(1);
+      setVoteCount((prev) => prev + (voteState === 0 ? value : value * 2));
+      setVoteState(value);
+    }
+    try {
+      if (prevState === value) {
+        await votesApi.remove({ commentId: comment.id });
+      } else {
+        await votesApi.cast({ commentId: comment.id }, value);
+      }
+    } catch {
+      setVoteState(prevState);
+      setVoteCount(prevCount);
+      alert('Could not update your vote. Please try again.');
     }
   };
 
-  const handleDownvote = () => {
-    if (voteState === -1) {
-      setVoteState(0);
-      setVoteCount((prev) => prev + 1);
-    } else {
-      setVoteCount((prev) => prev - (voteState === 1 ? 2 : 1));
-      setVoteState(-1);
+  const handleReport = async () => {
+    if (!currentUser) {
+      navigate('/auth/login');
+      return;
+    }
+    try {
+      await reportsApi.create({ commentId: comment.id, reason: 'Reported from comment thread' });
+      setIsReported(true);
+      alert('Thank you. This comment has been flagged for moderator review.');
+    } catch {
+      alert('Could not submit the report. Please try again.');
     }
   };
 
-  const handleSendReply = (e) => {
+  const handleSendReply = async (e) => {
     e.preventDefault();
     if (!replyText.trim()) return;
-
-    const newReply = {
-      id: Date.now(),
-      author: 'Srun Vireak',
-      role: 'STUDENT',
-      initials: 'SV',
-      timestamp: 'Just now',
-      replyingTo: replyingToUser?.name || comment.author,
-      votes: 0,
-      initialVoted: 0,
-      text: replyText.trim(),
-    };
-
-    setReplies([...replies, newReply]);
-    setReplyText('');
-    setReplyingToUser(null);
-    setShowAllReplies(true);
+    if (!currentUser) {
+      navigate('/auth/login');
+      return;
+    }
+    setSubmittingReply(true);
+    try {
+      await commentsApi.create(postId, replyText.trim(), comment.id);
+      setReplyText('');
+      setReplyingToUser(null);
+      onRefresh?.();
+    } catch (err) {
+      alert(getApiErrorMessage(err));
+    } finally {
+      setSubmittingReply(false);
+    }
   };
 
   return (
@@ -67,24 +90,24 @@ function CommentThread({ comment }) {
       <div className="flex items-center justify-between gap-2 mb-2">
         <div className="flex items-center gap-2 min-w-0 flex-wrap">
           <div className="h-6 w-6 sm:h-7 sm:w-7 bg-[#111827] text-white font-bold flex items-center justify-center rounded-full text-[10px] sm:text-xs flex-shrink-0">
-            {comment.initials}
+            {comment.author?.initials || initialsFrom(comment.author?.displayName || 'U')}
           </div>
-          <span className="font-bold text-gray-900 text-xs sm:text-sm truncate">{comment.author}</span>
+          <span className="font-bold text-gray-900 text-xs sm:text-sm truncate">{comment.author?.displayName || 'Student'}</span>
           <span
             className={`text-[8px] sm:text-[9px] uppercase font-bold px-1.5 py-0.5 rounded tracking-wide flex-shrink-0 ${
-              comment.role === 'PROFESSOR'
+              comment.author?.role === 'PROFESSOR'
                 ? 'bg-orange-50 text-[#FF4F00] border border-orange-100'
                 : 'bg-gray-100 text-gray-500'
             }`}
           >
-            {comment.role}
+            {comment.author?.role || 'STUDENT'}
           </span>
           <span className="text-gray-400 text-[11px] sm:text-xs">{comment.timestamp}</span>
         </div>
 
         <button
           type="button"
-          onClick={() => setIsReported(!isReported)}
+          onClick={handleReport}
           title="Report comment"
           className={`p-1 rounded transition-colors group flex-shrink-0 cursor-pointer ${
             isReported ? 'text-red-600 bg-red-50' : 'text-gray-300 hover:text-red-600 hover:bg-red-50'
@@ -115,7 +138,7 @@ function CommentThread({ comment }) {
           <div className="flex items-center gap-1 bg-gray-50 px-1.5 sm:px-2 py-0.5 rounded-lg border border-gray-100">
             <button
               type="button"
-              onClick={handleUpvote}
+              onClick={() => handleVote(1)}
               className={`p-0.5 rounded transition-colors cursor-pointer ${
                 voteState === 1 ? 'text-[#FF4F00]' : 'text-gray-400 hover:text-gray-600'
               }`}
@@ -129,7 +152,7 @@ function CommentThread({ comment }) {
             </span>
             <button
               type="button"
-              onClick={handleDownvote}
+              onClick={() => handleVote(-1)}
               className={`p-0.5 rounded transition-colors cursor-pointer ${
                 voteState === -1 ? 'text-blue-500' : 'text-gray-400 hover:text-gray-600'
               }`}
@@ -143,7 +166,7 @@ function CommentThread({ comment }) {
           <button
             type="button"
             onClick={() =>
-              setReplyingToUser(replyingToUser?.id === 'main' ? null : { id: 'main', name: comment.author })
+              setReplyingToUser(replyingToUser?.id === 'main' ? null : { id: 'main', name: comment.author?.displayName || 'Student' })
             }
             className="hover:text-gray-900 text-xs font-semibold transition-colors cursor-pointer"
           >
@@ -154,25 +177,16 @@ function CommentThread({ comment }) {
 
       {replies.length > 0 && (
         <div className="mt-3 sm:mt-4 ml-4 sm:ml-9 pl-3 sm:pl-4 border-l-2 border-gray-100 space-y-3.5 sm:space-y-4">
-          {showAllReplies &&
-            replies.map((reply) => (
-              <NestedReply
-                key={reply.id}
-                reply={reply}
-                onReplyClick={(u) => setReplyingToUser(u)}
-              />
-            ))}
-
-          <button
-            type="button"
-            onClick={() => setShowAllReplies(!showAllReplies)}
-            className="text-[11px] sm:text-xs font-bold text-[#FF4F00] hover:text-[#E64700] transition-colors flex items-center gap-1 pt-1 cursor-pointer"
-          >
-            <span>{showAllReplies ? 'Hide replies' : `View ${replies.length} replies`}</span>
-            <svg className={`w-3.5 h-3.5 transition-transform ${showAllReplies ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
+          {replies.map((reply) => (
+            <NestedReply
+              key={reply.id}
+              reply={reply}
+              postId={postId}
+              currentUser={currentUser}
+              onReplyClick={(u) => setReplyingToUser(u)}
+              onRefresh={onRefresh}
+            />
+          ))}
         </div>
       )}
 
@@ -209,14 +223,14 @@ function CommentThread({ comment }) {
             </button>
             <button
               type="submit"
-              disabled={!replyText.trim()}
+              disabled={!replyText.trim() || submittingReply}
               className={`px-3.5 sm:px-4 py-1.5 rounded-xl text-xs font-bold text-white transition-colors ${
-                replyText.trim()
+                replyText.trim() && !submittingReply
                   ? 'bg-[#FF4F00] hover:bg-[#E64700] shadow-xs cursor-pointer'
                   : 'bg-orange-200 cursor-not-allowed'
               }`}
             >
-              Reply
+              {submittingReply ? 'Posting…' : 'Reply'}
             </button>
           </div>
         </form>
@@ -225,28 +239,48 @@ function CommentThread({ comment }) {
   );
 }
 
-function NestedReply({ reply, onReplyClick }) {
+function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
+  const navigate = useNavigate();
   const [isReported, setIsReported] = useState(false);
-  const [voteState, setVoteState] = useState(reply.initialVoted || 0);
+  const [voteState, setVoteState] = useState(reply.myVote || 0);
   const [voteCount, setVoteCount] = useState(reply.votes || 0);
 
-  const handleUpvote = () => {
-    if (voteState === 1) {
+  const handleVote = async (value) => {
+    if (!currentUser) {
+      navigate('/auth/login');
+      return;
+    }
+    const prevState = voteState;
+    const prevCount = voteCount;
+    if (voteState === value) {
       setVoteState(0);
-      setVoteCount((prev) => prev - 1);
+      setVoteCount((prev) => prev - value);
     } else {
-      setVoteCount((prev) => prev + (voteState === -1 ? 2 : 1));
-      setVoteState(1);
+      setVoteCount((prev) => prev + (voteState === 0 ? value : value * 2));
+      setVoteState(value);
+    }
+    try {
+      if (prevState === value) {
+        await votesApi.remove({ commentId: reply.id });
+      } else {
+        await votesApi.cast({ commentId: reply.id }, value);
+      }
+    } catch {
+      setVoteState(prevState);
+      setVoteCount(prevCount);
     }
   };
 
-  const handleDownvote = () => {
-    if (voteState === -1) {
-      setVoteState(0);
-      setVoteCount((prev) => prev + 1);
-    } else {
-      setVoteCount((prev) => prev - (voteState === 1 ? 2 : 1));
-      setVoteState(-1);
+  const handleReport = async () => {
+    if (!currentUser) {
+      navigate('/auth/login');
+      return;
+    }
+    try {
+      await reportsApi.create({ commentId: reply.id, reason: 'Reported from comment thread' });
+      setIsReported(true);
+    } catch {
+      /* silent */
     }
   };
 
@@ -255,24 +289,24 @@ function NestedReply({ reply, onReplyClick }) {
       <div className="flex items-center justify-between gap-2 mb-1">
         <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-wrap">
           <div className="h-5 w-5 sm:h-6 sm:w-6 bg-[#111827] text-white font-bold flex items-center justify-center rounded-full text-[9px] sm:text-[10px] flex-shrink-0">
-            {reply.initials}
+            {reply.author?.initials || initialsFrom(reply.author?.displayName || 'U')}
           </div>
-          <span className="font-bold text-gray-900 text-xs truncate">{reply.author}</span>
+          <span className="font-bold text-gray-900 text-xs truncate">{reply.author?.displayName || 'Student'}</span>
           <span
             className={`text-[8px] uppercase font-bold px-1.5 py-0.5 rounded tracking-wide flex-shrink-0 ${
-              reply.role === 'PROFESSOR'
+              reply.author?.role === 'PROFESSOR'
                 ? 'bg-orange-50 text-[#FF4F00] border border-orange-100'
                 : 'bg-gray-100 text-gray-500'
             }`}
           >
-            {reply.role}
+            {reply.author?.role || 'STUDENT'}
           </span>
           <span className="text-gray-400 text-[10px] sm:text-[11px]">{reply.timestamp}</span>
         </div>
 
         <button
           type="button"
-          onClick={() => setIsReported(!isReported)}
+          onClick={handleReport}
           title="Report reply"
           className={`p-0.5 rounded transition-colors group flex-shrink-0 cursor-pointer ${
             isReported ? 'text-red-600 bg-red-50' : 'text-gray-300 hover:text-red-600 hover:bg-red-50'
@@ -289,14 +323,14 @@ function NestedReply({ reply, onReplyClick }) {
           {reply.replyingTo && (
             <span className="text-[#FF4F00] font-bold mr-1.5">@{reply.replyingTo}</span>
           )}
-          {reply.text}
+          {reply.body}
         </p>
 
         <div className="flex items-center gap-2.5 sm:gap-3 pt-1.5 text-gray-500 font-medium">
           <div className="flex items-center gap-0.5 sm:gap-1 bg-gray-50 px-1.5 py-0.5 rounded-md border border-gray-100">
             <button
               type="button"
-              onClick={handleUpvote}
+              onClick={() => handleVote(1)}
               className={`p-0.5 transition-colors cursor-pointer ${
                 voteState === 1 ? 'text-[#FF4F00]' : 'text-gray-400 hover:text-gray-600'
               }`}
@@ -310,7 +344,7 @@ function NestedReply({ reply, onReplyClick }) {
             </span>
             <button
               type="button"
-              onClick={handleDownvote}
+              onClick={() => handleVote(-1)}
               className={`p-0.5 transition-colors cursor-pointer ${
                 voteState === -1 ? 'text-blue-500' : 'text-gray-400 hover:text-gray-600'
               }`}
@@ -323,13 +357,28 @@ function NestedReply({ reply, onReplyClick }) {
 
           <button
             type="button"
-            onClick={() => onReplyClick({ id: reply.id, name: reply.author })}
+            onClick={() => onReplyClick({ id: reply.id, name: reply.author?.displayName || 'Student' })}
             className="hover:text-gray-900 text-[11px] font-semibold transition-colors cursor-pointer"
           >
             Reply
           </button>
         </div>
       </div>
+
+      {reply.replies?.length > 0 && (
+        <div className="mt-2 ml-4 sm:ml-8 pl-2 sm:pl-3 border-l-2 border-gray-100 space-y-3">
+          {reply.replies.map((sub) => (
+            <NestedReply
+              key={sub.id}
+              reply={sub}
+              postId={postId}
+              currentUser={currentUser}
+              onReplyClick={onReplyClick}
+              onRefresh={onRefresh}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -339,79 +388,12 @@ export default function PostDetailPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  // Load post dynamically based on active session
-  const [post, setPost] = useState(() => {
-    // If id is 1 or no id, post belongs to active user
-    const isPost1 = !id || id === '1';
-
-    if (isPost1) {
-      return {
-        id: 1,
-        userId: user?.id || 'usr_cadt_01',
-        author: user?.displayName || 'Srun Vireak',
-        authorEmail: user?.email || 'srun.vireak@student.cadt.edu.kh',
-        authorHandle: user?.handle || 'srunvireak',
-        role: user?.role || 'STUDENT',
-        initials: user?.initials || 'SV',
-        timestamp: '3h ago',
-        tag: '#SQL',
-        tags: ['#SQL', '#Database Design'],
-        title: 'How do I implement a CREATE VIEW statement for a multi-table database dashboard?',
-        content:
-          "I am working on a university group presentation and need help joining the user account table with the favorites list. Our schema has three relations and I can't figure out which join order reduces the query cost.",
-        image_url: null,
-      };
-    }
-
-    // Other posts belong to peers (e.g., Kwame Mensah)
-    return {
-      id: Number(id),
-      userId: 'usr_cadt_kwame',
-      author: 'Kwame Mensah',
-      authorEmail: 'kwame.mensah@student.cadt.edu.kh',
-      authorHandle: 'kwamemensah',
-      role: 'STUDENT',
-      initials: 'KM',
-      timestamp: '5h ago',
-      tag: '#C++',
-      tags: ['#C++', '#Algorithms'],
-      title: 'Guide: Common pointer pitfalls when building dynamic arrays from scratch',
-      content:
-        'A quick cheat sheet summarizing double free errors, dangling pointers, and memory leaks with diagram examples from our lab 3 exercises.',
-      image_url: null,
-    };
-  });
-
-  // Sync post author metadata if active user logs in or updates
-  useEffect(() => {
-    if ((!id || id === '1') && user) {
-      setPost((prev) => ({
-        ...prev,
-        userId: user.id || prev.userId,
-        author: user.displayName || prev.author,
-        authorEmail: user.email || prev.authorEmail,
-        authorHandle: user.handle || prev.authorHandle,
-        initials: user.initials || prev.initials,
-        role: user.role || prev.role,
-      }));
-    }
-  }, [id, user]);
-
-  const authorProfileSlug = useMemo(() => {
-    return post.authorHandle || (post.author ? post.author.toLowerCase().replace(/\s+/g, '') : 'user');
-  }, [post.authorHandle, post.author]);
-
-  // Robust ownership matching identical to PostCard.jsx
-  const isOwner = useMemo(() => {
-    if (!user) return false;
-
-    const matchId = post.userId && user.id === post.userId;
-    const matchName = post.author && user.displayName?.trim().toLowerCase() === post.author?.trim().toLowerCase();
-    const matchEmail = post.authorEmail && user.email?.trim().toLowerCase() === post.authorEmail?.trim().toLowerCase();
-    const matchHandle = user.handle && authorProfileSlug.toLowerCase() === user.handle.toLowerCase();
-
-    return Boolean(matchId || matchName || matchEmail || matchHandle);
-  }, [user, post.userId, post.author, post.authorEmail, user?.handle, authorProfileSlug]);
+  const [post, setPost] = useState(null);
+  const [postLoading, setPostLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+  const [comments, setComments] = useState([]);
+  const [commentText, setCommentText] = useState('');
+  const [submittingComment, setSubmittingComment] = useState(false);
 
   // Menu & Modal states
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -431,38 +413,84 @@ export default function PostDetailPage() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const refreshComments = useCallback(async () => {
+    if (!id) return;
+    try {
+      const list = await commentsApi.list(id);
+      setComments(buildCommentTree(list));
+    } catch {
+      setComments([]);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      setPostLoading(true);
+      setNotFound(false);
+      try {
+        const data = await postsApi.get(id, user?.id);
+        if (cancelled) return;
+        if (!data) {
+          setNotFound(true);
+          return;
+        }
+        setPost(data);
+      } catch {
+        if (!cancelled) setNotFound(true);
+      } finally {
+        if (!cancelled) setPostLoading(false);
+      }
+    }
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [id, user?.id]);
+
+  useEffect(() => {
+    if (id) refreshComments();
+  }, [id, refreshComments]);
+
   // Post Interaction States
   const [postVoteState, setPostVoteState] = useState(0);
-  const [postVoteCount, setPostVoteCount] = useState(124);
+  const [postVoteCount, setPostVoteCount] = useState(0);
   const [isSaved, setIsSaved] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [sortBy, setSortBy] = useState('top');
 
-  const handlePostUpvote = () => {
-    if (!user) {
-      navigate('/auth/login');
-      return;
+  useEffect(() => {
+    if (post) {
+      setPostVoteState(post.myVote || 0);
+      setPostVoteCount(post.upvotes || 0);
+      setIsSaved(Boolean(post.isSaved));
     }
-    if (postVoteState === 1) {
-      setPostVoteState(0);
-      setPostVoteCount((prev) => prev - 1);
-    } else {
-      setPostVoteCount((prev) => prev + (postVoteState === -1 ? 2 : 1));
-      setPostVoteState(1);
-    }
-  };
+  }, [post]);
 
-  const handlePostDownvote = () => {
+  const handlePostVote = async (value) => {
     if (!user) {
       navigate('/auth/login');
       return;
     }
-    if (postVoteState === -1) {
+    const prevState = postVoteState;
+    const prevCount = postVoteCount;
+    if (postVoteState === value) {
       setPostVoteState(0);
-      setPostVoteCount((prev) => prev + 1);
+      setPostVoteCount((prev) => prev - value);
     } else {
-      setPostVoteCount((prev) => prev - (postVoteState === 1 ? 2 : 1));
-      setPostVoteState(-1);
+      setPostVoteCount((prev) => prev + (postVoteState === 0 ? value : value * 2));
+      setPostVoteState(value);
+    }
+    try {
+      if (prevState === value) {
+        await votesApi.remove({ postId: post.id });
+      } else {
+        await votesApi.cast({ postId: post.id }, value);
+      }
+    } catch {
+      setPostVoteState(prevState);
+      setPostVoteCount(prevCount);
+      alert('Could not update your vote. Please try again.');
     }
   };
 
@@ -473,57 +501,136 @@ export default function PostDetailPage() {
     setTimeout(() => setIsCopied(false), 2000);
   };
 
-  const handleConfirmDelete = () => {
-    navigate('/');
+  const handleSaveToggle = async () => {
+    if (!user) {
+      navigate('/auth/login');
+      return;
+    }
+    const updated = !isSaved;
+    const prev = isSaved;
+    setIsSaved(updated);
+    try {
+      if (updated) await postsApi.save(id);
+      else await postsApi.unsave(id);
+    } catch {
+      setIsSaved(prev);
+      alert('Could not update saved posts. Please try again.');
+    }
   };
 
-  const handleSavePost = (updatedPayload) => {
-    setPost((prev) => ({
-      ...prev,
-      title: updatedPayload.title,
-      content: updatedPayload.content,
-      tags: updatedPayload.tags,
-      image_url: updatedPayload.imagePreview || prev.image_url,
-    }));
+  const handleConfirmDelete = async () => {
+    try {
+      await postsApi.remove(id);
+      navigate('/');
+    } catch (err) {
+      alert(getApiErrorMessage(err));
+    }
   };
 
-  const commentsData = [
-    {
-      id: 1,
-      author: 'Prof. James Carver',
-      role: 'PROFESSOR',
-      initials: 'JC',
-      timestamp: '2h ago',
-      votes: 98,
-      initialVoted: 0,
-      isLong: true,
-      body: (
-        <p>
-          Great question! The three-table join is straightforward — just chain another JOIN. The more important question is whether you need a materialized view. For a dashboard that reads frequently but updates rarely, materialization can cut query time significantly.
-        </p>
-      ),
-      replies: [
-        {
-          id: 101,
-          author: 'Kwame Mensah',
-          role: 'STUDENT',
-          initials: 'KM',
-          timestamp: '1h 30m ago',
-          replyingTo: null,
-          votes: 27,
-          initialVoted: 1,
-          text: "This is exactly what I needed. The distinction between regular and materialized views makes a lot more sense now. Would a session help me understand when the query planner's estimate is wrong? That's where I keep getting tripped up.",
-        },
-      ],
-    },
-  ];
+  const handleSavePost = async (updatedPayload) => {
+    try {
+      const updated = await postsApi.update(id, {
+        title: updatedPayload.title,
+        content: updatedPayload.details ?? updatedPayload.content,
+        type: updatedPayload.type,
+        tags: (updatedPayload.tags || []).map((t) => String(t).replace(/^#/, '')),
+      });
+      setPost(updated);
+    } catch (err) {
+      alert(getApiErrorMessage(err));
+    }
+  };
+
+  const handleReport = async () => {
+    if (!user) {
+      navigate('/auth/login');
+      return;
+    }
+    setIsMenuOpen(false);
+    try {
+      await reportsApi.create({ postId: id, reason: 'User-reported from post detail' });
+      setIsReported(true);
+      alert('Thank you. This post has been flagged for moderator review.');
+    } catch {
+      alert('Could not submit the report. Please try again.');
+    }
+  };
+
+  const handleAddComment = async () => {
+    if (!user) {
+      navigate('/auth/login');
+      return;
+    }
+    if (!commentText.trim()) return;
+    setSubmittingComment(true);
+    try {
+      await commentsApi.create(id, commentText.trim());
+      setCommentText('');
+      await refreshComments();
+    } catch (err) {
+      alert(getApiErrorMessage(err));
+    } finally {
+      setSubmittingComment(false);
+    }
+  };
+
+  const authorProfileSlug = useMemo(() => {
+    return post?.authorHandle || (post?.author ? post.author.toLowerCase().replace(/\s+/g, '') : 'user');
+  }, [post]);
+
+  // Robust ownership matching identical to PostCard.jsx
+  const isOwner = useMemo(() => {
+    if (!user || !post) return false;
+    const matchId = post.userId && user.id === post.userId;
+    const matchName = post.author && user.displayName?.trim().toLowerCase() === post.author?.trim().toLowerCase();
+    const matchEmail = post.authorEmail && user.email?.trim().toLowerCase() === post.authorEmail?.trim().toLowerCase();
+    const matchHandle = user.handle && user.handle.toLowerCase() === authorProfileSlug.toLowerCase();
+    return Boolean(matchId || matchName || matchEmail || matchHandle);
+  }, [user, post, authorProfileSlug]);
+
+  const sortedComments = useMemo(() => {
+    const sorted = [...comments];
+    if (sortBy === 'new') {
+      sorted.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+    } else if (sortBy === 'controversial') {
+      sorted.sort((a, b) => (b.commentVotes || 0) - (a.commentVotes || 0));
+    } else {
+      sorted.sort((a, b) => (b.votes || 0) - (a.votes || 0));
+    }
+    return sorted;
+  }, [comments, sortBy]);
+
+  if (postLoading) {
+    return (
+      <ThreeColumnLayout>
+        <div className="flex flex-col items-center justify-center py-16 text-gray-400 gap-2">
+          <div className="w-6 h-6 border-2 border-[#FF4F00] border-t-transparent rounded-full animate-spin" />
+          <span className="text-xs font-semibold">Loading post...</span>
+        </div>
+      </ThreeColumnLayout>
+    );
+  }
+
+  if (notFound || !post) {
+    return (
+      <ThreeColumnLayout>
+        <div className="bg-white border border-gray-200 rounded-2xl p-10 text-center shadow-xs">
+          <h2 className="text-sm font-bold text-gray-900">Post not found</h2>
+          <p className="text-xs text-gray-500 mt-1">This post may have been removed.</p>
+          <Link to="/" className="inline-block mt-4 text-xs font-bold text-[#FF4F00] hover:underline">
+            Back to feed
+          </Link>
+        </div>
+      </ThreeColumnLayout>
+    );
+  }
 
   return (
     <ThreeColumnLayout>
       <div className="w-full space-y-4 sm:space-y-6">
         {/* Breadcrumb Back Link */}
-        <Link 
-          to="/" 
+        <Link
+          to="/"
           className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-gray-500 hover:text-gray-900 font-semibold transition-colors"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -535,7 +642,7 @@ export default function PostDetailPage() {
         {/* Main Post Card */}
         <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl overflow-hidden shadow-xs">
           <div className="p-4 sm:p-6">
-            
+
             {/* Header: Author + Options / Request CTA */}
             <div className="flex items-center justify-between gap-3 mb-3.5 sm:mb-4">
               <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
@@ -558,7 +665,7 @@ export default function PostDetailPage() {
                     </span>
                   </div>
                   <div className="flex items-center text-[11px] sm:text-xs mt-0.5 text-gray-400">
-                    <span className="text-[#FF4F00] font-bold">{post.tag}</span>
+                    <span className="text-[#FF4F00] font-bold">{post.tag || '#General'}</span>
                     <span className="mx-1.5">•</span>
                     <span>{post.timestamp}</span>
                   </div>
@@ -568,7 +675,7 @@ export default function PostDetailPage() {
               {/* Top Right: CTA (If not owner) + Three-Dot Menu */}
               <div className="flex items-center gap-2 flex-shrink-0">
                 {!isOwner && (
-                  <button 
+                  <button
                     type="button"
                     onClick={() => navigate(`/user/${authorProfileSlug}`)}
                     className="text-[#FF4F00] border border-[#FF4F00] rounded-xl px-3 sm:px-4 py-1.5 text-xs font-bold hover:bg-orange-50 active:bg-orange-100 transition-colors cursor-pointer"
@@ -638,11 +745,7 @@ export default function PostDetailPage() {
 
                           <button
                             type="button"
-                            onClick={() => {
-                              setIsReported(true);
-                              setIsMenuOpen(false);
-                              alert('Thank you. This post has been flagged for moderator review.');
-                            }}
+                            onClick={handleReport}
                             className="w-full flex items-center gap-2 px-4 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors cursor-pointer text-left"
                           >
                             <svg className="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
@@ -657,6 +760,21 @@ export default function PostDetailPage() {
                 </div>
               </div>
             </div>
+
+            {/* Tag Badges */}
+            {post.tags?.length > 0 && (
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap mb-2.5">
+                {post.tags.map((t) => (
+                  <Link
+                    key={t}
+                    to={`/?tag=${encodeURIComponent(String(t).replace(/^#/, ''))}`}
+                    className="bg-orange-50 border border-orange-100 text-[#FF4F00] text-[10px] sm:text-[11px] font-bold px-2 sm:px-2.5 py-0.5 rounded-md hover:bg-orange-100 transition-colors"
+                  >
+                    #{String(t).replace(/^#/, '')}
+                  </Link>
+                ))}
+              </div>
+            )}
 
             {/* Post Title & Content */}
             <h1 className="text-base sm:text-xl font-bold text-gray-900 mb-2 sm:mb-3 leading-snug break-words">
@@ -684,9 +802,9 @@ export default function PostDetailPage() {
             <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
               {/* Voting Capsule */}
               <div className="flex items-center gap-1 bg-gray-50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-lg border border-gray-100">
-                <button 
+                <button
                   type="button"
-                  onClick={handlePostUpvote} 
+                  onClick={() => handlePostVote(1)}
                   className={`p-0.5 sm:p-1 rounded hover:bg-gray-200 transition-colors cursor-pointer ${
                     postVoteState === 1 ? 'text-[#FF4F00]' : 'text-gray-400'
                   }`}
@@ -703,9 +821,9 @@ export default function PostDetailPage() {
                   {postVoteCount}
                 </span>
 
-                <button 
+                <button
                   type="button"
-                  onClick={handlePostDownvote} 
+                  onClick={() => handlePostVote(-1)}
                   className={`p-0.5 sm:p-1 rounded hover:bg-gray-200 transition-colors cursor-pointer ${
                     postVoteState === -1 ? 'text-blue-500' : 'text-gray-400'
                   }`}
@@ -722,7 +840,7 @@ export default function PostDetailPage() {
                 <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                 </svg>
-                <span>2 comments</span>
+                <span>{comments.length} comments</span>
               </div>
 
               {/* Share Button */}
@@ -737,10 +855,10 @@ export default function PostDetailPage() {
                 <span className="hidden xs:inline">{isCopied ? 'Copied!' : 'Share'}</span>
               </button>
 
-              {/* Save Button */}
+              {/* Save Button — persists to the saved_posts backend */}
               <button
                 type="button"
-                onClick={() => setIsSaved(!isSaved)}
+                onClick={handleSaveToggle}
                 className={`flex items-center gap-1 sm:gap-1.5 text-xs font-semibold transition-colors cursor-pointer ${
                   isSaved ? 'text-[#FF4F00] font-bold' : 'hover:text-gray-800'
                 }`}
@@ -754,7 +872,7 @@ export default function PostDetailPage() {
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
                 </svg>
-                <span className="hidden xs:inline">Save</span>
+                <span className="hidden xs:inline">{isSaved ? 'Saved' : 'Save'}</span>
               </button>
             </div>
           </div>
@@ -764,15 +882,19 @@ export default function PostDetailPage() {
         <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-3.5 sm:p-5 shadow-xs">
           <textarea
             rows={3}
+            value={commentText}
+            onChange={(e) => setCommentText(e.target.value)}
             className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl p-3 text-xs sm:text-sm text-gray-800 placeholder-gray-400 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all min-h-[80px] sm:min-h-[90px] resize-none mb-3"
             placeholder="Share your knowledge or ask a follow-up..."
           />
           <div className="flex justify-end">
-            <button 
+            <button
               type="button"
-              className="w-full sm:w-auto bg-[#FF4F00] text-white px-5 py-2 rounded-xl text-xs sm:text-sm font-bold hover:bg-[#E64700] active:scale-98 transition-all shadow-xs cursor-pointer text-center"
+              onClick={handleAddComment}
+              disabled={submittingComment || !commentText.trim()}
+              className="w-full sm:w-auto bg-[#FF4F00] text-white px-5 py-2 rounded-xl text-xs sm:text-sm font-bold hover:bg-[#E64700] active:scale-98 transition-all shadow-xs cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed text-center"
             >
-              Comment
+              {submittingComment ? 'Posting…' : 'Comment'}
             </button>
           </div>
         </div>
@@ -800,9 +922,22 @@ export default function PostDetailPage() {
 
         {/* Comments List */}
         <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-xs space-y-5 sm:space-y-6">
-          {commentsData.map((comment) => (
-            <CommentThread key={comment.id} comment={comment} />
-          ))}
+          {sortedComments.length === 0 ? (
+            <div className="text-center py-10">
+              <h3 className="text-sm font-bold text-gray-900">No comments yet</h3>
+              <p className="text-xs text-gray-500 mt-1">Be the first to share your knowledge.</p>
+            </div>
+          ) : (
+            sortedComments.map((comment) => (
+              <CommentThread
+                key={comment.id}
+                comment={comment}
+                postId={id}
+                currentUser={user}
+                onRefresh={refreshComments}
+              />
+            ))
+          )}
         </div>
       </div>
 

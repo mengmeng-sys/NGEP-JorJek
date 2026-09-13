@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { tagsApi } from '@/lib/api';
+import { getApiErrorMessage } from '@/lib/apiClient';
 
 const TECH_CATEGORIES = [
   {
@@ -97,6 +99,8 @@ const TECH_CATEGORIES = [
 export default function TechInterestsPage() {
   const navigate = useNavigate();
   const [selectedInterests, setSelectedInterests] = useState(['cpp', 'sql']);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
 
   const toggleInterest = (id) => {
     if (selectedInterests.includes(id)) {
@@ -106,8 +110,22 @@ export default function TechInterestsPage() {
     }
   };
 
-  const handleFinishOnboarding = () => {
-    navigate('/');
+  const handleFinishOnboarding = async () => {
+    setSaving(true);
+    setError('');
+    try {
+      // Follow every selected tag (upserts the tag server-side by slug).
+      await Promise.allSettled(
+        TECH_CATEGORIES.filter((cat) => selectedInterests.includes(cat.id)).map((cat) =>
+          tagsApi.follow(cat.tag.replace(/^#/, ''))
+        )
+      );
+      navigate('/');
+    } catch (err) {
+      setError(getApiErrorMessage(err));
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -193,6 +211,11 @@ export default function TechInterestsPage() {
         </div>
 
         {/* Action Controls */}
+        {error && (
+          <p className="text-[11px] text-red-600 font-semibold bg-red-50 border border-red-100 rounded-lg px-3 py-2 mb-3">
+            {error}
+          </p>
+        )}
         <div className="flex flex-col-reverse xs:flex-row items-center justify-between gap-3 pt-4 border-t border-gray-100">
           <button
             type="button"
@@ -205,9 +228,10 @@ export default function TechInterestsPage() {
           <button
             type="button"
             onClick={handleFinishOnboarding}
-            className="w-full xs:w-auto bg-[#FF4F00] hover:bg-[#E64700] text-white text-xs font-bold px-6 py-3 sm:py-2.5 rounded-xl transition-all shadow-xs cursor-pointer active:scale-98 text-center"
+            disabled={saving}
+            className="w-full xs:w-auto bg-[#FF4F00] hover:bg-[#E64700] text-white text-xs font-bold px-6 py-3 sm:py-2.5 rounded-xl transition-all shadow-xs cursor-pointer active:scale-98 text-center disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            Done & Enter JorJek ({selectedInterests.length} Selected)
+            {saving ? 'Saving…' : `Done & Enter JorJek (${selectedInterests.length} Selected)`}
           </button>
         </div>
 

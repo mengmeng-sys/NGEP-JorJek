@@ -23,6 +23,20 @@ export default function HomePage() {
     ? posts?.filter((p) => p?.tags && p.tags.some(t => t.toLowerCase() === selectedTag.toLowerCase())) || []
     : posts || [];
 
+  // Client-side sorting — the backend /posts endpoint has no sort param.
+  const sortedPosts = [...filteredPosts].sort((a, b) => {
+    const aTime = new Date(a.createdAt || 0).getTime();
+    const bTime = new Date(b.createdAt || 0).getTime();
+    if (sortBy === 'new') return bTime - aTime;
+    if (sortBy === 'top') return (b.upvotes || 0) - (a.upvotes || 0);
+    if (sortBy === 'rising') {
+      const ageA = Math.max(1, (Date.now() - aTime) / 3600000);
+      const ageB = Math.max(1, (Date.now() - bTime) / 3600000);
+      return (b.upvotes || 0) / Math.pow(ageB, 1.4) - (a.upvotes || 0) / Math.pow(ageA, 1.4);
+    }
+    return 0; // hot: keep the backend order
+  });
+
   if (loading) {
     return (
       <ThreeColumnLayout>
@@ -87,12 +101,12 @@ export default function HomePage() {
 
           {/* Post Counter Badge */}
           <span className="text-[11px] sm:text-xs text-gray-400 font-medium whitespace-nowrap pl-2 border-l border-gray-100 sm:border-l-0 flex-shrink-0">
-            {filteredPosts.length} <span className="hidden xs:inline">posts</span>
+            {sortedPosts.length} <span className="hidden xs:inline">posts</span>
           </span>
         </div>
 
         {/* Post Feed Container */}
-        {filteredPosts.length === 0 ? (
+        {sortedPosts.length === 0 ? (
           <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-8 sm:p-12 text-center shadow-xs">
             <div className="w-10 h-10 rounded-full bg-orange-50 text-[#FF4F00] flex items-center justify-center mx-auto mb-3">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -117,7 +131,7 @@ export default function HomePage() {
           </div>
         ) : (
           <div className="space-y-3 sm:space-y-4">
-            {filteredPosts.map((p) => (
+            {sortedPosts.map((p) => (
               <PostCard key={p.id} post={p} />
             ))}
           </div>

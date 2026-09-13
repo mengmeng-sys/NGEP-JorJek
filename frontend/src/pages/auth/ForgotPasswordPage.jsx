@@ -1,14 +1,27 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 
 export default function ForgotPasswordPage() {
+  const navigate = useNavigate();
+  const { forgotPassword } = useAuth();
   const [email, setEmail] = useState('');
   const [isSent, setIsSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (email.trim()) {
+    if (!email.trim()) return;
+    setError('');
+    setSending(true);
+    try {
+      await forgotPassword(email.trim());
       setIsSent(true);
+    } catch (err) {
+      setError(err?.message || 'We could not send a reset code. Please try again.');
+    } finally {
+      setSending(false);
     }
   };
 
@@ -35,28 +48,29 @@ export default function ForgotPasswordPage() {
         {isSent ? (
           <div className="bg-orange-50/70 border border-orange-200 rounded-xl sm:rounded-2xl p-4 sm:p-6 text-center animate-in fade-in duration-150">
             <span className="text-3xl block">📬</span>
-            <h3 className="text-xs sm:text-sm font-bold text-gray-900 mt-2.5">
-              Recovery Link Sent
-            </h3>
-            <p className="text-[11px] sm:text-xs text-gray-600 mt-1.5 leading-relaxed break-words">
-              If an account exists for <strong className="text-gray-900">{email}</strong>, check your student inbox for the password reset link.
-            </p>
-            <div className="mt-5 space-y-2">
-              <Link
-                to="/auth/login"
-                className="w-full inline-block bg-[#FF4F00] hover:bg-[#E64700] text-white text-xs font-bold py-2.5 rounded-xl transition-all shadow-xs cursor-pointer active:scale-98"
-              >
-                Return to Login
-              </Link>
-              <button
-                type="button"
-                onClick={() => setIsSent(false)}
-                className="text-[11px] font-semibold text-gray-400 hover:text-gray-700 block w-full pt-1"
-              >
-                Try another email
-              </button>
-            </div>
+<h3 className="text-xs sm:text-sm font-bold text-gray-900 mt-2.5">
+            Recovery Code Sent
+          </h3>
+          <p className="text-[11px] sm:text-xs text-gray-600 mt-1.5 leading-relaxed break-words">
+            If an account exists for <strong className="text-gray-900">{email}</strong>, check your student inbox for the 6-digit reset code.
+          </p>
+          <div className="mt-5 space-y-2">
+            <button
+              type="button"
+              onClick={() => navigate('/auth/verify-otp', { state: { email, from: 'reset', otpSent: true } })}
+              className="w-full bg-[#FF4F00] hover:bg-[#E64700] text-white text-xs font-bold py-2.5 rounded-xl transition-all shadow-xs cursor-pointer active:scale-98"
+            >
+              I have a code — Continue
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsSent(false)}
+              className="text-[11px] font-semibold text-gray-400 hover:text-gray-700 block w-full pt-1"
+            >
+Try another email
+            </button>
           </div>
+            </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -73,12 +87,19 @@ export default function ForgotPasswordPage() {
               />
             </div>
 
-            <button
-              type="submit"
-              className="w-full bg-[#FF4F00] hover:bg-[#E64700] text-white text-xs font-bold py-2.5 sm:py-3 rounded-xl transition-all shadow-xs cursor-pointer active:scale-98"
-            >
-              Send Reset Link
-            </button>
+{error && (
+            <p className="text-[11px] text-red-600 font-semibold bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+              {error}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={sending}
+            className="w-full bg-[#FF4F00] hover:bg-[#E64700] text-white text-xs font-bold py-2.5 sm:py-3 rounded-xl transition-all shadow-xs cursor-pointer active:scale-98 disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {sending ? 'Sending…' : 'Send Reset Code'}
+          </button>
 
             <div className="text-center pt-2 border-t border-gray-100">
               <Link
