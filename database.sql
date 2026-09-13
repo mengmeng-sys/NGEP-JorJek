@@ -14,6 +14,10 @@ create table public.users (
   role text not null default 'STUDENT' check (role in ('STUDENT', 'PROFESSOR')),
   bio text,
   karma integer not null default 0,
+  show_profile_to_guests boolean not null default true,
+  allow_direct_requests boolean not null default true,
+  show_online_status boolean not null default false,
+  receive_email_notifications boolean not null default true,
   created_at timestamptz not null default now()
 );
  

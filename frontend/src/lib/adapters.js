@@ -80,6 +80,10 @@ export function normalizeUser(row) {
     bio: row.bio || null,
     karma: row.karma ?? 0,
     emailVerified: row.emailVerified ?? row.email_verified ?? false,
+    showProfileToGuests: row.showProfileToGuests ?? row.show_profile_to_guests ?? true,
+    allowDirectRequests: row.allowDirectRequests ?? row.allow_direct_requests ?? true,
+    showOnlineStatus: row.showOnlineStatus ?? row.show_online_status ?? false,
+    receiveEmailNotifications: row.receiveEmailNotifications ?? row.receive_email_notifications ?? true,
     createdAt: row.createdAt || row.created_at || null,
   };
 }

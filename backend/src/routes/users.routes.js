@@ -4,7 +4,7 @@ const { requireAuth } = require("../middleware/auth.middleware");
 
 const usersRouter = Router();
 
-const USER_SAFE = "id,email,display_name,role,bio,karma,email_verified,created_at";
+const USER_SAFE = "id,email,display_name,role,bio,karma,email_verified,show_profile_to_guests,allow_direct_requests,show_online_status,receive_email_notifications,created_at";
 
 // GET /users -- READ all users (paginated)
 
@@ -144,7 +144,7 @@ usersRouter.get("/:id", async (req, res, next) => {
   try {
     const { data: user, error } = await supabase
       .from("users")
-      .select("id, displayName:display_name, role, karma, bio, createdAt:created_at")
+      .select("id, displayName:display_name, role, karma, bio, showProfileToGuests:show_profile_to_guests, allowDirectRequests:allow_direct_requests, showOnlineStatus:show_online_status, receiveEmailNotifications:receive_email_notifications, createdAt:created_at")
       .eq("id", req.params.id)
       .maybeSingle();
     if (error) throw error;
@@ -163,7 +163,7 @@ usersRouter.get("/:id", async (req, res, next) => {
  * /users/{id}:
  *   patch:
  *     summary: Update own profile
- *     description: Updates the authenticated user's own profile (`displayName`, `bio`, `role`). Only the account owner can update it.
+ *     description: Updates the authenticated user's own profile (`displayName`, `bio`, `role`, and privacy flags). Only the account owner can update it.
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -190,6 +190,18 @@ usersRouter.get("/:id", async (req, res, next) => {
  *                 type: string
  *                 enum: [STUDENT, MENTOR, ADMIN]
  *                 example: MENTOR
+ *               showProfileToGuests:
+ *                 type: boolean
+ *                 example: true
+ *               allowDirectRequests:
+ *                 type: boolean
+ *                 example: true
+ *               showOnlineStatus:
+ *                 type: boolean
+ *                 example: false
+ *               receiveEmailNotifications:
+ *                 type: boolean
+ *                 example: true
  *     responses:
  *       200:
  *         description: Updated user (safe fields)
@@ -222,11 +234,15 @@ usersRouter.patch("/:id", requireAuth, async (req, res, next) => {
       return res.status(403).json({ error: "You can only update your own profile" });
     }
 
-    const { displayName, bio, role } = req.body;
+    const { displayName, bio, role, showProfileToGuests, allowDirectRequests, showOnlineStatus, receiveEmailNotifications } = req.body;
     const updates = {};
     if (displayName !== undefined) updates.display_name = displayName;
     if (bio !== undefined) updates.bio = bio;
     if (role !== undefined) updates.role = role;
+    if (typeof showProfileToGuests === "boolean") updates.show_profile_to_guests = showProfileToGuests;
+    if (typeof allowDirectRequests === "boolean") updates.allow_direct_requests = allowDirectRequests;
+    if (typeof showOnlineStatus === "boolean") updates.show_online_status = showOnlineStatus;
+    if (typeof receiveEmailNotifications === "boolean") updates.receive_email_notifications = receiveEmailNotifications;
 
     if (Object.keys(updates).length === 0) {
       return res.status(400).json({ error: "No fields to update" });
