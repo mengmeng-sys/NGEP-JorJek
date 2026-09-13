@@ -122,12 +122,29 @@ export const searchApi = {
 export const usersApi = {
   topMentors: async () => safeArray(await apiFetch("/users/top-mentors")).map(normalizeMentor),
   get: async (idOrSlug) => {
-    const data = await apiFetch(`/users?limit=50`);
-    // Backend has no "get by handle" endpoint, so resolve a slug/id from the list.
-    const users = safeArray(data.users);
-    const match =
-      users.find((u) => String(u.id) === String(idOrSlug)) ||
-      users.find((u) => String(u.display_name || "").toLowerCase().replace(/\s+/g, "") === String(idOrSlug).toLowerCase());
+    // Backend has no "get by handle" endpoint, so resolve a slug/id from the
+    // paginated user list. Walk every page until we find a match so the profile
+    // resolves regardless of how many users exist.
+    const normalizedSlug = String(idOrSlug || "").toLowerCase().replace(/\s+/g, "");
+    const limit = 50;
+    let page = 1;
+    let match = null;
+    for (;;) {
+      const data = await apiFetch(`/users?limit=${limit}&page=${page}`);
+      const users = safeArray(data.users);
+      match =
+        users.find((u) => String(u.id) === String(idOrSlug)) ||
+        users.find(
+          (u) =>
+            String(u.display_name || "")
+              .toLowerCase()
+              .replace(/\s+/g, "") === normalizedSlug
+        );
+      if (match) break;
+      const total = data.total ?? users.length;
+      if (!Array.isArray(data.users) || users.length === 0 || page * limit >= total) break;
+      page += 1;
+    }
     if (!match) return null;
     const detail = await apiFetch(`/users/${match.id}`);
     return normalizeUser(detail);
