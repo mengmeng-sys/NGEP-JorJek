@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { tagsApi } from '@/lib/api';
 import { getApiErrorMessage } from '@/lib/apiClient';
+import { BackHomeArrow } from '@/components/shared/BackHomeArrow';
 
 const TECH_CATEGORIES = [
   {
@@ -129,7 +130,10 @@ export default function TechInterestsPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#FBFBFB] flex flex-col justify-center items-center px-3.5 sm:px-6 py-6 sm:py-12">
+    <div className="min-h-screen w-full bg-[#FBFBFB] flex flex-col justify-center items-center px-3.5 sm:px-6 py-6 sm:py-12 relative">
+      <div className="absolute top-4 sm:top-6 left-4 sm:left-6">
+        <BackHomeArrow />
+      </div>
       <div className="w-full max-w-lg sm:max-w-2xl bg-white border border-gray-200 rounded-xl sm:rounded-2xl shadow-xs p-4 sm:p-7 md:p-8">
         
         {/* Brand & Progress Header */}

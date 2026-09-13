@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import { BackHomeArrow } from '@/components/shared/BackHomeArrow';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -72,7 +73,10 @@ export default function LoginPage() {
       </div>
 
       {/* Right Column: Interactive Login Card */}
-      <div className="flex flex-col justify-center items-center px-4 py-8 sm:p-12 min-h-screen lg:min-h-0">
+      <div className="flex flex-col justify-center items-center px-4 py-8 sm:p-12 min-h-screen lg:min-h-0 relative">
+        <div className="absolute top-4 sm:top-6 left-4 sm:left-6">
+          <BackHomeArrow />
+        </div>
         <div className="w-full max-w-sm sm:max-w-md bg-white sm:bg-transparent border sm:border-0 border-gray-200 rounded-2xl p-6 sm:p-0 shadow-xs sm:shadow-none space-y-5 sm:space-y-6">
           
           {/* Mobile Header Brand */}
