@@ -4,7 +4,6 @@ import { ThreeColumnLayout } from '@/components/layout/ThreeColumnLayout';
 import { PostCard } from '@/components/post/PostCard';
 
 export default function SavedPage() {
-  // Sample initial state with 1 saved post matching your design
   const [savedPosts, setSavedPosts] = useState([
     {
       id: 1,
@@ -21,66 +20,81 @@ export default function SavedPage() {
     },
   ]);
 
+  const handleToggleSave = (postId) => {
+    setSavedPosts((prev) => prev.filter((p) => p.id !== postId));
+  };
+
   return (
     <ThreeColumnLayout>
-      {/* Header */}
-      <div className="mb-6">
-        <div className="flex items-center gap-2 mb-1">
-          <svg
-            className="w-5 h-5 text-[#FF4F00]"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-          </svg>
-          <h1 className="text-xl font-bold text-gray-900">Your Saved Resources</h1>
-        </div>
-        <p className="text-sm text-gray-500">
-          {savedPosts.length === 0
-            ? 'Posts you save will appear here for quick access'
-            : `${savedPosts.length} post saved to your bookmarks`}
-        </p>
-      </div>
-
-      {/* Conditional Rendering: Empty State vs Saved List */}
-      {savedPosts.length === 0 ? (
-        <div className="bg-[#FBFBFB] border border-gray-100 rounded-2xl p-16 flex flex-col items-center justify-center text-center min-h-[420px]">
-          {/* Outline Bookmark Icon */}
-          <div className="text-gray-300 mb-4">
-            <svg
-              className="w-16 h-16"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth="1.2"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
-              />
-            </svg>
+      <div className="w-full space-y-4 sm:space-y-5">
+        
+        {/* Responsive Header Banner */}
+        <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-4 sm:p-5 shadow-xs">
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center text-[#FF4F00] flex-shrink-0">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+              </svg>
+            </div>
+            <div className="min-w-0">
+              <h1 className="text-base sm:text-lg font-bold text-gray-900 leading-tight truncate">
+                Your Saved Resources
+              </h1>
+              <p className="text-[11px] sm:text-xs text-gray-500 mt-0.5 leading-snug truncate">
+                {savedPosts.length === 0
+                  ? 'Posts you save will appear here for quick access'
+                  : `${savedPosts.length} ${savedPosts.length === 1 ? 'post' : 'posts'} saved to your bookmarks`}
+              </p>
+            </div>
           </div>
-
-          <h2 className="text-base font-bold text-gray-800 mb-2">Nothing here yet!</h2>
-          <p className="text-xs text-gray-400 max-w-xs mb-6 leading-relaxed">
-            Click the <strong className="font-semibold text-gray-600">Save</strong> icon on any post to keep your study materials here.
-          </p>
-
-          <Link
-            to="/"
-            className="bg-[#FF4F00] hover:bg-[#E64700] text-white font-bold text-sm px-6 py-2.5 rounded-lg transition-colors inline-flex items-center gap-1.5 shadow-sm"
-          >
-            Browse the feed →
-          </Link>
         </div>
-      ) : (
-        <div className="space-y-4">
-          {savedPosts.map((post) => (
-            <PostCard key={post.id} post={post} />
-          ))}
-        </div>
-      )}
+
+        {/* Saved Feed vs Empty State */}
+        {savedPosts.length === 0 ? (
+          <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-8 sm:p-14 flex flex-col items-center justify-center text-center shadow-xs min-h-[360px] sm:min-h-[400px]">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-orange-50/70 border border-orange-100 text-[#FF4F00] flex items-center justify-center mb-4">
+              <svg
+                className="w-7 h-7 sm:w-8 sm:h-8"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="1.5"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
+                />
+              </svg>
+            </div>
+
+            <h2 className="text-sm sm:text-base font-bold text-gray-900 mb-1.5">
+              Nothing saved yet!
+            </h2>
+            <p className="text-xs text-gray-400 max-w-xs mb-5 sm:mb-6 leading-relaxed">
+              Click the <strong className="font-semibold text-gray-700">Save</strong> bookmark button on questions or study guides to collect them here.
+            </p>
+
+            <Link
+              to="/"
+              className="w-full sm:w-auto bg-[#FF4F00] hover:bg-[#E64700] text-white font-bold text-xs px-6 py-3 sm:py-2.5 rounded-xl transition-all shadow-xs inline-flex items-center justify-center gap-1.5 active:scale-98 text-center"
+            >
+              Browse campus feed →
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-3 sm:space-y-4">
+            {savedPosts.map((post) => (
+              <PostCard
+                key={post.id}
+                post={post}
+                onToggleSave={handleToggleSave}
+              />
+            ))}
+          </div>
+        )}
+
+      </div>
     </ThreeColumnLayout>
   );
 }
