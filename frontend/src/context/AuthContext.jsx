@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext(null);
 
-const DEFAULT_CADT_USER = {
+export const DEFAULT_CADT_USER = {
   id: 'usr_cadt_01',
   displayName: 'Srun Vireak',
   handle: 'srunvireak',
@@ -18,61 +18,116 @@ const DEFAULT_CADT_USER = {
 };
 
 export function AuthProvider({ children }) {
-  // Load saved session or fallback to mock user (set to null if testing logged-out state)
+  // Read clean JSON from localStorage; fallback to null so guest flow works as expected
   const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('jorjek_auth_user');
-    return saved ? JSON.parse(saved) : DEFAULT_CADT_USER;
+    try {
+      const saved = localStorage.getItem('jorjek_auth_user');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed === 'object') return parsed;
+      }
+    } catch {
+      localStorage.removeItem('jorjek_auth_user');
+    }
+    return null;
   });
 
   const [isLoading, setIsLoading] = useState(false);
 
-  // Sync with localStorage
+  // Synchronize with persistent storage on state transitions
   useEffect(() => {
-    if (user) {
-      localStorage.setItem('jorjek_auth_user', JSON.stringify(user));
-    } else {
-      localStorage.removeItem('jorjek_auth_user');
+    try {
+      if (user) {
+        localStorage.setItem('jorjek_auth_user', JSON.stringify(user));
+      } else {
+        localStorage.removeItem('jorjek_auth_user');
+      }
+    } catch (err) {
+      console.error('Failed to sync auth state to localStorage:', err);
     }
   }, [user]);
 
-  // Handle successful login or OTP completion
-  const login = (userData) => {
-    const initials = userData.displayName
-      ? userData.displayName.split(' ').map((n) => n[0]).join('').toUpperCase()
-      : 'U';
+  // Compute initials and normalized handle from display name
+  const computeUserMetadata = (userData = {}) => {
+    const rawName = userData.displayName || userData.username || 'CADT Student';
+    const words = rawName.trim().split(/\s+/).filter(Boolean);
+    const initials = words.length > 1
+      ? `${words[0][0]}${words[words.length - 1][0]}`.toUpperCase()
+      : (words[0] ? words[0].slice(0, 2).toUpperCase() : 'SV');
 
-    const handle = userData.displayName
-      ? userData.displayName.toLowerCase().replace(/\s+/g, '')
-      : 'cadtuser';
+    const handle = userData.handle || rawName.toLowerCase().replace(/[^a-z0-9]/g, '') || 'cadtuser';
+
+    return {
+      displayName: rawName,
+      initials,
+      handle,
+    };
+  };
+
+  // Login handler
+  const login = (userData = {}) => {
+    const computedMeta = computeUserMetadata(userData);
 
     const authenticatedUser = {
       ...DEFAULT_CADT_USER,
       ...userData,
-      initials,
-      handle,
+      ...computedMeta,
     };
 
     setUser(authenticatedUser);
+    try {
+      localStorage.setItem('jorjek_auth_user', JSON.stringify(authenticatedUser));
+    } catch (err) {
+      console.error('Storage write error:', err);
+    }
     return authenticatedUser;
   };
 
-  // Complete signup after OTP & tech interest selection
-  const completeSignup = (signupData, selectedInterests = []) => {
-    const newUser = login({
+  // Onboarding completion handler
+  const completeSignup = (signupData = {}, selectedInterests = []) => {
+    const computedMeta = computeUserMetadata(signupData);
+
+    const newUser = {
+      ...DEFAULT_CADT_USER,
       ...signupData,
-      interests: selectedInterests,
-    });
+      ...computedMeta,
+      interests: selectedInterests.length > 0 ? selectedInterests : DEFAULT_CADT_USER.interests,
+    };
+
+    setUser(newUser);
+    try {
+      localStorage.setItem('jorjek_auth_user', JSON.stringify(newUser));
+    } catch (err) {
+      console.error('Storage write error:', err);
+    }
     return newUser;
   };
 
+  // Logout handler
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('jorjek_auth_user');
+    try {
+      localStorage.removeItem('jorjek_auth_user');
+    } catch (err) {
+      console.error('Storage removal error:', err);
+    }
   };
 
-  // Update profile attributes (bio, mentoring status, etc.)
-  const updateUserProfile = (updatedFields) => {
-    setUser((prev) => (prev ? { ...prev, ...updatedFields } : null));
+  // Profile patcher
+  const updateUserProfile = (updatedFields = {}) => {
+    setUser((prev) => {
+      if (!prev) return null;
+      const merged = { ...prev, ...updatedFields };
+      if (updatedFields.displayName) {
+        Object.assign(merged, computeUserMetadata(merged));
+      }
+      try {
+        localStorage.setItem('jorjek_auth_user', JSON.stringify(merged));
+      } catch (err) {
+        console.error('Storage patch error:', err);
+      }
+      return merged;
+    });
   };
 
   return (
@@ -81,6 +136,7 @@ export function AuthProvider({ children }) {
         user,
         isAuthenticated: Boolean(user),
         isLoading,
+        setIsLoading,
         login,
         logout,
         completeSignup,

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { GeneralTab } from '@/components/settings/GeneralTab';
-import { MyPostsTab } from '@/components/settings/MyPostsTab';
 import { MentoringDashboardTab } from '@/components/settings/MentoringDashboardTab';
 import { MentoringPreferencesTab } from '@/components/settings/MentoringPreferencesTab';
 import { PrivacyTab } from '@/components/settings/PrivacyTab';
@@ -13,15 +12,6 @@ export default function SettingsPage() {
     {
       section: 'CONTENT',
       items: [
-        {
-          id: 'posts',
-          label: 'My Posts',
-          icon: (
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-            </svg>
-          ),
-        },
         {
           id: 'mentoring-dashboard',
           label: 'Mentoring Dashboard',
@@ -144,7 +134,6 @@ export default function SettingsPage() {
           {/* Tab Content Display */}
           <div className="md:col-span-8 lg:col-span-9 bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 shadow-sm">
             {activeTab === 'general' && <GeneralTab />}
-            {activeTab === 'posts' && <MyPostsTab />}
             {activeTab === 'mentoring-dashboard' && <MentoringDashboardTab />}
             {activeTab === 'preferences' && <MentoringPreferencesTab />}
             {activeTab === 'privacy' && <PrivacyTab />}
