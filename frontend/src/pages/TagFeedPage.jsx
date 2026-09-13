@@ -1,11 +1,14 @@
 import { useParams } from "react-router-dom";
 import { usePosts } from "@/hooks/usePosts";
+import { usePostEditor } from "@/hooks/usePostEditor";
 import { PostCard } from "@/components/post/PostCard";
+import { CreatePostModal } from "@/components/post/CreatePostModal";
 
 // Route: "/tags/:tag". Owner: CS2
 export default function TagFeedPage() {
   const { tag = "" } = useParams();
-  const { posts, loading, error } = usePosts({ tag });
+  const { posts, loading, error, updatePost } = usePosts({ tag });
+  const { isPostModalOpen, editingPost, openEdit, closeEdit, saveEdit } = usePostEditor(updatePost);
 
   if (loading) {
     return (
@@ -27,8 +30,15 @@ export default function TagFeedPage() {
       {posts.length === 0 ? (
         <p className="text-xs text-gray-500 py-10 text-center">No posts tagged #{tag} yet.</p>
       ) : (
-        posts.map((p) => <PostCard key={p.id} post={p} />)
+        posts.map((p) => <PostCard key={p.id} post={p} onEdit={openEdit} />)
       )}
+
+      <CreatePostModal
+        isOpen={isPostModalOpen}
+        initialData={editingPost}
+        onClose={closeEdit}
+        onPublish={saveEdit}
+      />
     </main>
   );
 }

@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { searchApi } from "@/lib/api";
 import { PostCard } from "@/components/post/PostCard";
+import { CreatePostModal } from "@/components/post/CreatePostModal";
 import { ThreeColumnLayout } from "@/components/layout/ThreeColumnLayout";
+import { usePostEditor } from "@/hooks/usePostEditor";
 import { getApiErrorMessage } from "@/lib/apiClient";
 
 // Route: "/search". Owner: CS2
@@ -14,6 +16,9 @@ export default function SearchPage() {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const { isPostModalOpen, editingPost, openEdit, closeEdit, saveEdit } = usePostEditor((updated) =>
+    setResults((prev) => prev.map((p) => (p.id === updated.id ? updated : p)))
+  );
 
   const currentUserId = (() => {
     try {
@@ -88,10 +93,17 @@ export default function SearchPage() {
               </p>
             </div>
           ) : (
-            results.map((p) => <PostCard key={p.id} post={p} />)
+            results.map((p) => <PostCard key={p.id} post={p} onEdit={openEdit} />)
           )}
         </div>
       </div>
+
+      <CreatePostModal
+        isOpen={isPostModalOpen}
+        initialData={editingPost}
+        onClose={closeEdit}
+        onPublish={saveEdit}
+      />
     </ThreeColumnLayout>
   );
 }

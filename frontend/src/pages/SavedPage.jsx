@@ -2,8 +2,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ThreeColumnLayout } from '@/components/layout/ThreeColumnLayout';
 import { PostCard } from '@/components/post/PostCard';
+import { CreatePostModal } from '@/components/post/CreatePostModal';
 import { savedApi } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
+import { usePostEditor } from '@/hooks/usePostEditor';
 
 export default function SavedPage() {
   const navigate = useNavigate();
@@ -12,6 +14,9 @@ export default function SavedPage() {
   const [savedPosts, setSavedPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const { isPostModalOpen, editingPost, openEdit, closeEdit, saveEdit } = usePostEditor((updated) =>
+    setSavedPosts((prev) => prev.map((p) => (p.id === updated.id ? updated : p)))
+  );
 
   const loadSaved = useCallback(async () => {
     setLoading(true);
@@ -121,12 +126,20 @@ export default function SavedPage() {
                 key={post.id}
                 post={post}
                 onToggleSave={handleToggleSave}
+                onEdit={openEdit}
               />
             ))}
           </div>
         )}
 
       </div>
+
+      <CreatePostModal
+        isOpen={isPostModalOpen}
+        initialData={editingPost}
+        onClose={closeEdit}
+        onPublish={saveEdit}
+      />
     </ThreeColumnLayout>
   );
 }

@@ -44,9 +44,13 @@ export function usePosts({ tag, page = 1, limit = 50 } = {}) {
     }
   }, [tag, page, limit, currentUserId]);
 
+  const updatePost = useCallback((updated) => {
+    setPosts((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
+  }, []);
+
   useEffect(() => {
     load();
   }, [load]);
 
-  return { posts, loading, error, total, refresh: load };
+  return { posts, loading, error, total, refresh: load, updatePost };
 }

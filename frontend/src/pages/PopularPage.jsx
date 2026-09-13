@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { ThreeColumnLayout } from '@/components/layout/ThreeColumnLayout';
 import { PostCard } from '@/components/post/PostCard';
+import { CreatePostModal } from '@/components/post/CreatePostModal';
 import { postsApi } from '@/lib/api';
+import { usePostEditor } from '@/hooks/usePostEditor';
 
 export default function PopularPage() {
   const [timeframe, setTimeframe] = useState('week'); // 'today' | 'week' | 'all'
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { isPostModalOpen, editingPost, openEdit, closeEdit, saveEdit } = usePostEditor((updated) =>
+    setPosts((prev) => prev.map((p) => (p.id === updated.id ? updated : p)))
+  );
 
   useEffect(() => {
     async function fetchPopularPosts() {
@@ -110,12 +115,19 @@ export default function PopularPage() {
         ) : (
           <div className="space-y-3 sm:space-y-4">
             {posts.map((post) => (
-              <PostCard key={post.id} post={post} />
+              <PostCard key={post.id} post={post} onEdit={openEdit} />
             ))}
           </div>
         )}
 
       </div>
+
+      <CreatePostModal
+        isOpen={isPostModalOpen}
+        initialData={editingPost}
+        onClose={closeEdit}
+        onPublish={saveEdit}
+      />
     </ThreeColumnLayout>
   );
 }

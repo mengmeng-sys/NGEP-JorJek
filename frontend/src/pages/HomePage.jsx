@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { usePosts } from "@/hooks/usePosts";
+import { usePostEditor } from "@/hooks/usePostEditor";
 import { PostCard } from "@/components/post/PostCard";
+import { CreatePostModal } from "@/components/post/CreatePostModal";
 import { ThreeColumnLayout } from "@/components/layout/ThreeColumnLayout";
 
 export default function HomePage() {
-  const { posts, loading } = usePosts();
+  const { posts, loading, updatePost } = usePosts();
+  const { isPostModalOpen, editingPost, openEdit, closeEdit, saveEdit } = usePostEditor(updatePost);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const selectedTag = searchParams.get('tag');
@@ -132,12 +135,19 @@ export default function HomePage() {
         ) : (
           <div className="space-y-3 sm:space-y-4">
             {sortedPosts.map((p) => (
-              <PostCard key={p.id} post={p} />
+              <PostCard key={p.id} post={p} onEdit={openEdit} />
             ))}
           </div>
         )}
 
       </div>
+
+      <CreatePostModal
+        isOpen={isPostModalOpen}
+        initialData={editingPost}
+        onClose={closeEdit}
+        onPublish={saveEdit}
+      />
     </ThreeColumnLayout>
   );
 }
