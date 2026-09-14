@@ -8,6 +8,7 @@ import { ReportModal } from '@/components/shared/ReportModal';
 import { useAuth } from '@/context/AuthContext';
 import { useSocket } from '@/context/SocketContext';
 import { postsApi, usersApi, reportsApi } from '@/lib/api';
+import { normalizeUser } from '@/lib/adapters';
 import { getApiErrorMessage } from '@/lib/apiClient';
 import { copyToClipboard } from '@/lib/clipboard';
 
@@ -78,9 +79,10 @@ export default function UserProfilePage() {
   // Listen for real-time profile updates
   useEffect(() => {
     if (isOwnProfile) return;
-    const handleProfileUpdated = (updatedUser) => {
-      if (profile && updatedUser.id === profile.id) {
-        setProfile((prev) => ({ ...prev, ...updatedUser }));
+    const handleProfileUpdated = (rawUser) => {
+      if (profile && rawUser.id === profile.id) {
+        const normalized = normalizeUser(rawUser);
+        setProfile((prev) => ({ ...prev, ...normalized }));
       }
     };
     on("profile_updated", handleProfileUpdated);

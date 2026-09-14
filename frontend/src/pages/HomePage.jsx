@@ -6,6 +6,7 @@ import { useSocket } from "@/context/SocketContext";
 import { PostCard } from "@/components/post/PostCard";
 import { CreatePostModal } from "@/components/post/CreatePostModal";
 import { ThreeColumnLayout } from "@/components/layout/ThreeColumnLayout";
+import { normalizePost } from "@/lib/adapters";
 
 export default function HomePage() {
   const { posts, loading, updatePost, setPosts } = usePosts();
@@ -17,11 +18,11 @@ export default function HomePage() {
 
   useEffect(() => {
     const handleNewPost = (newPost) => {
+      const normalized = normalizePost(newPost);
       setPosts((prev) => {
-        if (prev.some((p) => p.id === newPost.id)) return prev;
-        const tags = newPost.tags?.map((t) => (typeof t === "string" ? t : t.tag?.name || t.name || "")) || [];
-        if (selectedTag && !tags.some((t) => t.toLowerCase() === selectedTag.toLowerCase())) return prev;
-        return [newPost, ...prev];
+        if (prev.some((p) => p.id === normalized.id)) return prev;
+        if (selectedTag && !normalized.tags.some((t) => t.toLowerCase() === selectedTag.toLowerCase())) return prev;
+        return [normalized, ...prev];
       });
     };
 
@@ -30,8 +31,9 @@ export default function HomePage() {
     };
 
     const handlePostUpdated = (updatedPost) => {
+      const normalized = normalizePost(updatedPost);
       setPosts((prev) =>
-        prev.map((p) => (p.id === updatedPost.id ? { ...p, ...updatedPost } : p))
+        prev.map((p) => (p.id === normalized.id ? { ...p, ...normalized } : p))
       );
     };
 

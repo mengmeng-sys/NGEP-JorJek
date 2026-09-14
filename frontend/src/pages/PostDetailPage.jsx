@@ -7,7 +7,7 @@ import { ReportModal } from '@/components/shared/ReportModal';
 import { useAuth } from '@/context/AuthContext';
 import { useSocket } from '@/context/SocketContext';
 import { postsApi, commentsApi, votesApi, reportsApi } from '@/lib/api';
-import { buildCommentTree, initialsFrom } from '@/lib/adapters';
+import { buildCommentTree, normalizeComment, normalizePost, initialsFrom } from '@/lib/adapters';
 import { getApiErrorMessage } from '@/lib/apiClient';
 import { copyToClipboard } from '@/lib/clipboard';
 
@@ -691,22 +691,15 @@ export default function PostDetailPage() {
 
     joinPost(id);
 
-    const handleNewComment = (comment) => {
-      if (comment.post_id !== id && comment.postId !== id) return;
+    const handleNewComment = (rawComment) => {
+      const comment = normalizeComment(rawComment);
+      if (!comment) return;
       setComments((prev) => {
         const exists = prev.some((c) => c.id === comment.id) || prev.some((c) => c.replies?.some((r) => r.id === comment.id));
         if (exists) return prev;
-        const newComment = {
-          ...comment,
-          replies: [],
-          votes: 0,
-          myVote: 0,
-          timestamp: 'just now',
-          isLong: comment.body?.length > 200,
-        };
-        const parentId = comment.parent_comment_id || comment.parentCommentId || comment.parentId;
-        if (parentId) {
-          return prev.map((c) => addReplyToTree(c, parentId, newComment));
+        const newComment = { ...comment, timestamp: "just now", isLong: comment.body?.length > 200 };
+        if (comment.parentId) {
+          return prev.map((c) => addReplyToTree(c, comment.parentId, newComment));
         }
         return [...prev, newComment];
       });
@@ -716,8 +709,10 @@ export default function PostDetailPage() {
       setComments((prev) => removeCommentFromTree(prev, deletedId));
     };
 
-    const handleCommentUpdated = (updatedComment) => {
-      setComments((prev) => updateCommentInTree(prev, updatedComment.id, (c) => ({ ...c, body: updatedComment.body })));
+    const handleCommentUpdated = (rawComment) => {
+      const comment = normalizeComment(rawComment);
+      if (!comment) return;
+      setComments((prev) => updateCommentInTree(prev, comment.id, (c) => ({ ...c, body: comment.body })));
     };
 
     const handleVoteUpdate = ({ target, id: targetId, value, voterId, removed }) => {
@@ -743,9 +738,11 @@ export default function PostDetailPage() {
       if (deletedPostId === id) navigate('/');
     };
 
-    const handlePostUpdated = (updatedPost) => {
-      if (updatedPost.id === id) {
-        setPost((prev) => (prev ? { ...prev, ...updatedPost } : prev));
+    const handlePostUpdated = (rawPost) => {
+      if (rawPost.id !== id && rawPost.id !== undefined) return;
+      const normalized = normalizePost(rawPost);
+      if (normalized) {
+        setPost((prev) => (prev ? { ...prev, ...normalized } : prev));
       }
     };
 
