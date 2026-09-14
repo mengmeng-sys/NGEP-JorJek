@@ -35,14 +35,34 @@ adminRouter.get("/overview", async (_req, res, next) => {
       supabase.from("reports").select("id,reason,created_at,target_user_id,status").eq("status", "PENDING").order("created_at", { ascending: false }).limit(5),
     ]);
 
-    const statusCounts = { ACTIVE: 0, SUSPENDED: 0, BANNED: 0 };
-    if (byStatus) byStatus.forEach((s) => { statusCounts[s.status] = (statusCounts[s.status] || 0) + 1; });
+    const statusCounts = { active: 0, suspended: 0, banned: 0 };
+    if (byStatus) byStatus.forEach((s) => {
+      const key = s.status.toLowerCase();
+      statusCounts[key] = (statusCounts[key] || 0) + 1;
+    });
 
-    const roleCounts = { SUPER_ADMIN: 0, MODERATOR: 0, PROFESSOR: 0, STUDENT: 0 };
-    if (byRole) byRole.forEach((r) => { roleCounts[r.role] = (roleCounts[r.role] || 0) + 1; });
+    const roleCounts = { super_admin: 0, moderator: 0, professor: 0, student: 0 };
+    if (byRole) byRole.forEach((r) => {
+      const key = r.role.toLowerCase();
+      roleCounts[key] = (roleCounts[key] || 0) + 1;
+    });
 
     const throughput = {};
-    if (sessionThroughput) sessionThroughput.forEach((s) => { throughput[s.status] = (throughput[s.status] || 0) + 1; });
+    if (sessionThroughput) sessionThroughput.forEach((s) => {
+      const key = s.status.toLowerCase();
+      throughput[key] = (throughput[key] || 0) + 1;
+    });
+
+    const formattedReports = await Promise.all((recentReports || []).map(async (r) => {
+      const { data: targetUser } = await supabase.from("users").select("id,display_name").eq("id", r.target_user_id).maybeSingle();
+      return {
+        id: r.id,
+        reason: r.reason,
+        createdAt: r.created_at,
+        status: r.status,
+        targetUser: targetUser ? { id: targetUser.id, displayName: targetUser.display_name } : null,
+      };
+    }));
 
     res.json({
       totals: {
@@ -54,9 +74,9 @@ adminRouter.get("/overview", async (_req, res, next) => {
       },
       accountStanding: statusCounts,
       roles: roleCounts,
-      karmaTop: karmaTop || [],
+      karmaTop: (karmaTop || []).map((u) => ({ id: u.id, displayName: u.display_name, karma: u.karma })),
       sessionThroughput: throughput,
-      recentReports: recentReports || [],
+      recentReports: formattedReports,
     });
   } catch (err) {
     next(err);
