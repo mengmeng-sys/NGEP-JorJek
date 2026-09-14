@@ -584,7 +584,7 @@ authRouter.post("/verify-email", async (req, res, next) => {
       .eq("id", user.id);
     if (updateErr) throw updateErr;
 
-    await sendMail({
+    sendMail({
       to: cadtEmail,
       subject: "JorJek — Email Verified Successfully",
       html: successEmailHtml("verified"),
@@ -761,7 +761,7 @@ authRouter.post("/reset-password", requireCadtEmail, async (req, res, next) => {
       .eq("id", user.id);
     if (updateErr) throw updateErr;
 
-    await sendMail({
+    sendMail({
       to: cadtEmail,
       subject: "JorJek — Password Reset Successful",
       html: successEmailHtml("passwordReset"),
