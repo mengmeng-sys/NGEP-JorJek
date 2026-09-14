@@ -4,8 +4,9 @@ import { ThreeColumnLayout } from '@/components/layout/ThreeColumnLayout';
 import { PostCard } from '@/components/post/PostCard';
 import { CreatePostModal } from '@/components/post/CreatePostModal';
 import { DeletePostModal } from '@/components/post/DeletePostModal';
+import { ReportUserModal } from '@/components/shared/ReportUserModal';
 import { useAuth } from '@/context/AuthContext';
-import { postsApi, usersApi } from '@/lib/api';
+import { postsApi, usersApi, reportsApi } from '@/lib/api';
 import { getApiErrorMessage } from '@/lib/apiClient';
 import { copyToClipboard } from '@/lib/clipboard';
 
@@ -25,6 +26,7 @@ export default function UserProfilePage() {
   const [profile, setProfile] = useState(null);
   const [profileLoading, setProfileLoading] = useState(true);
   const [userPosts, setUserPosts] = useState([]);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
   const isOwnProfile =
     !username ||
@@ -104,6 +106,11 @@ export default function UserProfilePage() {
       alert(getApiErrorMessage(err));
     }
     setPostToDelete(null);
+  };
+
+  const handleReportSubmit = async (reason) => {
+    await reportsApi.create({ targetUserId: profileUser.id, reason });
+    setIsReportModalOpen(false);
   };
 
   // Save changes from CreatePostModal (create or edit)
@@ -257,17 +264,29 @@ export default function UserProfilePage() {
                   Create Post
                 </button>
               )}
-              <button
-                type="button"
-                onClick={async () => {
-                  const ok = await copyToClipboard(window.location.href);
-                  alert(ok ? 'Profile URL copied to clipboard!' : 'Could not copy the link. Please copy the URL manually.');
-                }}
-                className="flex-1 md:flex-initial bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 text-xs font-bold px-4 py-2.5 rounded-xl transition-all text-center cursor-pointer"
-              >
-                Share Profile
-              </button>
-            </div>
+               <button
+                 type="button"
+                 onClick={async () => {
+                   const ok = await copyToClipboard(window.location.href);
+                   alert(ok ? 'Profile URL copied to clipboard!' : 'Could not copy the link. Please copy the URL manually.');
+                 }}
+                 className="flex-1 md:flex-initial bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 text-xs font-bold px-4 py-2.5 rounded-xl transition-all text-center cursor-pointer"
+               >
+                 Share Profile
+               </button>
+               {!isOwnProfile && profileUser?.id && (
+                 <button
+                   type="button"
+                   onClick={() => setIsReportModalOpen(true)}
+                   className="flex items-center justify-center gap-1.5 bg-white border border-red-200 hover:bg-red-50 text-red-500 text-xs font-bold px-4 py-2.5 rounded-xl transition-all cursor-pointer"
+                 >
+                   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
+                   </svg>
+                   Report User
+                 </button>
+               )}
+             </div>
           </div>
 
           {/* Metrics */}
@@ -346,6 +365,14 @@ export default function UserProfilePage() {
         postTitle={postToDelete?.title}
         onClose={() => setPostToDelete(null)}
         onConfirm={handleConfirmDelete}
+      />
+
+      {/* Report User Modal */}
+      <ReportUserModal
+        targetUser={profileUser}
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+        onSubmit={handleReportSubmit}
       />
     </ThreeColumnLayout>
   );
