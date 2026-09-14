@@ -1,10 +1,14 @@
 const nodemailer = require("nodemailer");
+const dns = require("dns");
 const { env } = require("./env");
+
+dns.setDefaultResultOrder("ipv4first");
 
 const transporter = nodemailer.createTransport({
   host: env.smtpHost,
   port: env.smtpPort,
   secure: env.smtpPort === 465,
+  family: 4,
   auth: {
     user: env.smtpUser,
     pass: env.smtpPass,
