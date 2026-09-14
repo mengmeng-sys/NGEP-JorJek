@@ -6,13 +6,27 @@ export default function ForgotPasswordPage() {
   const navigate = useNavigate();
   const { forgotPassword } = useAuth();
   const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState('');
   const [isSent, setIsSent] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
 
+  // Domain restriction validator — mirrors the backend CADT_EMAIL_DOMAIN gate.
+  const validateEmailDomain = (val) => {
+    setEmail(val);
+    const domainRegex = /@student\.cadt\.edu\.kh$/i;
+    if (val && !domainRegex.test(val)) {
+      setEmailError('Email must end with @student.cadt.edu.kh');
+    } else {
+      setEmailError('');
+    }
+  };
+
+  const isValidEmail = Boolean(email.trim()) && !emailError;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!email.trim()) return;
+    if (!isValidEmail) return;
     setError('');
     setSending(true);
     try {
@@ -81,10 +95,19 @@ Try another email
                 type="email"
                 required
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => validateEmailDomain(e.target.value)}
                 placeholder="e.g. srun.vireak@student.cadt.edu.kh"
-                className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs text-gray-900 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs"
+                className={`w-full bg-[#FAFAFA] border rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs text-gray-900 outline-none transition-all shadow-2xs ${
+                  emailError
+                    ? 'border-red-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 bg-red-50/20'
+                    : 'border-gray-200 focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00]'
+                }`}
               />
+              {emailError && (
+                <p className="text-[11px] text-red-600 font-semibold mt-1 leading-snug">
+                  {emailError}
+                </p>
+              )}
             </div>
 
 {error && (
@@ -95,7 +118,7 @@ Try another email
 
           <button
             type="submit"
-            disabled={sending}
+            disabled={sending || !isValidEmail}
             className="w-full bg-[#FF4F00] hover:bg-[#E64700] text-white text-xs font-bold py-2.5 sm:py-3 rounded-xl transition-all shadow-xs cursor-pointer active:scale-98 disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {sending ? 'Sending…' : 'Send Reset Code'}

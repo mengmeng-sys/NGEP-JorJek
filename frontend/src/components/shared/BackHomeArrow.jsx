@@ -12,7 +12,7 @@ export function BackHomeArrow() {
           <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
         </svg>
       </span>
-      Back to Home
+      Go to home
     </Link>
   );
 }

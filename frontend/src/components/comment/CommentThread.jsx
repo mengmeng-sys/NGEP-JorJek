@@ -13,7 +13,7 @@ export function CommentThread({ comments }) {
           <p>{c.body}</p>
           <span>{c.author.displayName}</span>
           <VoteButtons commentId={c.id} />
-          {/* Phase 2 stub — see component for why this is disabled */}
+          {/* Routes to the Request Session page (Phase 2 booking, blurred Coming Soon) */}
           <RequestSessionButton mentorId={c.author.id} commentId={c.id} />
         </li>
       ))}

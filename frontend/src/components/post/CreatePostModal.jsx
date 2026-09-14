@@ -75,20 +75,20 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
     }
   };
 
+  const commitTagInput = () => {
+    const trimmed = tagInput.trim();
+    if (!trimmed) return;
+    const formattedTag = trimmed.startsWith('#') ? trimmed : `#${trimmed}`;
+    if (!selectedTags.includes(formattedTag)) {
+      setSelectedTags([...selectedTags, formattedTag]);
+    }
+    setTagInput('');
+  };
+
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' || e.key === ',') {
       e.preventDefault();
-      let formattedTag = tagInput.trim();
-      if (!formattedTag) return;
-
-      if (!formattedTag.startsWith('#')) {
-        formattedTag = `#${formattedTag}`;
-      }
-
-      if (!selectedTags.includes(formattedTag)) {
-        setSelectedTags([...selectedTags, formattedTag]);
-      }
-      setTagInput('');
+      commitTagInput();
     } else if (e.key === 'Backspace' && !tagInput && selectedTags.length > 0) {
       setSelectedTags(selectedTags.slice(0, -1));
     }
@@ -159,6 +159,8 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!title.trim()) return;
+
+    commitTagInput();
 
     if (onPublish) {
       onPublish({
@@ -293,6 +295,7 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
                 value={tagInput}
                 onChange={(e) => setTagInput(e.target.value)}
                 onKeyDown={handleKeyDown}
+                onBlur={commitTagInput}
                 placeholder={selectedTags.length > 0 ? 'add more...' : 'type tag & enter...'}
                 className="flex-1 min-w-[110px] text-xs text-gray-700 outline-none placeholder-gray-400 ml-1 py-1 bg-transparent"
               />

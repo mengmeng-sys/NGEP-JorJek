@@ -113,6 +113,7 @@ export function normalizePost(raw, currentUserId = null) {
     content: raw.body || raw.content || "",
     body: raw.body,
     type: raw.type || "question",
+    allowMentoring: raw.allow_mentoring ?? raw.allowMentoring ?? false,
     tags,
     tag: tags.length > 0 ? `#${tags[0]}` : raw.tag ? String(raw.tag).replace(/^#/, "#") : undefined,
     timestamp: formatTimestamp(raw.created_at),

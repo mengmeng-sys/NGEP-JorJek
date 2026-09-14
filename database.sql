@@ -41,6 +41,7 @@ create table public.posts (
   type text not null default 'question' check (type in ('question', 'offer', 'resource')),
   title text not null,
   body text not null,
+  allow_mentoring boolean not null default false,
   created_at timestamptz not null default now(),
   updated_at timestamptz
 );

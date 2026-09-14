@@ -1,6 +1,7 @@
 import React from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider } from "@/context/AuthContext";
+import { SocketProvider } from "@/context/SocketContext";
 import Navbar from "@/components/shared/Navbar";
 
 // Core Pages
@@ -18,6 +19,7 @@ import ContactPage from "@/pages/ContactPage";
 import PrivacyPage from "@/pages/PrivacyPage";
 import TermsPage from "@/pages/TermsPage";
 import UserProfilePage from "@/pages/UserProfilePage";
+import RequestSessionPage from "@/pages/RequestSessionPage";
 
 // Dedicated Authentication & Onboarding Pages
 import LoginPage from "@/pages/auth/LoginPage";
@@ -30,11 +32,13 @@ export default function App() {
   const { pathname } = useLocation();
   const hideNavbar = pathname.startsWith('/auth/login')
     || pathname.startsWith('/auth/signup')
+    || pathname.startsWith('/auth/forgot-password')
     || pathname.startsWith('/auth/verify-otp')
     || pathname.startsWith('/auth/tech-interests');
 
   return (
     <AuthProvider>
+      <SocketProvider>
       <div className="min-h-screen bg-[#FBFBFB]">
         {/* Global Responsive Header (hidden on auth pages) */}
         {!hideNavbar && <Navbar />}
@@ -56,6 +60,9 @@ export default function App() {
           <Route path="/user" element={<UserProfilePage />} />
           <Route path="/profile" element={<Navigate to="/user" replace />} />
           <Route path="/settings" element={<SettingsPage />} />
+
+          {/* Mentoring Sessions */}
+          <Route path="/request-session/:mentorId" element={<RequestSessionPage />} />
 
           {/* Platform Info & Footer */}
           <Route path="/about" element={<AboutPage />} />
@@ -82,6 +89,7 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
+      </SocketProvider>
     </AuthProvider>
   );
 }

@@ -2,10 +2,20 @@ const { Router } = require("express");
 const { supabase } = require("../config/db");
 const { requireAuth, optionalAuth } = require("../middleware/auth.middleware");
 const { requireVerifiedEmail } = require("../middleware/verifiedEmail.middleware");
+const { getIO } = require("../lib/socket");
 
 const postsRouter = Router();
 
 const USER_SAFE = "id,email,display_name,role,bio,karma,created_at";
+
+// The posts.allow_mentoring column is introduced by a migration. The app
+// gracefully supports running before that migration exists: we detect the
+// column on each write and only persist the flag when the column is actually
+// present, so post creation/update never 400s on a missing column.
+async function canStoreAllowMentoring() {
+  const { error } = await supabase.from("posts").select("allow_mentoring").limit(1);
+  return !error;
+}
 
 // Fetch the set of post ids the current user has saved (empty when anonymous).
 async function savedIdsFor(userId) {
@@ -200,11 +210,21 @@ postsRouter.get("/:id", optionalAuth, async (req, res, next) => {
  */
 postsRouter.post("/", requireAuth, requireVerifiedEmail, async (req, res, next) => {
   try {
-    const { type, title, body, tagNames } = req.body;
+    const { type, title, body, tagNames, allowMentoring } = req.body;
+
+    const insertPayload = {
+      author_id: req.userId,
+      type: (type ?? "question").toLowerCase(),
+      title,
+      body,
+    };
+    if (req.body.allowMentoring !== undefined && (await canStoreAllowMentoring())) {
+      insertPayload.allow_mentoring = Boolean(allowMentoring);
+    }
 
     const { data: post, error: postError } = await supabase
       .from("posts")
-      .insert({ author_id: req.userId, type: (type ?? "question").toLowerCase(), title, body })
+      .insert(insertPayload)
       .select()
       .single();
     if (postError) throw postError;
@@ -228,10 +248,15 @@ postsRouter.post("/", requireAuth, requireVerifiedEmail, async (req, res, next) 
 
     const { data: postWithTags, error: fetchError } = await supabase
       .from("posts")
-      .select(`*, author:users!posts_author_id_fkey(${USER_SAFE}), tags:post_tags(tag:skill_tags(*))`)
+      .select(`*, author:users!posts_author_id_fkey(${USER_SAFE}), tags:post_tags(tag:skill_tags(*)), comments:comments(id), votes(*)`)
       .eq("id", post.id)
       .single();
     if (fetchError) throw fetchError;
+
+    const io = getIO();
+    if (io) {
+      io.emit("new_post", postWithTags);
+    }
 
     res.status(201).json(postWithTags);
   } catch (err) {
@@ -318,11 +343,14 @@ postsRouter.patch("/:id", requireAuth, requireVerifiedEmail, async (req, res, ne
       return res.status(403).json({ error: "You can only edit your own posts" });
     }
 
-    const { title, body, type, tagNames } = req.body;
+    const { title, body, type, tagNames, allowMentoring } = req.body;
     const updates = {};
     if (title !== undefined) updates.title = title;
     if (body !== undefined) updates.body = body;
     if (type !== undefined) updates.type = type.toLowerCase();
+    if (req.body.allowMentoring !== undefined && (await canStoreAllowMentoring())) {
+      updates.allow_mentoring = Boolean(allowMentoring);
+    }
 
     if (Object.keys(updates).length === 0 && tagNames === undefined) {
       return res.status(400).json({ error: "No fields to update" });
@@ -424,6 +452,11 @@ postsRouter.delete("/:id", requireAuth, requireVerifiedEmail, async (req, res, n
 
     const { error } = await supabase.from("posts").delete().eq("id", req.params.id);
     if (error) throw error;
+
+    const io = getIO();
+    if (io) {
+      io.emit("post_deleted", { id: req.params.id });
+    }
 
     res.status(204).send();
   } catch (err) {

@@ -4,6 +4,7 @@ const { requireAuth } = require("../middleware/auth.middleware");
 const { requireVerifiedEmail } = require("../middleware/verifiedEmail.middleware");
 const { recalculateKarma } = require("../services/karma.service");
 const { notify } = require("../services/notification.service");
+const { getIO } = require("../lib/socket");
 
 const votesRouter = Router();
 
@@ -279,6 +280,19 @@ votesRouter.post("/vote", requireAuth, requireVerifiedEmail, async (req, res, ne
       }
     }
 
+    const io = getIO();
+    if (io) {
+      if (postId) {
+        io.to(`post:${postId}`).emit("vote_update", { target: "post", id: postId, value: voteValue, voterId: req.userId });
+      }
+      if (commentId) {
+        const { data: comment } = await supabase.from("comments").select("post_id").eq("id", commentId).maybeSingle();
+        if (comment) {
+          io.to(`post:${comment.post_id}`).emit("vote_update", { target: "comment", id: commentId, postId: comment.post_id, value: voteValue, voterId: req.userId });
+        }
+      }
+    }
+
     res.json(vote);
   } catch (err) {
     next(err);
@@ -343,7 +357,6 @@ votesRouter.delete("/vote", requireAuth, requireVerifiedEmail, async (req, res, 
     const { error } = await query;
     if (error) throw error;
 
-    // Recalculate karma for the author
     let authorId = null;
     if (postId) {
       const { data: post } = await supabase.from("posts").select("author_id").eq("id", postId).maybeSingle();
@@ -353,6 +366,19 @@ votesRouter.delete("/vote", requireAuth, requireVerifiedEmail, async (req, res, 
       authorId = comment?.author_id ?? null;
     }
     if (authorId) await recalculateKarma(authorId);
+
+    const io = getIO();
+    if (io) {
+      if (postId) {
+        io.to(`post:${postId}`).emit("vote_update", { target: "post", id: postId, value: 0, voterId: req.userId, removed: true });
+      }
+      if (commentId) {
+        const { data: comment } = await supabase.from("comments").select("post_id").eq("id", commentId).maybeSingle();
+        if (comment) {
+          io.to(`post:${comment.post_id}`).emit("vote_update", { target: "comment", id: commentId, postId: comment.post_id, value: 0, voterId: req.userId, removed: true });
+        }
+      }
+    }
 
     res.status(204).send();
   } catch (err) {

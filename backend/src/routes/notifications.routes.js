@@ -234,6 +234,42 @@ notificationsRouter.post("/read-all", requireAuth, async (req, res, next) => {
   }
 });
 
+// DELETE /notifications/read -- DELETE all notifications marked as read
+
+/**
+ * @swagger
+ * /notifications/read:
+ *   delete:
+ *     summary: Delete all read notifications
+ *     description: Deletes every notification the authenticated user has already read.
+ *     tags: [Notifications]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       204:
+ *         description: Read notifications deleted
+ *       401:
+ *         description: Missing or invalid token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Error"
+ */
+notificationsRouter.delete("/read", requireAuth, async (req, res, next) => {
+  try {
+    const { error } = await supabase
+      .from("notifications")
+      .delete()
+      .eq("user_id", req.userId)
+      .eq("read", true);
+    if (error) throw error;
+
+    res.status(204).send();
+  } catch (err) {
+    next(err);
+  }
+});
+
 // DELETE /notifications/:id -- DELETE a single notification
 
 /**

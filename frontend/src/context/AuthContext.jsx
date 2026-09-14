@@ -33,6 +33,19 @@ function persistedUserOrDefault() {
   return null;
 }
 
+function persistedOnboarding() {
+  try {
+    const saved = localStorage.getItem("jorjek_onboarding");
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed && typeof parsed === "object") return parsed;
+    }
+  } catch {
+    localStorage.removeItem("jorjek_onboarding");
+  }
+  return { hasUpvoted: false, hasSaved: false, hasCommented: false };
+}
+
 // Merge computed metadata (initials/handle) derived from the real display name.
 function withUserMeta(user) {
   if (!user) return null;
@@ -48,6 +61,7 @@ function withUserMeta(user) {
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => withUserMeta(persistedUserOrDefault()));
   const [isLoading, setIsLoading] = useState(true);
+  const [onboarding, setOnboarding] = useState(() => persistedOnboarding());
 
   const persist = useCallback((nextUser) => {
     try {
@@ -57,6 +71,27 @@ export function AuthProvider({ children }) {
       /* ignore quota errors */
     }
   }, []);
+
+  const persistOnboarding = useCallback((next) => {
+    try {
+      localStorage.setItem("jorjek_onboarding", JSON.stringify(next));
+    } catch {
+      /* ignore quota errors */
+    }
+  }, []);
+
+  const markOnboardingComplete = useCallback((task) => {
+    setOnboarding((prev) => {
+      if (prev[task]) return prev;
+      const next = { ...prev, [task]: true };
+      persistOnboarding(next);
+      return next;
+    });
+  }, [persistOnboarding]);
+
+  const isOnboardingComplete = useCallback(() => {
+    return onboarding.hasUpvoted && onboarding.hasSaved && onboarding.hasCommented;
+  }, [onboarding]);
 
   const storeSession = useCallback((data) => {
     if (data?.token) localStorage.setItem("jorjek_token", data.token);
@@ -209,6 +244,9 @@ export function AuthProvider({ children }) {
         resendOtp,
         forgotPassword,
         resetPassword,
+        onboarding,
+        markOnboardingComplete,
+        isOnboardingComplete,
       }}
     >
       {children}

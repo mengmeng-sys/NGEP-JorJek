@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { BackHomeArrow } from '@/components/shared/BackHomeArrow';
@@ -22,6 +22,16 @@ export default function OtpVerificationPage() {
   const [error, setError] = useState('');
   const [info, setInfo] = useState('');
   const inputRefs = useRef([]);
+
+  // Strong password checks — mirrors SignupPage
+  const passwordCriteria = useMemo(() => ({
+    minLength: newPassword.length >= 8,
+    hasUpper: /[A-Z]/.test(newPassword),
+    hasNumber: /[0-9]/.test(newPassword),
+    hasSpecial: /[^A-Za-z0-9]/.test(newPassword),
+  }), [newPassword]);
+
+  const isPasswordStrong = Object.values(passwordCriteria).every(Boolean);
 
   // If we landed here directly for a reset, trigger the forgot-password OTP once.
   React.useEffect(() => {
@@ -74,8 +84,8 @@ export default function OtpVerificationPage() {
 
     try {
       if (isResetFlow) {
-        if (newPassword.length < 6) {
-          setError('Password must be at least 6 characters.');
+        if (!isPasswordStrong) {
+          setError('Password does not meet the requirements below.');
           setVerifying(false);
           return;
         }
@@ -134,8 +144,8 @@ export default function OtpVerificationPage() {
 
         <p className="text-[11px] sm:text-xs text-gray-500 mt-1 max-w-xs mx-auto leading-relaxed break-words">
           {isResetFlow
-            ? 'Enter the 6-digit code we sent to: <br />'
-            : 'We sent a 6-digit confirmation code to: <br />'}
+            ? 'Enter the 6-digit code we sent to:  '
+            : 'We sent a 6-digit confirmation code to: <br/>'}
           <strong className="text-gray-900 font-semibold">{userEmail}</strong>
         </p>
 
@@ -179,7 +189,7 @@ export default function OtpVerificationPage() {
                     required
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    placeholder="At least 6 characters"
+                    placeholder="Create strong password"
                     className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs text-gray-900 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs pr-14"
                   />
                   <button
@@ -189,6 +199,22 @@ export default function OtpVerificationPage() {
                   >
                     {showPassword ? 'Hide' : 'Show'}
                   </button>
+                </div>
+
+                {/* Validation indicators */}
+                <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 mt-2.5 bg-[#FAFAFA] p-2.5 sm:p-3 rounded-xl border border-gray-100 text-[10px] sm:text-[11px]">
+                  <span className={`flex items-center gap-1.5 ${passwordCriteria.minLength ? 'text-emerald-600 font-bold' : 'text-gray-400'}`}>
+                    <span>{passwordCriteria.minLength ? '✓' : '○'}</span> Min 8 characters
+                  </span>
+                  <span className={`flex items-center gap-1.5 ${passwordCriteria.hasUpper ? 'text-emerald-600 font-bold' : 'text-gray-400'}`}>
+                    <span>{passwordCriteria.hasUpper ? '✓' : '○'}</span> Uppercase letter
+                  </span>
+                  <span className={`flex items-center gap-1.5 ${passwordCriteria.hasNumber ? 'text-emerald-600 font-bold' : 'text-gray-400'}`}>
+                    <span>{passwordCriteria.hasNumber ? '✓' : '○'}</span> At least 1 number
+                  </span>
+                  <span className={`flex items-center gap-1.5 ${passwordCriteria.hasSpecial ? 'text-emerald-600 font-bold' : 'text-gray-400'}`}>
+                    <span>{passwordCriteria.hasSpecial ? '✓' : '○'}</span> Special character
+                  </span>
                 </div>
               </div>
               <div>
@@ -209,9 +235,9 @@ export default function OtpVerificationPage() {
 
           <button
             type="submit"
-            disabled={otp.join('').length < 6 || verifying}
+            disabled={otp.join('').length < 6 || verifying || (isResetFlow && (!isPasswordStrong || newPassword !== confirmPassword))}
             className={`w-full text-xs font-bold py-3 sm:py-3.5 rounded-xl transition-all shadow-xs ${
-              otp.join('').length === 6 && !verifying
+              otp.join('').length === 6 && !verifying && (!isResetFlow || (isPasswordStrong && newPassword === confirmPassword))
                 ? 'bg-[#FF4F00] hover:bg-[#E64700] text-white cursor-pointer active:scale-98'
                 : 'bg-orange-200 text-white/90 cursor-not-allowed'
             }`}

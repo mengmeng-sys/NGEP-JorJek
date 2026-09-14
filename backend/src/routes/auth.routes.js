@@ -613,7 +613,7 @@ authRouter.post("/verify-email", async (req, res, next) => {
  *                   type: string
  *                   example: If an account exists, an OTP has been sent
  */
-authRouter.post("/forgot-password", async (req, res, next) => {
+authRouter.post("/forgot-password", requireCadtEmail, async (req, res, next) => {
   try {
     const { cadtEmail } = req.body;
     if (!cadtEmail) {
@@ -705,7 +705,7 @@ authRouter.post("/forgot-password", async (req, res, next) => {
  *             schema:
  *               $ref: "#/components/schemas/Error"
  */
-authRouter.post("/reset-password", async (req, res, next) => {
+authRouter.post("/reset-password", requireCadtEmail, async (req, res, next) => {
   try {
     const { cadtEmail, otp, newPassword } = req.body;
     if (!cadtEmail || !otp || !newPassword) {

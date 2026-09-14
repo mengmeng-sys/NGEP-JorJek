@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ThreeColumnLayout } from '@/components/layout/ThreeColumnLayout';
 import { PostCard } from '@/components/post/PostCard';
 import { CreatePostModal } from '@/components/post/CreatePostModal';
@@ -7,9 +7,11 @@ import { DeletePostModal } from '@/components/post/DeletePostModal';
 import { useAuth } from '@/context/AuthContext';
 import { postsApi, usersApi } from '@/lib/api';
 import { getApiErrorMessage } from '@/lib/apiClient';
+import { copyToClipboard } from '@/lib/clipboard';
 
 export default function UserProfilePage() {
   const { username } = useParams();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('posts');
 
@@ -112,6 +114,7 @@ export default function UserProfilePage() {
           title: updatedPayload.title,
           content: updatedPayload.details ?? updatedPayload.content,
           type: updatedPayload.type,
+          allowMentoring: updatedPayload.allowMentoring,
           tags: (updatedPayload.tags || []).map((t) => String(t).replace(/^#/, '')),
         });
         setUserPosts((prev) =>
@@ -124,6 +127,7 @@ export default function UserProfilePage() {
           title: updatedPayload.title,
           content: updatedPayload.details ?? updatedPayload.content,
           tags: updatedPayload.tags || [],
+          allowMentoring: updatedPayload.allowMentoring,
         });
         setUserPosts((prev) =>
           [created, ...prev].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
@@ -236,6 +240,7 @@ export default function UserProfilePage() {
               {!isOwnProfile ? (
                 <button
                   type="button"
+                  onClick={() => navigate(`/request-session/${profileUser.id || ''}`)}
                   className="flex-1 md:flex-initial bg-[#FF4F00] hover:bg-[#E64700] text-white text-xs font-bold px-5 py-2.5 rounded-xl transition-all shadow-xs text-center cursor-pointer active:scale-98"
                 >
                   Request Session
@@ -254,9 +259,9 @@ export default function UserProfilePage() {
               )}
               <button
                 type="button"
-                onClick={() => {
-                  navigator.clipboard.writeText(window.location.href);
-                  alert('Profile URL copied to clipboard!');
+                onClick={async () => {
+                  const ok = await copyToClipboard(window.location.href);
+                  alert(ok ? 'Profile URL copied to clipboard!' : 'Could not copy the link. Please copy the URL manually.');
                 }}
                 className="flex-1 md:flex-initial bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 text-xs font-bold px-4 py-2.5 rounded-xl transition-all text-center cursor-pointer"
               >

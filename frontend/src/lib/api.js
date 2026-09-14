@@ -40,15 +40,14 @@ export const postsApi = {
   get: async (id, currentUserId) => normalizePost(await apiFetch(`/posts/${id}`), currentUserId),
 
   create: async (payload) => {
-    const post = await apiFetch("/posts", {
-      method: "POST",
-      body: {
-        type: payload.type || "question",
-        title: payload.title,
-        body: payload.content || payload.body,
-        tagNames: safeArray(payload.tags).map((t) => String(t).replace(/^#/, "")),
-      },
-    });
+    const postBody = {
+      type: payload.type || "question",
+      title: payload.title,
+      body: payload.content || payload.body,
+      tagNames: safeArray(payload.tags).map((t) => String(t).replace(/^#/, "")),
+    };
+    if (payload.allowMentoring !== undefined) postBody.allowMentoring = payload.allowMentoring;
+    const post = await apiFetch("/posts", { method: "POST", body: postBody });
     return normalizePost(post);
   },
 
@@ -57,6 +56,7 @@ export const postsApi = {
     if (payload.title !== undefined) updates.title = payload.title;
     if (payload.content !== undefined) updates.body = payload.content;
     if (payload.type !== undefined) updates.type = payload.type;
+    if (payload.allowMentoring !== undefined) updates.allowMentoring = payload.allowMentoring;
     if (payload.tags !== undefined) {
       updates.tagNames = safeArray(payload.tags)
         .map((t) => String(t).replace(/^#/, ""))
@@ -94,6 +94,7 @@ export const commentsApi = {
       method: "POST",
       body: { body, parentId: parentId || undefined },
     }),
+  update: (id, body) => apiFetch(`/comments/${id}`, { method: "PATCH", body: { body } }),
   remove: (id) => apiFetch(`/comments/${id}`, { method: "DELETE" }),
 };
 
@@ -161,11 +162,12 @@ export const usersApi = {
 
 export const notificationsApi = {
   list: async () =>
-    safeArray(await apiFetch("/notifications?limit=50")).map(normalizeNotification),
+    safeArray((await apiFetch("/notifications?limit=50"))?.notifications).map(normalizeNotification),
   unreadCount: () => apiFetch("/notifications/unread-count"),
   markRead: (id) => apiFetch(`/notifications/${id}/read`, { method: "POST" }),
   markAllRead: () => apiFetch("/notifications/read-all", { method: "POST" }),
   remove: (id) => apiFetch(`/notifications/${id}`, { method: "DELETE" }),
+  clearRead: () => apiFetch("/notifications/read", { method: "DELETE" }),
 };
 
 export const reportsApi = {
