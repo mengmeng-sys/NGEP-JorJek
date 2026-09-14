@@ -9,11 +9,10 @@ const SOCKET_URL = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
 export function SocketProvider({ children }) {
   const { user, isAuthenticated } = useAuth();
   const socketRef = useRef(null);
+  const pendingSubs = useRef([]);
   const [isConnected, setIsConnected] = useState(false);
 
-  useEffect(() => {
-    if (!isAuthenticated || !user?.id) return;
-
+  if (isAuthenticated && user?.id && !socketRef.current) {
     const socket = io(SOCKET_URL, {
       transports: ["websocket", "polling"],
       reconnection: true,
@@ -24,6 +23,8 @@ export function SocketProvider({ children }) {
     socket.on("connect", () => {
       setIsConnected(true);
       socket.emit("join", user.id);
+      for (const sub of pendingSubs.current) sub();
+      pendingSubs.current = [];
     });
 
     socket.on("disconnect", () => {
@@ -31,10 +32,18 @@ export function SocketProvider({ children }) {
     });
 
     socketRef.current = socket;
+  }
+
+  useEffect(() => {
+    if (!isAuthenticated || !user?.id) return;
+    if (!socketRef.current) return;
+
+    const socket = socketRef.current;
 
     return () => {
       socket.disconnect();
       socketRef.current = null;
+      pendingSubs.current = [];
       setIsConnected(false);
     };
   }, [isAuthenticated, user?.id]);
@@ -54,6 +63,8 @@ export function SocketProvider({ children }) {
   const on = useCallback((event, handler) => {
     if (socketRef.current) {
       socketRef.current.on(event, handler);
+    } else {
+      pendingSubs.current.push(() => socketRef.current && socketRef.current.on(event, handler));
     }
   }, []);
 
