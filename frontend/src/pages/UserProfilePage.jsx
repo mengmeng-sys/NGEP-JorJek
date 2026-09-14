@@ -4,7 +4,7 @@ import { ThreeColumnLayout } from '@/components/layout/ThreeColumnLayout';
 import { PostCard } from '@/components/post/PostCard';
 import { CreatePostModal } from '@/components/post/CreatePostModal';
 import { DeletePostModal } from '@/components/post/DeletePostModal';
-import { ReportUserModal } from '@/components/shared/ReportUserModal';
+import { ReportModal } from '@/components/shared/ReportModal';
 import { useAuth } from '@/context/AuthContext';
 import { postsApi, usersApi, reportsApi } from '@/lib/api';
 import { getApiErrorMessage } from '@/lib/apiClient';
@@ -368,8 +368,9 @@ export default function UserProfilePage() {
       />
 
       {/* Report User Modal */}
-      <ReportUserModal
-        targetUser={profileUser}
+      <ReportModal
+        targetType="user"
+        targetName={profileUser?.displayName}
         isOpen={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
         onSubmit={handleReportSubmit}

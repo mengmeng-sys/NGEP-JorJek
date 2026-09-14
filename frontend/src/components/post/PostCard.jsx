@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useSocket } from '@/context/SocketContext';
+import { ReportModal } from '@/components/shared/ReportModal';
 import { votesApi, reportsApi, postsApi } from '@/lib/api';
 import { copyToClipboard } from '@/lib/clipboard';
 
@@ -32,6 +33,7 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
   const [isSaved, setIsSaved] = useState(post.isSaved || false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isReported, setIsReported] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
   const { on, off } = useSocket();
 
@@ -151,20 +153,20 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
     if (onEdit) onEdit(post);
   };
 
-  const handleReport = async (e) => {
+  const handleReport = (e) => {
     e.stopPropagation();
     setIsMenuOpen(false);
     if (!user) {
       navigate('/auth/login');
       return;
     }
-    try {
-      await reportsApi.create({ postId: post.id, reason: 'User-reported from the feed' });
-      setIsReported(true);
-      alert('Thank you. This post has been flagged for moderator review.');
-    } catch {
-      alert('Could not submit the report. Please try again.');
-    }
+    setIsReportModalOpen(true);
+  };
+
+  const handleReportSubmit = async (reason) => {
+    await reportsApi.create({ postId: post.id, reason });
+    setIsReported(true);
+    setIsReportModalOpen(false);
   };
 
   const handleCopyLink = async (e) => {
@@ -430,6 +432,14 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
           </button>
         )}
       </div>
+
+      <ReportModal
+        targetType="post"
+        targetName={post.author}
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+        onSubmit={handleReportSubmit}
+      />
     </div>
   );
 }

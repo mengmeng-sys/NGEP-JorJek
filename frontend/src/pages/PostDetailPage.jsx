@@ -3,6 +3,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { ThreeColumnLayout } from '@/components/layout/ThreeColumnLayout';
 import { CreatePostModal } from '@/components/post/CreatePostModal';
 import { DeletePostModal } from '@/components/post/DeletePostModal';
+import { ReportModal } from '@/components/shared/ReportModal';
 import { useAuth } from '@/context/AuthContext';
 import { useSocket } from '@/context/SocketContext';
 import { postsApi, commentsApi, votesApi, reportsApi } from '@/lib/api';
@@ -16,6 +17,7 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
   const { markOnboardingComplete } = useAuth();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isReported, setIsReported] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
   // Voting state for parent comment
   const [voteState, setVoteState] = useState(comment.myVote || 0);
@@ -61,18 +63,18 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
     }
   };
 
-  const handleReport = async () => {
+  const handleReport = () => {
     if (!currentUser) {
       navigate('/auth/login');
       return;
     }
-    try {
-      await reportsApi.create({ commentId: comment.id, reason: 'Reported from comment thread' });
-      setIsReported(true);
-      alert('Thank you. This comment has been flagged for moderator review.');
-    } catch {
-      alert('Could not submit the report. Please try again.');
-    }
+    setIsReportModalOpen(true);
+  };
+
+  const handleReportSubmit = async (reason) => {
+    await reportsApi.create({ commentId: comment.id, reason });
+    setIsReported(true);
+    setIsReportModalOpen(false);
   };
 
   const handleSendReply = async (e) => {
@@ -330,6 +332,14 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
           </div>
         </form>
       )}
+
+      <ReportModal
+        targetType="comment"
+        targetName={comment.author?.displayName}
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+        onSubmit={handleReportSubmit}
+      />
     </div>
   );
 }
@@ -337,6 +347,7 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
 function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
   const navigate = useNavigate();
   const [isReported, setIsReported] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [voteState, setVoteState] = useState(reply.myVote || 0);
   const [voteCount, setVoteCount] = useState(reply.votes || 0);
 
@@ -373,17 +384,18 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
     }
   };
 
-  const handleReport = async () => {
+  const handleReport = () => {
     if (!currentUser) {
       navigate('/auth/login');
       return;
     }
-    try {
-      await reportsApi.create({ commentId: reply.id, reason: 'Reported from comment thread' });
-      setIsReported(true);
-    } catch {
-      /* silent */
-    }
+    setIsReportModalOpen(true);
+  };
+
+  const handleReportSubmit = async (reason) => {
+    await reportsApi.create({ commentId: reply.id, reason });
+    setIsReported(true);
+    setIsReportModalOpen(false);
   };
 
   const handleEdit = async (e) => {
@@ -565,6 +577,14 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
           ))}
         </div>
       )}
+
+      <ReportModal
+        targetType="comment"
+        targetName={reply.author?.displayName}
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+        onSubmit={handleReportSubmit}
+      />
     </div>
   );
 }
@@ -587,6 +607,7 @@ export default function PostDetailPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isReported, setIsReported] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const menuRef = useRef(null);
 
   // Close dropdown on outside click
@@ -799,19 +820,19 @@ export default function PostDetailPage() {
     }
   };
 
-  const handleReport = async () => {
+  const handleReport = () => {
     if (!user) {
       navigate('/auth/login');
       return;
     }
     setIsMenuOpen(false);
-    try {
-      await reportsApi.create({ postId: id, reason: 'User-reported from post detail' });
-      setIsReported(true);
-      alert('Thank you. This post has been flagged for moderator review.');
-    } catch {
-      alert('Could not submit the report. Please try again.');
-    }
+    setIsReportModalOpen(true);
+  };
+
+  const handleReportSubmit = async (reason) => {
+    await reportsApi.create({ postId: id, reason });
+    setIsReported(true);
+    setIsReportModalOpen(false);
   };
 
   const handleAddComment = async () => {
@@ -1214,6 +1235,15 @@ export default function PostDetailPage() {
         postTitle={post.title}
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
+      />
+
+      {/* Report Modal */}
+      <ReportModal
+        targetType="post"
+        targetName={post?.author}
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+        onSubmit={handleReportSubmit}
       />
     </ThreeColumnLayout>
   );

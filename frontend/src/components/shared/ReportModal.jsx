@@ -2,14 +2,14 @@ import { useState } from "react";
 
 const REPORT_REASONS = [
   { id: "harassment", label: "Harassment or bullying" },
-  { id: "spam", label: "Spam or unwanted messages" },
-  { id: "inappropriate", label: "Inappropriate content" },
-  { id: "impersonation", label: "Impersonating someone" },
+  { id: "spam", label: "Spam or unwanted content" },
+  { id: "inappropriate", label: "Inappropriate or offensive content" },
+  { id: "misinformation", label: "Misinformation" },
   { id: "cheating", label: "Cheating or academic dishonesty" },
-  { id: "offensive", label: "Offensive language or behavior" },
+  { id: "other", label: "Other (write your own)" },
 ];
 
-export function ReportUserModal({ targetUser, isOpen, onClose, onSubmit }) {
+export function ReportModal({ targetType, targetName, isOpen, onClose, onSubmit }) {
   const [selectedReason, setSelectedReason] = useState("");
   const [customReason, setCustomReason] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -17,7 +17,8 @@ export function ReportUserModal({ targetUser, isOpen, onClose, onSubmit }) {
 
   if (!isOpen) return null;
 
-  const finalReason = selectedReason === "other" ? customReason.trim() : selectedReason;
+  const isOther = selectedReason === "other";
+  const finalReason = isOther ? customReason.trim() : REPORT_REASONS.find((r) => r.id === selectedReason)?.label || "";
   const canSubmit = finalReason.length > 0 && !submitting;
 
   const handleSubmit = async (e) => {
@@ -33,10 +34,20 @@ export function ReportUserModal({ targetUser, isOpen, onClose, onSubmit }) {
     }
   };
 
+  const handleClose = () => {
+    setSelectedReason("");
+    setCustomReason("");
+    setSubmitted(false);
+    setSubmitting(false);
+    onClose();
+  };
+
+  const targetLabel = targetType === "user" ? targetName : targetType === "post" ? "this post" : "this comment";
+
   if (submitted) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs" onClick={onClose} />
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs" onClick={handleClose} />
         <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-md p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-150">
           <div className="text-center">
             <div className="w-14 h-14 rounded-full bg-green-50 text-green-500 flex items-center justify-center mx-auto mb-4">
@@ -46,11 +57,11 @@ export function ReportUserModal({ targetUser, isOpen, onClose, onSubmit }) {
             </div>
             <h3 className="text-base font-bold text-gray-900 mb-1">Report Submitted</h3>
             <p className="text-xs text-gray-500 mb-5">
-              Thank you. Our moderation team will review this report shortly.
+              Thank you. Our moderation team will review this shortly.
             </p>
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleClose}
               className="w-full bg-[#FF4F00] text-white text-xs font-bold py-2.5 rounded-xl hover:bg-[#E64700] transition-colors cursor-pointer"
             >
               Close
@@ -63,15 +74,15 @@ export function ReportUserModal({ targetUser, isOpen, onClose, onSubmit }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="fixed inset-0 bg-black/40 backdrop-blur-xs" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/40 backdrop-blur-xs" onClick={handleClose} />
       <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-md animate-in fade-in zoom-in-95 duration-150">
         <div className="flex items-center justify-between p-4 sm:p-5 border-b border-gray-100">
           <h3 className="text-sm sm:text-base font-bold text-gray-900">
-            Report {targetUser?.displayName || "User"}
+            Report {targetLabel}
           </h3>
           <button
             type="button"
-            onClick={onClose}
+            onClick={handleClose}
             className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -81,9 +92,9 @@ export function ReportUserModal({ targetUser, isOpen, onClose, onSubmit }) {
         </div>
 
         <form onSubmit={handleSubmit} className="p-4 sm:p-5 space-y-3">
-          <p className="text-xs text-gray-500">Why are you reporting this user?</p>
+          <p className="text-xs text-gray-500">Why are you reporting {targetLabel}?</p>
 
-          <div className="space-y-2">
+          <div className="space-y-2 max-h-56 overflow-y-auto">
             {REPORT_REASONS.map((reason) => (
               <label
                 key={reason.id}
@@ -115,38 +126,9 @@ export function ReportUserModal({ targetUser, isOpen, onClose, onSubmit }) {
                 <span className="text-xs sm:text-sm text-gray-700 font-medium">{reason.label}</span>
               </label>
             ))}
-
-            <label
-              className={`flex items-center gap-3 p-2.5 rounded-xl border cursor-pointer transition-all ${
-                selectedReason === "other"
-                  ? "border-[#FF4F00] bg-orange-50/50"
-                  : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-              }`}
-            >
-              <input
-                type="radio"
-                name="report-reason"
-                value="other"
-                checked={selectedReason === "other"}
-                onChange={() => setSelectedReason("other")}
-                className="sr-only"
-              />
-              <div
-                className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
-                  selectedReason === "other"
-                    ? "border-[#FF4F00] bg-[#FF4F00]"
-                    : "border-gray-300"
-                }`}
-              >
-                {selectedReason === "other" && (
-                  <div className="w-1.5 h-1.5 rounded-full bg-white" />
-                )}
-              </div>
-              <span className="text-xs sm:text-sm text-gray-700 font-medium">Other (write your own)</span>
-            </label>
           </div>
 
-          {selectedReason === "other" && (
+          {isOther && (
             <textarea
               autoFocus
               value={customReason}
@@ -160,7 +142,7 @@ export function ReportUserModal({ targetUser, isOpen, onClose, onSubmit }) {
           <div className="flex gap-2 pt-2">
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleClose}
               className="flex-1 bg-white border border-gray-200 text-gray-700 text-xs font-bold py-2.5 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer"
             >
               Cancel
