@@ -26,12 +26,21 @@ import SignupPage from "@/pages/auth/SignupPage";
 import OtpVerificationPage from "@/pages/auth/OtpVerificationPage";
 import TechInterestsPage from "@/pages/auth/TechInterestsPage";
 
+// Admin Dashboard
+import AdminLayout from "@/pages/admin/AdminLayout";
+import AdminOverviewPage from "@/pages/admin/AdminOverviewPage";
+import UserDirectoryPage from "@/pages/admin/UserDirectoryPage";
+import ModerationFeedPage from "@/pages/admin/ModerationFeedPage";
+import MentorPipelinePage from "@/pages/admin/MentorPipelinePage";
+import TagsTopicsPage from "@/pages/admin/TagsTopicsPage";
+
 export default function App() {
   const { pathname } = useLocation();
   const hideNavbar = pathname.startsWith('/auth/login')
     || pathname.startsWith('/auth/signup')
     || pathname.startsWith('/auth/verify-otp')
-    || pathname.startsWith('/auth/tech-interests');
+    || pathname.startsWith('/auth/tech-interests')
+    || pathname.startsWith('/admin');
 
   return (
     <AuthProvider>
@@ -77,6 +86,15 @@ export default function App() {
           {/* Canonical Redirects */}
           <Route path="/login" element={<Navigate to="/auth/login" replace />} />
           <Route path="/signup" element={<Navigate to="/auth/signup" replace />} />
+
+          {/* Admin Dashboard */}
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminOverviewPage />} />
+            <Route path="users" element={<UserDirectoryPage />} />
+            <Route path="moderation" element={<ModerationFeedPage />} />
+            <Route path="mentors" element={<MentorPipelinePage />} />
+            <Route path="tags" element={<TagsTopicsPage />} />
+          </Route>
 
           {/* 404 Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />

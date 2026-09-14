@@ -198,6 +198,8 @@ export function AuthProvider({ children }) {
       value={{
         user,
         isAuthenticated: Boolean(user),
+        isAdmin: user?.role === "SUPER_ADMIN" || user?.role === "MODERATOR",
+        loading: isLoading,
         isLoading,
         setIsLoading,
         login,
