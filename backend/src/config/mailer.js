@@ -12,12 +12,16 @@ const transporter = nodemailer.createTransport({
 });
 
 async function sendMail({ to, subject, html }) {
-  return transporter.sendMail({
-    from: env.smtpFrom,
-    to,
-    subject,
-    html,
-  });
+  const from = env.smtpFrom || env.smtpUser || "JorJek <no-reply@jorjek.app>";
+  console.log(`[MAIL] Sending "${subject}" to ${to} via ${env.smtpHost}:${env.smtpPort}`);
+  try {
+    const result = await transporter.sendMail({ from, to, subject, html });
+    console.log(`[MAIL] Sent successfully: ${result.messageId}`);
+    return result;
+  } catch (err) {
+    console.error(`[MAIL] Failed to send to ${to}: ${err.message}`);
+    throw err;
+  }
 }
 
 module.exports = { sendMail };
