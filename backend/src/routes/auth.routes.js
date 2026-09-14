@@ -7,6 +7,7 @@ const { sendMail } = require("../config/mailer");
 const { generateOtp, otpEmailHtml, successEmailHtml } = require("../utils/otp");
 const { requireCadtEmail } = require("../middleware/cadtEmailGate.middleware");
 const { requireAuth } = require("../middleware/auth.middleware");
+const { getIO } = require("../lib/socket");
 
 const OTP_EXPIRY_MINUTES = 10;
 const REFRESH_TOKEN_DAYS = 30;
@@ -140,6 +141,11 @@ authRouter.post("/signup", requireCadtEmail, async (req, res, next) => {
       subject: "JorJek — Verify your email",
       html: otpEmailHtml(otp, "verify"),
     }).catch((e) => console.error("Failed to send verification OTP:", e.message));
+
+    const io = getIO();
+    if (io) {
+      io.emit("user_registered", userSafe(user));
+    }
 
     res.status(201).json({ token, refreshToken, user: userSafe(user) });
   } catch (err) {

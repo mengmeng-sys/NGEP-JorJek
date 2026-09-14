@@ -6,6 +6,7 @@ import { CreatePostModal } from '@/components/post/CreatePostModal';
 import { DeletePostModal } from '@/components/post/DeletePostModal';
 import { ReportModal } from '@/components/shared/ReportModal';
 import { useAuth } from '@/context/AuthContext';
+import { useSocket } from '@/context/SocketContext';
 import { postsApi, usersApi, reportsApi } from '@/lib/api';
 import { getApiErrorMessage } from '@/lib/apiClient';
 import { copyToClipboard } from '@/lib/clipboard';
@@ -14,6 +15,7 @@ export default function UserProfilePage() {
   const { username } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { on, off } = useSocket();
   const [activeTab, setActiveTab] = useState('posts');
 
   // Edit / Create Modal State
@@ -72,6 +74,18 @@ export default function UserProfilePage() {
       cancelled = true;
     };
   }, [isOwnProfile, username]);
+
+  // Listen for real-time profile updates
+  useEffect(() => {
+    if (isOwnProfile) return;
+    const handleProfileUpdated = (updatedUser) => {
+      if (profile && updatedUser.id === profile.id) {
+        setProfile((prev) => ({ ...prev, ...updatedUser }));
+      }
+    };
+    on("profile_updated", handleProfileUpdated);
+    return () => off("profile_updated", handleProfileUpdated);
+  }, [on, off, isOwnProfile, profile?.id]);
 
   // Load posts authored by this profile.
   useEffect(() => {

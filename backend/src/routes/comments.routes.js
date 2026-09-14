@@ -293,9 +293,14 @@ commentsRouter.patch("/comments/:id", requireAuth, requireVerifiedEmail, async (
       .from("comments")
       .update({ body })
       .eq("id", req.params.id)
-      .select(`*, author:users(${USER_SAFE})`)
+      .select(`*, author:users(${USER_SAFE}), post_id`)
       .single();
     if (error) throw error;
+
+    const io = getIO();
+    if (io) {
+      io.to(`post:${comment.post_id}`).emit("comment_updated", comment);
+    }
 
     res.json(comment);
   } catch (err) {

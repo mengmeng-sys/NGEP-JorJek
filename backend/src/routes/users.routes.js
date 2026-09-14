@@ -1,6 +1,7 @@
 const { Router } = require("express");
 const { supabase } = require("../config/db");
 const { requireAuth } = require("../middleware/auth.middleware");
+const { getIO } = require("../lib/socket");
 
 const usersRouter = Router();
 
@@ -272,6 +273,11 @@ usersRouter.patch("/:id", requireAuth, async (req, res, next) => {
       .select(USER_SAFE)
       .single();
     if (error) throw error;
+
+    const io = getIO();
+    if (io) {
+      io.emit("profile_updated", user);
+    }
 
     res.json(user);
   } catch (err) {

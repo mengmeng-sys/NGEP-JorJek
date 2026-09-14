@@ -11,6 +11,33 @@ import { buildCommentTree, initialsFrom } from '@/lib/adapters';
 import { getApiErrorMessage } from '@/lib/apiClient';
 import { copyToClipboard } from '@/lib/clipboard';
 
+function addReplyToTree(comment, parentId, reply) {
+  if (comment.id === parentId) {
+    return { ...comment, replies: [...(comment.replies || []), reply] };
+  }
+  if (comment.replies?.length) {
+    return { ...comment, replies: comment.replies.map((r) => addReplyToTree(r, parentId, reply)) };
+  }
+  return comment;
+}
+
+function removeCommentFromTree(comments, deletedId) {
+  return comments
+    .filter((c) => c.id !== deletedId)
+    .map((c) => ({
+      ...c,
+      replies: c.replies?.length ? removeCommentFromTree(c.replies, deletedId) : [],
+    }));
+}
+
+function updateCommentInTree(comments, targetId, updater) {
+  return comments.map((c) => {
+    if (c.id === targetId) return updater(c);
+    if (c.replies?.length) return { ...c, replies: updateCommentInTree(c.replies, targetId, updater) };
+    return c;
+  });
+}
+
 // Subcomponent for handling each individual comment thread
 function CommentThread({ comment, postId, currentUser, onRefresh }) {
   const navigate = useNavigate();
@@ -28,6 +55,10 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
   const [replyText, setReplyText] = useState('');
   const [submittingReply, setSubmittingReply] = useState(false);
   const [replies, setReplies] = useState(comment.replies || []);
+
+  useEffect(() => {
+    setReplies(comment.replies || []);
+  }, [comment.replies]);
 
   // Edit state
   const [isEditing, setIsEditing] = useState(false);
@@ -90,7 +121,6 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
       markOnboardingComplete('hasCommented');
       setReplyText('');
       setReplyingToUser(null);
-      onRefresh?.();
     } catch (err) {
       alert(getApiErrorMessage(err));
     } finally {
@@ -105,7 +135,6 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
     try {
       await commentsApi.update(comment.id, editText.trim());
       setIsEditing(false);
-      onRefresh?.();
     } catch (err) {
       alert(getApiErrorMessage(err));
     } finally {
@@ -117,7 +146,6 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
     if (!window.confirm('Delete this comment?')) return;
     try {
       await commentsApi.remove(comment.id);
-      onRefresh?.();
     } catch (err) {
       alert(getApiErrorMessage(err));
     }
@@ -405,7 +433,6 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
     try {
       await commentsApi.update(reply.id, editText.trim());
       setIsEditing(false);
-      onRefresh?.();
     } catch (err) {
       alert(getApiErrorMessage(err));
     } finally {
@@ -417,7 +444,6 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
     if (!window.confirm('Delete this reply?')) return;
     try {
       await commentsApi.remove(reply.id);
-      onRefresh?.();
     } catch (err) {
       alert(getApiErrorMessage(err));
     }
@@ -666,60 +692,80 @@ export default function PostDetailPage() {
     joinPost(id);
 
     const handleNewComment = (comment) => {
-      if (comment.post_id === id || comment.postId === id) {
-        setComments((prev) => {
-          const exists = prev.some((c) => c.id === comment.id);
-          if (exists) return prev;
-          const newComment = {
-            ...comment,
-            replies: [],
-            votes: 0,
-            myVote: 0,
-            timestamp: 'just now',
-            isLong: comment.body?.length > 200,
-          };
-          return [...prev, newComment];
-        });
-      }
+      if (comment.post_id !== id && comment.postId !== id) return;
+      setComments((prev) => {
+        const exists = prev.some((c) => c.id === comment.id) || prev.some((c) => c.replies?.some((r) => r.id === comment.id));
+        if (exists) return prev;
+        const newComment = {
+          ...comment,
+          replies: [],
+          votes: 0,
+          myVote: 0,
+          timestamp: 'just now',
+          isLong: comment.body?.length > 200,
+        };
+        const parentId = comment.parent_comment_id || comment.parentCommentId || comment.parentId;
+        if (parentId) {
+          return prev.map((c) => addReplyToTree(c, parentId, newComment));
+        }
+        return [...prev, newComment];
+      });
     };
 
     const handleCommentDeleted = ({ id: deletedId }) => {
-      setComments((prev) => prev.filter((c) => c.id !== deletedId));
+      setComments((prev) => removeCommentFromTree(prev, deletedId));
+    };
+
+    const handleCommentUpdated = (updatedComment) => {
+      setComments((prev) => updateCommentInTree(prev, updatedComment.id, (c) => ({ ...c, body: updatedComment.body })));
     };
 
     const handleVoteUpdate = ({ target, id: targetId, value, voterId, removed }) => {
-      if (voterId === user?.id) return;
-
       if (target === "post" && targetId === id) {
+        if (voterId === user?.id) return;
         setPostVoteCount((prev) => {
           if (removed) return prev;
           return prev + value;
         });
+        return;
       }
-
       if (target === "comment") {
         setComments((prev) =>
-          prev.map((c) => {
-            if (c.id === targetId) {
-              return { ...c, votes: removed ? c.votes : c.votes + value };
-            }
-            return c;
-          })
+          updateCommentInTree(prev, targetId, (c) => ({
+            ...c,
+            votes: removed ? c.votes : c.votes + value,
+          }))
         );
+      }
+    };
+
+    const handlePostDeleted = ({ id: deletedPostId }) => {
+      if (deletedPostId === id) navigate('/');
+    };
+
+    const handlePostUpdated = (updatedPost) => {
+      if (updatedPost.id === id) {
+        setPost((prev) => (prev ? { ...prev, ...updatedPost } : prev));
       }
     };
 
     on("new_comment", handleNewComment);
     on("comment_deleted", handleCommentDeleted);
+    on("comment_updated", handleCommentUpdated);
     on("vote_update", handleVoteUpdate);
+    on("post_deleted", handlePostDeleted);
+    on("post_updated", handlePostUpdated);
 
     return () => {
       off("new_comment", handleNewComment);
       off("comment_deleted", handleCommentDeleted);
+      off("comment_updated", handleCommentUpdated);
       off("vote_update", handleVoteUpdate);
+      off("post_deleted", handlePostDeleted);
+      off("post_updated", handlePostUpdated);
       leavePost(id);
     };
-  }, [id, joinPost, leavePost, on, off, user?.id]);
+  }, [id, joinPost, leavePost, on, off, user?.id, navigate]);
 
   // Post Interaction States
   const [postVoteState, setPostVoteState] = useState(0);
@@ -846,7 +892,6 @@ export default function PostDetailPage() {
       await commentsApi.create(id, commentText.trim());
       markOnboardingComplete('hasCommented');
       setCommentText('');
-      await refreshComments();
     } catch (err) {
       alert(getApiErrorMessage(err));
     } finally {

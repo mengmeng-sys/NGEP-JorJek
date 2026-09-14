@@ -392,6 +392,11 @@ postsRouter.patch("/:id", requireAuth, requireVerifiedEmail, async (req, res, ne
       .single();
     if (error) throw error;
 
+    const io = getIO();
+    if (io) {
+      io.emit("post_updated", post);
+    }
+
     res.json(post);
   } catch (err) {
     next(err);

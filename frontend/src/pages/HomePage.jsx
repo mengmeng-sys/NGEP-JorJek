@@ -19,9 +19,9 @@ export default function HomePage() {
     const handleNewPost = (newPost) => {
       setPosts((prev) => {
         if (prev.some((p) => p.id === newPost.id)) return prev;
-      const tags = newPost.tags?.map((t) => (typeof t === "string" ? t : t.tag?.name || t.name || "")) || [];
-      if (selectedTag && !tags.some((t) => t.toLowerCase() === selectedTag.toLowerCase())) return prev;
-      return [newPost, ...prev];
+        const tags = newPost.tags?.map((t) => (typeof t === "string" ? t : t.tag?.name || t.name || "")) || [];
+        if (selectedTag && !tags.some((t) => t.toLowerCase() === selectedTag.toLowerCase())) return prev;
+        return [newPost, ...prev];
       });
     };
 
@@ -29,11 +29,19 @@ export default function HomePage() {
       setPosts((prev) => prev.filter((p) => p.id !== id));
     };
 
+    const handlePostUpdated = (updatedPost) => {
+      setPosts((prev) =>
+        prev.map((p) => (p.id === updatedPost.id ? { ...p, ...updatedPost } : p))
+      );
+    };
+
     on("new_post", handleNewPost);
     on("post_deleted", handlePostDeleted);
+    on("post_updated", handlePostUpdated);
     return () => {
       off("new_post", handleNewPost);
       off("post_deleted", handlePostDeleted);
+      off("post_updated", handlePostUpdated);
     };
   }, [on, off, selectedTag, setPosts]);
 
