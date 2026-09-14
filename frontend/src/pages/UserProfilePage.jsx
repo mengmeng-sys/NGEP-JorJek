@@ -31,6 +31,12 @@ export default function UserProfilePage() {
   const [editForm, setEditForm] = useState({});
   const [saving, setSaving] = useState(false);
 
+  const departmentOptions = [
+    { name: 'Computer Science', specializations: ['Software Engineering', 'Data Science'] },
+    { name: 'Telecommunications and Networking', specializations: ['Telecommunications and Networking Engineering', 'Cybersecurity'] },
+    { name: 'Digital Business', specializations: ['E-commerce'] },
+  ];
+
   const isOwnProfile =
     !username ||
     username === 'me' ||
@@ -280,41 +286,59 @@ export default function UserProfilePage() {
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div>
-                  <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">Generation</label>
-                  <select
-                    value={editForm.gen}
-                    onChange={(e) => setEditForm((p) => ({ ...p, gen: e.target.value }))}
-                    className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all"
-                  >
-                    <option value="">Select Gen</option>
-                    {[8, 9, 10, 11, 12].map((g) => (
-                      <option key={g} value={g}>Gen {g}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">Department</label>
-                  <input
-                    type="text"
-                    value={editForm.department}
-                    onChange={(e) => setEditForm((p) => ({ ...p, department: e.target.value }))}
-                    placeholder="Your department"
-                    className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">Specialization</label>
-                  <input
-                    type="text"
-                    value={editForm.specialization}
-                    onChange={(e) => setEditForm((p) => ({ ...p, specialization: e.target.value }))}
-                    placeholder="Your specialization"
-                    className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all"
-                  />
+              <div>
+                <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">Generation (Gen)</label>
+                <input
+                  type="number"
+                  min="1"
+                  value={editForm.gen}
+                  onChange={(e) => setEditForm((p) => ({ ...p, gen: e.target.value }))}
+                  placeholder="e.g. 8"
+                  className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">Department</label>
+                <div className="grid grid-cols-1 gap-2">
+                  {departmentOptions.map((dept) => (
+                    <button
+                      key={dept.name}
+                      type="button"
+                      onClick={() => setEditForm((p) => ({ ...p, department: dept.name, specialization: '' }))}
+                      className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                        editForm.department === dept.name
+                          ? 'bg-[#FF4F00] border-[#FF4F00] text-white'
+                          : 'bg-white border-gray-200 text-gray-600 hover:border-[#FF4F00] hover:text-[#FF4F00]'
+                      }`}
+                    >
+                      {dept.name}
+                    </button>
+                  ))}
                 </div>
               </div>
+
+              {editForm.department && (
+                <div>
+                  <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">Specialization</label>
+                  <div className="grid grid-cols-1 gap-2">
+                    {(departmentOptions.find((d) => d.name === editForm.department)?.specializations || []).map((spec) => (
+                      <button
+                        key={spec}
+                        type="button"
+                        onClick={() => setEditForm((p) => ({ ...p, specialization: spec }))}
+                        className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                          editForm.specialization === spec
+                            ? 'bg-[#FF4F00] border-[#FF4F00] text-white'
+                            : 'bg-white border-gray-200 text-gray-600 hover:border-[#FF4F00] hover:text-[#FF4F00]'
+                        }`}
+                      >
+                        {spec}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="flex gap-2 pt-2">
                 <button
