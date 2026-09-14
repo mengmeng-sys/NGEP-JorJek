@@ -147,7 +147,8 @@ authRouter.post("/signup", requireCadtEmail, async (req, res, next) => {
       io.emit("user_registered", userSafe(user));
     }
 
-    res.status(201).json({ token, refreshToken, user: userSafe(user) });
+    const devPayload = process.env.NODE_ENV !== "production" ? { devOtp: otp } : {};
+    res.status(201).json({ token, refreshToken, user: userSafe(user), ...devPayload });
   } catch (err) {
     next(err);
   }
@@ -490,13 +491,14 @@ authRouter.post("/resend-otp", async (req, res, next) => {
       .eq("id", user.id);
     if (updateErr) throw updateErr;
 
-    await sendMail({
+    sendMail({
       to: cadtEmail,
       subject: "JorJek — New Verification Code",
       html: otpEmailHtml(otp, "resend"),
-    });
+    }).catch((e) => console.error("Failed to send resend OTP email:", e.message));
 
-    res.json({ message: "OTP sent" });
+    const devPayload = process.env.NODE_ENV !== "production" ? { devOtp: otp } : {};
+    res.json({ message: "OTP sent", ...devPayload });
   } catch (err) {
     next(err);
   }
@@ -653,13 +655,14 @@ authRouter.post("/forgot-password", requireCadtEmail, async (req, res, next) => 
       .eq("id", user.id);
     if (updateErr) throw updateErr;
 
-    await sendMail({
+    sendMail({
       to: cadtEmail,
       subject: "JorJek — Password Reset",
       html: otpEmailHtml(otp, "reset"),
-    });
+    }).catch((e) => console.error("Failed to send reset OTP email:", e.message));
 
-    res.json({ message: "If an account exists, an OTP has been sent" });
+    const devPayload = process.env.NODE_ENV !== "production" ? { devOtp: otp } : {};
+    res.json({ message: "If an account exists, an OTP has been sent", ...devPayload });
   } catch (err) {
     next(err);
   }
