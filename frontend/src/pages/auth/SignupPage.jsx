@@ -10,10 +10,25 @@ export default function SignupPage() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [gen, setGen] = useState('');
+  const [department, setDepartment] = useState('');
+  const [specialization, setSpecialization] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [emailError, setEmailError] = useState('');
   const [submitError, setSubmitError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  const departments = [
+    'Computer Science & Software Engineering',
+    'Information Technology',
+    'Data Science & AI',
+    'Cybersecurity',
+    'Business Information Technology',
+    'Multimedia & Creative Design',
+    'Telecommunication & Network Engineering',
+  ];
+
+  const genOptions = [8, 9, 10, 11, 12];
 
   // Domain restriction validator — mirrors the backend's CADT_EMAIL_DOMAIN gate.
   const validateEmailDomain = (val) => {
@@ -36,7 +51,7 @@ export default function SignupPage() {
 
   const isPasswordStrong = Object.values(passwordCriteria).every(Boolean);
   const isValidEmail = Boolean(email) && !emailError;
-  const isFormValid = isPasswordStrong && isValidEmail && Boolean(username.trim());
+  const isFormValid = isPasswordStrong && isValidEmail && Boolean(username.trim()) && Boolean(gen) && Boolean(department) && Boolean(specialization.trim());
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -49,6 +64,9 @@ export default function SignupPage() {
         cadtEmail: email.trim(),
         password,
         role: 'STUDENT',
+        gen: Number(gen),
+        department: department.trim(),
+        specialization: specialization.trim(),
       });
       navigate('/auth/verify-otp', {
         state: {
@@ -167,6 +185,62 @@ export default function SignupPage() {
                 <span>{passwordCriteria.hasSpecial ? '✓' : '○'}</span> Special character
               </span>
             </div>
+          </div>
+
+          {/* Gen Selector */}
+          <div>
+            <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">
+              Generation (Gen)
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {genOptions.map((g) => (
+                <button
+                  key={g}
+                  type="button"
+                  onClick={() => setGen(g === gen ? '' : g)}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                    gen === g
+                      ? 'bg-[#FF4F00] border-[#FF4F00] text-white'
+                      : 'bg-white border-gray-200 text-gray-600 hover:border-[#FF4F00] hover:text-[#FF4F00]'
+                  }`}
+                >
+                  Gen {g}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Department Selector */}
+          <div>
+            <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">
+              Department
+            </label>
+            <select
+              value={department}
+              onChange={(e) => setDepartment(e.target.value)}
+              className={`w-full bg-[#FAFAFA] border rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs text-gray-900 outline-none transition-all shadow-2xs ${
+                department ? 'border-gray-200 focus:border-[#FF4F00]' : 'border-gray-200'
+              } focus:bg-white focus:ring-1 focus:ring-[#FF4F00]`}
+            >
+              <option value="">Select your department</option>
+              {departments.map((d) => (
+                <option key={d} value={d}>{d}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Specialization */}
+          <div>
+            <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">
+              Specialization
+            </label>
+            <input
+              type="text"
+              value={specialization}
+              onChange={(e) => setSpecialization(e.target.value)}
+              placeholder="e.g. Frontend Development, AI/ML, Cybersecurity"
+              className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs text-gray-900 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs"
+            />
           </div>
 
           {submitError && (

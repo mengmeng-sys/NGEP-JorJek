@@ -4,7 +4,7 @@ const { requireAuth } = require("../middleware/auth.middleware");
 
 const usersRouter = Router();
 
-const USER_SAFE = "id,email,display_name,role,bio,karma,email_verified,show_profile_to_guests,allow_direct_requests,show_online_status,receive_email_notifications,created_at";
+const USER_SAFE = "id,email,display_name,role,bio,gen,department,specialization,karma,email_verified,show_profile_to_guests,allow_direct_requests,show_online_status,receive_email_notifications,created_at";
 
 // GET /users -- READ all users (paginated)
 
@@ -144,13 +144,27 @@ usersRouter.get("/:id", async (req, res, next) => {
   try {
     const { data: user, error } = await supabase
       .from("users")
-      .select("id, displayName:display_name, role, karma, bio, showProfileToGuests:show_profile_to_guests, allowDirectRequests:allow_direct_requests, showOnlineStatus:show_online_status, receiveEmailNotifications:receive_email_notifications, createdAt:created_at")
+      .select("id, display_name, role, karma, bio, gen, department, specialization, show_profile_to_guests, allow_direct_requests, show_online_status, receive_email_notifications, created_at")
       .eq("id", req.params.id)
       .maybeSingle();
     if (error) throw error;
     if (!user) return res.status(404).json({ error: "User not found" });
 
-    res.json(user);
+    res.json({
+      id: user.id,
+      displayName: user.display_name,
+      role: user.role,
+      karma: user.karma,
+      bio: user.bio,
+      gen: user.gen,
+      department: user.department,
+      specialization: user.specialization,
+      showProfileToGuests: user.show_profile_to_guests,
+      allowDirectRequests: user.allow_direct_requests,
+      showOnlineStatus: user.show_online_status,
+      receiveEmailNotifications: user.receive_email_notifications,
+      createdAt: user.created_at,
+    });
   } catch (err) {
     next(err);
   }
@@ -234,11 +248,14 @@ usersRouter.patch("/:id", requireAuth, async (req, res, next) => {
       return res.status(403).json({ error: "You can only update your own profile" });
     }
 
-    const { displayName, bio, role, showProfileToGuests, allowDirectRequests, showOnlineStatus, receiveEmailNotifications } = req.body;
+    const { displayName, bio, role, gen, department, specialization, showProfileToGuests, allowDirectRequests, showOnlineStatus, receiveEmailNotifications } = req.body;
     const updates = {};
     if (displayName !== undefined) updates.display_name = displayName;
     if (bio !== undefined) updates.bio = bio;
     if (role !== undefined) updates.role = role;
+    if (gen !== undefined) updates.gen = gen;
+    if (department !== undefined) updates.department = department;
+    if (specialization !== undefined) updates.specialization = specialization;
     if (typeof showProfileToGuests === "boolean") updates.show_profile_to_guests = showProfileToGuests;
     if (typeof allowDirectRequests === "boolean") updates.allow_direct_requests = allowDirectRequests;
     if (typeof showOnlineStatus === "boolean") updates.show_online_status = showOnlineStatus;
