@@ -29,4 +29,10 @@ services:
         sync: false
       - key: SMTP_FROM
         sync: false
+      # HTTPS email API (port 443 — allowed on Render free tier).
+      # If RESEND_API_KEY is set, the app uses Resend and ignores SMTP.
+      - key: RESEND_API_KEY
+        sync: false
+      - key: RESEND_FROM
+        sync: false
     plan: free
