@@ -20,9 +20,14 @@ const app = express();
 
 const ALLOWED_ORIGINS = [
   "https://jorjek-frontend.onrender.com",
+  "https://ngep-jor-jek.vercel.app",
   "http://localhost:5173",
   "http://localhost:3000",
 ];
+
+if (process.env.FRONTEND_URL) {
+  ALLOWED_ORIGINS.push(process.env.FRONTEND_URL);
+}
 
 app.use(cors({
   origin: (origin, callback) => {
