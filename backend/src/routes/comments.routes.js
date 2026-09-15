@@ -54,7 +54,7 @@ commentsRouter.get("/posts/:postId/comments", async (req, res, next) => {
 
     const { data: comments, error, count } = await supabase
       .from("comments")
-      .select(`*, author:users(${USER_SAFE}), votes(*)`, { count: "exact" })
+      .select(`id, post_id, author_id, parent_comment_id, body, created_at, updated_at, author:users(${USER_SAFE}), votes(*)`, { count: "exact" })
       .eq("post_id", req.params.postId)
       .order("created_at", { ascending: true })
       .range(from, from + limit - 1);
@@ -189,6 +189,14 @@ commentsRouter.post("/posts/:postId/comments", requireAuth, requireVerifiedEmail
       .maybeSingle();
     if (postError) throw postError;
 
+    const { data: actor } = await supabase
+      .from("users")
+      .select("display_name")
+      .eq("id", req.userId)
+      .maybeSingle();
+    const actorName = actor?.display_name || "Someone";
+    const snippet = body.length > 80 ? body.slice(0, 80) + "…" : body;
+
     if (parentId) {
       const { data: parentComment } = await supabase
         .from("comments")
@@ -196,10 +204,25 @@ commentsRouter.post("/posts/:postId/comments", requireAuth, requireVerifiedEmail
         .eq("id", parentId)
         .maybeSingle();
       if (parentComment && parentComment.author_id !== req.userId) {
-        await notify(parentComment.author_id, "reply", { postId: post.id, commentId: comment.id, parentId });
+        await notify(parentComment.author_id, "reply", {
+          postId: post.id,
+          commentId: comment.id,
+          parentId,
+          actorId: req.userId,
+          actorName,
+          snippet,
+          isReply: true,
+        });
       }
     } else if (post && post.author_id !== req.userId) {
-      await notify(post.author_id, "reply", { postId: post.id, commentId: comment.id });
+      await notify(post.author_id, "reply", {
+        postId: post.id,
+        commentId: comment.id,
+        actorId: req.userId,
+        actorName,
+        snippet,
+        isReply: false,
+      });
     }
 
     const io = getIO();
@@ -291,7 +314,7 @@ commentsRouter.patch("/comments/:id", requireAuth, requireVerifiedEmail, async (
 
     const { data: comment, error } = await supabase
       .from("comments")
-      .update({ body })
+      .update({ body, updated_at: new Date().toISOString() })
       .eq("id", req.params.id)
       .select(`*, author:users(${USER_SAFE}), post_id`)
       .single();

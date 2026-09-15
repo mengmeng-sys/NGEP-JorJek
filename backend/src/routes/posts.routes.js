@@ -75,14 +75,14 @@ postsRouter.get("/", optionalAuth, async (req, res, next) => {
 
     let query = supabase
       .from("posts")
-      .select(`*, author:users!posts_author_id_fkey(${USER_SAFE}), tags:post_tags(tag:skill_tags(*)), comments:comments(id), votes(*)`, { count: "exact" })
+      .select(`*, author:users!posts_author_id_fkey(${USER_SAFE}), tags:post_tags(tag:skill_tags(*)), comments:comments(id), votes(*), saved_posts:saved_posts(post_id)`, { count: "exact" })
       .order("created_at", { ascending: true })
       .range(from, from + limit - 1);
 
     if (tag) {
       query = supabase
         .from("posts")
-        .select(`*, author:users!posts_author_id_fkey(${USER_SAFE}), tags:post_tags!inner(tag:skill_tags!inner(*)), comments:comments(id), votes(*)`, { count: "exact" })
+        .select(`*, author:users!posts_author_id_fkey(${USER_SAFE}), tags:post_tags!inner(tag:skill_tags!inner(*)), comments:comments(id), votes(*), saved_posts:saved_posts(post_id)`, { count: "exact" })
         .eq("tags.tag.name", String(tag))
         .order("created_at", { ascending: true })
         .range(from, from + limit - 1);
@@ -137,7 +137,7 @@ postsRouter.get("/:id", optionalAuth, async (req, res, next) => {
     const { data: post, error } = await supabase
       .from("posts")
       .select(
-        `*, author:users!posts_author_id_fkey(${USER_SAFE}), tags:post_tags(tag:skill_tags(*)), comments(*, author:users(${USER_SAFE}), votes(*)), votes(*)`
+        `*, author:users!posts_author_id_fkey(${USER_SAFE}), tags:post_tags(tag:skill_tags(*)), comments(*, author:users(${USER_SAFE}), votes(*)), votes(*), saved_posts:saved_posts(post_id)`
       )
       .eq("id", req.params.id)
       .maybeSingle();
@@ -248,7 +248,7 @@ postsRouter.post("/", requireAuth, requireVerifiedEmail, async (req, res, next) 
 
     const { data: postWithTags, error: fetchError } = await supabase
       .from("posts")
-      .select(`*, author:users!posts_author_id_fkey(${USER_SAFE}), tags:post_tags(tag:skill_tags(*)), comments:comments(id), votes(*)`)
+      .select(`*, author:users!posts_author_id_fkey(${USER_SAFE}), tags:post_tags(tag:skill_tags(*)), comments:comments(id), votes(*), saved_posts:saved_posts(post_id)`)
       .eq("id", post.id)
       .single();
     if (fetchError) throw fetchError;
@@ -510,6 +510,16 @@ postsRouter.post("/:id/save", requireAuth, requireVerifiedEmail, async (req, res
       .upsert({ user_id: req.userId, post_id: post.id }, { onConflict: "user_id, post_id" });
     if (error) throw error;
 
+    const { count } = await supabase
+      .from("saved_posts")
+      .select("id", { count: "exact", head: true })
+      .eq("post_id", post.id);
+
+    const io = getIO();
+    if (io) {
+      io.to(`post:${post.id}`).emit("save_update", { postId: post.id, saves: count ?? 0, saved: true });
+    }
+
     res.status(204).send();
   } catch (err) {
     next(err);
@@ -549,6 +559,16 @@ postsRouter.delete("/:id/save", requireAuth, requireVerifiedEmail, async (req, r
       .eq("user_id", req.userId)
       .eq("post_id", req.params.id);
     if (error) throw error;
+
+    const { count } = await supabase
+      .from("saved_posts")
+      .select("id", { count: "exact", head: true })
+      .eq("post_id", req.params.id);
+
+    const io = getIO();
+    if (io) {
+      io.to(`post:${req.params.id}`).emit("save_update", { postId: req.params.id, saves: count ?? 0, saved: false });
+    }
 
     res.status(204).send();
   } catch (err) {

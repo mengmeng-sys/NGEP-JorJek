@@ -1,6 +1,5 @@
 import { apiFetch } from "./apiClient";
 import {
-  normalizeComment,
   normalizeMentor,
   normalizeNotification,
   normalizePost,
@@ -87,7 +86,7 @@ export const savedApi = {
 export const commentsApi = {
   list: async (postId) => {
     const data = await apiFetch(`/posts/${postId}/comments?limit=50`);
-    return safeArray(data.comments).map(normalizeComment);
+    return safeArray(data.comments);
   },
   create: (postId, body, parentId = null) =>
     apiFetch(`/posts/${postId}/comments`, {

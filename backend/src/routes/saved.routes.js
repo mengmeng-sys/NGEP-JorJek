@@ -42,7 +42,7 @@ savedRouter.get("/", requireAuth, async (req, res, next) => {
 
     const { data, error, count } = await supabase
       .from("saved_posts")
-      .select("post:posts!saved_posts_post_id_fkey(*, author:users!posts_author_id_fkey(*), tags:post_tags(tag:skill_tags(*)), comments:comments(id), votes(*)), created_at", { count: "exact" })
+      .select("post:posts!saved_posts_post_id_fkey(*, author:users!posts_author_id_fkey(*), tags:post_tags(tag:skill_tags(*)), comments:comments(id), votes(*), saved_posts:saved_posts(post_id)), created_at", { count: "exact" })
       .eq("user_id", req.userId)
       .order("created_at", { ascending: false })
       .range(from, from + limit - 1);

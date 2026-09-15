@@ -266,23 +266,23 @@ export default function Navbar() {
 
                   {/* Notifications Flyout */}
                   {isNotificationsOpen && (
-                    <div className="fixed sm:absolute top-16 sm:top-auto sm:right-0 inset-x-4 sm:inset-x-auto sm:w-80 md:w-96 bg-white border border-gray-200 rounded-2xl shadow-xl py-2 z-50 animate-in fade-in zoom-in-95 duration-100">
-                      <div className="flex items-center justify-between px-4 py-2 border-b border-gray-100">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-bold text-gray-900">Notifications</span>
+                    <div className="fixed sm:absolute top-16 sm:top-auto sm:right-0 inset-x-4 sm:inset-x-auto sm:w-[420px] bg-white border border-gray-200 rounded-2xl shadow-2xl z-50 overflow-hidden">
+                      {/* Header */}
+                      <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100 bg-gray-50/50">
+                        <div className="flex items-center gap-2.5">
+                          <h3 className="text-sm font-bold text-gray-900">Notifications</h3>
                           {unreadCount > 0 && (
-                            <span className="bg-orange-50 text-[#FF4F00] text-[10px] font-extrabold px-1.5 py-0.5 rounded-md">
-                              {unreadCount} new
+                            <span className="bg-[#FF4F00] text-white text-[10px] font-bold px-2 py-0.5 rounded-full leading-none">
+                              {unreadCount}
                             </span>
                           )}
                         </div>
-                        <div className="flex items-center gap-2.5">
+                        <div className="flex items-center gap-3">
                           {notifications.some((n) => n.read) && (
                             <button
                               type="button"
                               onClick={handleClearRead}
-                              className="text-[11px] font-semibold text-gray-400 hover:text-red-600 hover:underline cursor-pointer"
-                              title="Remove all read notifications"
+                              className="text-[11px] font-medium text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
                             >
                               Clear read
                             </button>
@@ -291,75 +291,122 @@ export default function Navbar() {
                             <button
                               type="button"
                               onClick={handleMarkAllRead}
-                              className="text-[11px] font-semibold text-[#FF4F00] hover:underline cursor-pointer"
+                              className="text-[11px] font-semibold text-[#FF4F00] hover:text-orange-700 transition-colors cursor-pointer"
                             >
-                              Mark all as read
+                              Mark all read
                             </button>
                           )}
                         </div>
                       </div>
 
-                      <div className="max-h-72 overflow-y-auto divide-y divide-gray-50">
+                      {/* Notification List */}
+                      <div className="max-h-[380px] overflow-y-auto">
                         {notifications.length === 0 ? (
-                          <div className="p-6 text-center text-xs text-gray-400">
-                            No notifications yet
+                          <div className="py-12 flex flex-col items-center gap-2">
+                            <svg className="w-10 h-10 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                            </svg>
+                            <p className="text-xs text-gray-400 font-medium">No notifications yet</p>
+                            <p className="text-[11px] text-gray-300">When someone comments or replies, you'll see it here.</p>
                           </div>
                         ) : (
                           notifications.map((notif) => (
                             <div
                               key={notif.id}
                               onClick={() => handleNotificationClick(notif)}
-                              className={`flex items-start gap-3 p-3.5 hover:bg-gray-50 transition-colors cursor-pointer ${
-                                !notif.read ? 'bg-orange-50/30' : ''
+                              className={`group flex items-start gap-3.5 px-5 py-3.5 hover:bg-gray-50 transition-colors cursor-pointer border-b border-gray-50 last:border-b-0 ${
+                                !notif.read ? 'bg-orange-50/40' : ''
                               }`}
                             >
-                              <div className="h-8 w-8 rounded-full bg-[#111827] text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
-                                {notif.actorInitials || 'CA'}
+                              {/* Avatar with type icon */}
+                              <div className="relative flex-shrink-0">
+                                <div className={`h-10 w-10 rounded-full flex items-center justify-center text-white text-xs font-bold ${
+                                  notif.isReply ? 'bg-gradient-to-br from-violet-500 to-purple-600' : 'bg-gradient-to-br from-orange-400 to-[#FF4F00]'
+                                }`}>
+                                  {notif.actorInitials || 'U'}
+                                </div>
+                                <div className={`absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full border-2 border-white flex items-center justify-center ${
+                                  notif.isReply ? 'bg-violet-100' : 'bg-orange-100'
+                                }`}>
+                                  {notif.isReply ? (
+                                    <svg className="w-2.5 h-2.5 text-violet-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                                    </svg>
+                                  ) : (
+                                    <svg className="w-2.5 h-2.5 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                    </svg>
+                                  )}
+                                </div>
                               </div>
+
+                              {/* Content */}
                               <div className="flex-1 min-w-0">
-                                <div className="flex items-center justify-between gap-1">
-                                  <span className="text-xs font-bold text-gray-900 truncate">
-                                    {notif.title || notif.type}
-                                  </span>
-                                  <span className="text-[10px] text-gray-400 whitespace-nowrap">
-                                    {notif.timestamp || 'recently'}
+                                <p className="text-[13px] text-gray-900 leading-snug">
+                                  <span className="font-semibold">{notif.actorName}</span>
+                                  {' '}
+                                  <span className="text-gray-600">{notif.isReply ? 'replied to your comment' : 'commented on your post'}</span>
+                                </p>
+                                {notif.message && (
+                                  <p className="text-xs text-gray-500 mt-1 line-clamp-2 leading-relaxed">
+                                    "{notif.message}"
+                                  </p>
+                                )}
+                                <div className="flex items-center gap-1.5 mt-1.5">
+                                  {notif.isReply && (
+                                    <span className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-violet-600 bg-violet-50 px-1.5 py-0.5 rounded">
+                                      <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                                      </svg>
+                                      Reply
+                                    </span>
+                                  )}
+                                  <span className="text-[11px] text-gray-400">
+                                    {notif.timestamp || 'Recently'}
                                   </span>
                                 </div>
-                                <p className="text-[11px] text-gray-600 line-clamp-2 mt-0.5 leading-snug">
-                                  {notif.message || notif.content}
-                                </p>
                               </div>
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleDeleteNotification(notif.id);
-                                }}
-                                className="text-gray-300 hover:text-red-600 p-1 -m-1 flex-shrink-0 cursor-pointer"
-                                title="Remove notification"
-                                aria-label="Remove notification"
-                              >
-                                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                              </button>
-                              {!notif.read && (
-                                <span className="w-2 h-2 rounded-full bg-[#FF4F00] mt-1.5 flex-shrink-0" />
-                              )}
+
+                              {/* Actions */}
+                              <div className="flex flex-col items-center gap-1 flex-shrink-0">
+                                {!notif.read && (
+                                  <span className="w-2.5 h-2.5 rounded-full bg-[#FF4F00] ring-4 ring-orange-100" />
+                                )}
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeleteNotification(notif.id);
+                                  }}
+                                  className="opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-500 p-1 -m-1 transition-all cursor-pointer"
+                                  title="Remove notification"
+                                  aria-label="Remove notification"
+                                >
+                                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                  </svg>
+                                </button>
+                              </div>
                             </div>
                           ))
                         )}
                       </div>
 
-                      <div className="border-t border-gray-100 p-2 text-center">
-                        <Link
-                          to="/notifications"
-                          onClick={() => setIsNotificationsOpen(false)}
-                          className="text-xs font-bold text-[#FF4F00] hover:underline"
-                        >
-                          View all activity
-                        </Link>
-                      </div>
+                      {/* Footer */}
+                      {notifications.length > 0 && (
+                        <div className="border-t border-gray-100 px-5 py-2.5 bg-gray-50/50 text-center">
+                          <Link
+                            to="/notifications"
+                            onClick={() => setIsNotificationsOpen(false)}
+                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#FF4F00] hover:text-orange-700 transition-colors"
+                          >
+                            View all notifications
+                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                          </Link>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

@@ -21,6 +21,7 @@ const app = express();
 const ALLOWED_ORIGINS = [
   "https://jorjek-frontend.onrender.com",
   "http://localhost:5173",
+  "http://localhost:3000",
 ];
 
 app.use(cors({
