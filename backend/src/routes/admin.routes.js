@@ -234,6 +234,10 @@ adminRouter.get("/reports", async (req, res, next) => {
 
     const enriched = await Promise.all((reports || []).map(async (r) => {
       const isComment = Boolean(r.comment_id);
+      // NOTE: each destructured variable below (reporter, targetUser, post, comment,
+      // resolvedBy) is already the *unwrapped* row from Supabase (or null) — do not
+      // append another `.data` when reading from it (that was the bug: it silently
+      // produced `undefined` for every field, since a plain row has no `.data`).
       const [{ data: reporter }, { data: targetUser }, { data: post }, { data: comment }, { data: resolvedBy }] = await Promise.all([
         supabase.from("users").select("id,display_name,email").eq("id", r.reporter_id).maybeSingle(),
         r.target_user_id ? supabase.from("users").select("id,display_name,email").eq("id", r.target_user_id).maybeSingle() : Promise.resolve({ data: null }),
@@ -242,19 +246,19 @@ adminRouter.get("/reports", async (req, res, next) => {
         r.resolved_by ? supabase.from("users").select("id,display_name").eq("id", r.resolved_by).maybeSingle() : Promise.resolve({ data: null }),
       ]);
 
-      const target = isComment ? comment?.data : post?.data;
+      const target = isComment ? comment : post;
       return {
         id: r.id,
         target_type: isComment ? "comment" : "post",
         target_id: target?.id,
-        author: { id: targetUser?.data?.id ?? null, name: targetUser?.data?.display_name ?? "Unknown", email: targetUser?.data?.email ?? null },
-        snippet: isComment ? comment?.data?.body : post?.data?.body ?? post?.data?.title ?? "",
+        author: { id: targetUser?.id ?? null, name: targetUser?.display_name ?? "Unknown", email: targetUser?.email ?? null },
+        snippet: isComment ? comment?.body : post?.body ?? post?.title ?? "",
         reason: r.reason,
         status: r.status.toLowerCase(),
         created_at: r.created_at,
-        reporter: { name: reporter?.data?.display_name ?? "Unknown", email: reporter?.data?.email ?? null },
+        reporter: { name: reporter?.display_name ?? "Unknown", email: reporter?.email ?? null },
         moderation_note: r.moderation_note,
-        resolved_by: resolvedBy?.data?.display_name ?? null,
+        resolved_by: resolvedBy?.display_name ?? null,
         resolved_at: r.resolved_at,
         flagged_deleted: false,
       };
@@ -333,19 +337,21 @@ adminRouter.get("/mentors", async (_req, res, next) => {
     if (error) throw error;
 
     const enriched = await Promise.all((applications || []).map(async (a) => {
+      // NOTE: `user` and `reviewedBy` are already the unwrapped rows (or null) —
+      // see the same note in the /reports handler above.
       const [{ data: user }, { data: reviewedBy }] = await Promise.all([
         supabase.from("users").select("id,display_name,email,role,karma,is_mentor").eq("id", a.user_id).maybeSingle(),
         a.reviewed_by ? supabase.from("users").select("id,display_name").eq("id", a.reviewed_by).maybeSingle() : Promise.resolve({ data: null }),
       ]);
       return {
         id: a.id,
-        applicant: user?.data,
+        applicant: user,
         department: a.department,
         credential_summary: a.credential_summary,
         claimed_tags: a.claimed_tags || [],
         status: a.status.toLowerCase(),
         review_note: a.review_note,
-        reviewed_by: reviewedBy?.data?.display_name ?? null,
+        reviewed_by: reviewedBy?.display_name ?? null,
         reviewed_at: a.reviewed_at,
         created_at: a.created_at,
       };
@@ -418,15 +424,16 @@ adminRouter.get("/sessions", async (_req, res, next) => {
     if (error) throw error;
 
     const enriched = await Promise.all((sessions || []).map(async (s) => {
+      // NOTE: same unwrap note as above — `requester`/`mentor` are already rows.
       const [{ data: requester }, { data: mentor }] = await Promise.all([
         supabase.from("users").select("id,display_name").eq("id", s.mentee_id).maybeSingle(),
         supabase.from("users").select("id,display_name").eq("id", s.mentor_id).maybeSingle(),
       ]);
       return {
         id: s.id,
-        requester: requester?.data?.display_name ?? "Unknown",
+        requester: requester?.display_name ?? "Unknown",
         requester_id: s.mentee_id,
-        mentor: mentor?.data?.display_name ?? "Unknown",
+        mentor: mentor?.display_name ?? "Unknown",
         mentor_id: s.mentor_id,
         topic: null,
         meeting_link: s.meeting_link,

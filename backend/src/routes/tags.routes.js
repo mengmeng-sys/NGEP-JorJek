@@ -23,6 +23,13 @@ const tagsRouter = Router();
  *         name: limit
  *         schema: { type: integer, minimum: 1, maximum: 100, default: 50 }
  *         description: Number of tags per page (max 100)
+ *       - in: query
+ *         name: featured
+ *         schema: { type: boolean }
+ *         description: >
+ *           When `true`, only returns tags an admin has marked as "featured"
+ *           (see `PATCH /api/admin/tags/{id}`). Used by the home-feed
+ *           sidebar so admins control which tags show there.
  *     responses:
  *       200:
  *         description: Paginated list of tags
@@ -45,17 +52,25 @@ const tagsRouter = Router();
  *             schema:
  *               $ref: "#/components/schemas/Error"
  */
-tagsRouter.get("/", async (_req, res, next) => {
+tagsRouter.get("/", async (req, res, next) => {
   try {
-    const page = Math.max(1, Number(_req.query.page) || 1);
-    const limit = Math.min(100, Math.max(1, Number(_req.query.limit) || 50));
+    const page = Math.max(1, Number(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, Number(req.query.limit) || 50));
     const from = (page - 1) * limit;
 
-    const { data: tags, error, count } = await supabase
+    let query = supabase
       .from("skill_tags")
       .select("*", { count: "exact" })
-      .order("name", { ascending: true })
-      .range(from, from + limit - 1);
+      .order("name", { ascending: true });
+
+    // ?featured=true restricts results to admin-curated tags. This is what
+    // lets the admin Tags & Topics page's "Featured" toggle control which
+    // tags actually show in the user-facing sidebar's Skill Tags list.
+    if (req.query.featured === "true") {
+      query = query.eq("featured", true);
+    }
+
+    const { data: tags, error, count } = await query.range(from, from + limit - 1);
     if (error) throw error;
 
     res.json({ tags, page, limit, total: count });

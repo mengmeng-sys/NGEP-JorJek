@@ -7,6 +7,11 @@ const usersRouter = Router();
 
 const USER_SAFE = "id,email,display_name,role,bio,gen,department,specialization,karma,email_verified,show_profile_to_guests,allow_direct_requests,show_online_status,receive_email_notifications,created_at";
 
+// Roles a user may set on themselves via PATCH /users/:id (the "Platform Role"
+// toggle in Settings). MODERATOR/SUPER_ADMIN are deliberately excluded — those
+// are administrative grants only, made outside the public API (see backend/seed.js).
+const SELF_SERVICE_ROLES = ["STUDENT", "PROFESSOR"];
+
 // GET /users -- READ all users (paginated)
 
 /**
@@ -178,7 +183,11 @@ usersRouter.get("/:id", async (req, res, next) => {
  * /users/{id}:
  *   patch:
  *     summary: Update own profile
- *     description: Updates the authenticated user's own profile (`displayName`, `bio`, `role`, and privacy flags). Only the account owner can update it.
+ *     description: >
+ *       Updates the authenticated user's own profile (`displayName`, `bio`, `role`, and privacy flags).
+ *       Only the account owner can update it. `role` may only be set to `STUDENT` or `PROFESSOR` — the
+ *       platform-role self-toggle in Settings. `MODERATOR`/`SUPER_ADMIN` can never be set through this
+ *       endpoint; that is an administrative action made outside the public API (see backend/seed.js).
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -203,8 +212,9 @@ usersRouter.get("/:id", async (req, res, next) => {
  *                 example: Full-stack developer at CADT
  *               role:
  *                 type: string
- *                 enum: [STUDENT, MENTOR, ADMIN]
- *                 example: MENTOR
+ *                 enum: [STUDENT, PROFESSOR]
+ *                 description: Self-service platform role only — MODERATOR/SUPER_ADMIN are rejected.
+ *                 example: STUDENT
  *               showProfileToGuests:
  *                 type: boolean
  *                 example: true
@@ -249,11 +259,15 @@ usersRouter.patch("/:id", requireAuth, async (req, res, next) => {
       return res.status(403).json({ error: "You can only update your own profile" });
     }
 
-    const { displayName, bio, role, gen, department, specialization, showProfileToGuests, allowDirectRequests, showOnlineStatus, receiveEmailNotifications } = req.body;
+    // SECURITY: `role` is deliberately excluded from the destructure below.
+    // This route lets a user edit only their own row, so accepting a
+    // client-supplied `role` here would let anyone self-promote to
+    // SUPER_ADMIN/MODERATOR. Role assignment happens outside the public API
+    // (see backend/seed.js) — never from a value the caller supplies.
+    const { displayName, bio, gen, department, specialization, showProfileToGuests, allowDirectRequests, showOnlineStatus, receiveEmailNotifications } = req.body;
     const updates = {};
     if (displayName !== undefined) updates.display_name = displayName;
     if (bio !== undefined) updates.bio = bio;
-    if (role !== undefined) updates.role = role;
     if (gen !== undefined) updates.gen = gen;
     if (department !== undefined) updates.department = department;
     if (specialization !== undefined) updates.specialization = specialization;

@@ -56,7 +56,8 @@ function userSafe(row) {
  *     summary: Create a new account
  *     description: >
  *       Registers a new user with a CADT student email. Sends a 6-digit OTP to the email.
- *       `role` defaults to `STUDENT`. Returns JWT tokens — email verification is recommended but tokens are issued immediately.
+ *       `role` is always `STUDENT` — it is never accepted from the client (see security note below).
+ *       Returns JWT tokens — email verification is recommended but tokens are issued immediately.
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -80,11 +81,6 @@ function userSafe(row) {
  *               displayName:
  *                 type: string
  *                 example: Dara Chan
- *               role:
- *                 type: string
- *                 enum: [STUDENT, MENTOR]
- *                 default: STUDENT
- *                 example: STUDENT
  *     responses:
  *       201:
  *         description: Account created — tokens + safe user object returned
@@ -107,7 +103,11 @@ function userSafe(row) {
  */
 authRouter.post("/signup", requireCadtEmail, async (req, res, next) => {
   try {
-    const { cadtEmail, password, displayName, role, gen, department, specialization } = req.body;
+    // SECURITY: `role` is intentionally NOT read from req.body. Every account
+    // self-registers as STUDENT; SUPER_ADMIN/MODERATOR can only be granted by
+    // an existing admin through a dedicated, requireRole-gated endpoint —
+    // never by a value the caller supplies at signup.
+    const { cadtEmail, password, displayName, gen, department, specialization } = req.body;
     if (!password || password.length < 6) {
       return res.status(400).json({ error: "Password must be at least 6 characters" });
     }
@@ -121,7 +121,7 @@ authRouter.post("/signup", requireCadtEmail, async (req, res, next) => {
         email: cadtEmail,
         password_hash: passwordHash,
         display_name: displayName,
-        role: role ?? "STUDENT",
+        role: "STUDENT",
         gen: gen ?? null,
         department: department ?? null,
         specialization: specialization ?? null,
