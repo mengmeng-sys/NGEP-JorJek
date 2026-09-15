@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider } from "@/context/AuthContext";
 import Navbar from "@/components/shared/Navbar";
 
@@ -27,11 +27,17 @@ import OtpVerificationPage from "@/pages/auth/OtpVerificationPage";
 import TechInterestsPage from "@/pages/auth/TechInterestsPage";
 
 export default function App() {
+  const { pathname } = useLocation();
+  const hideNavbar = pathname.startsWith('/auth/login')
+    || pathname.startsWith('/auth/signup')
+    || pathname.startsWith('/auth/verify-otp')
+    || pathname.startsWith('/auth/tech-interests');
+
   return (
     <AuthProvider>
       <div className="min-h-screen bg-[#FBFBFB]">
-        {/* Global Responsive Header */}
-        <Navbar />
+        {/* Global Responsive Header (hidden on auth pages) */}
+        {!hideNavbar && <Navbar />}
 
         <Routes>
           {/* Core Feeds & Discovery */}

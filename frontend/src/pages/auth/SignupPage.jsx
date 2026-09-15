@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import { BackHomeArrow } from '@/components/shared/BackHomeArrow';
 
 export default function SignupPage() {
   const navigate = useNavigate();
@@ -64,7 +65,10 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#FBFBFB] flex flex-col justify-center items-center px-3.5 sm:px-6 py-6 sm:py-12">
+    <div className="min-h-screen w-full bg-[#FBFBFB] flex flex-col justify-center items-center px-3.5 sm:px-6 py-6 sm:py-12 relative">
+      <div className="absolute top-4 sm:top-6 left-4 sm:left-6">
+        <BackHomeArrow />
+      </div>
       <div className="w-full max-w-md sm:max-w-lg bg-white border border-gray-200 rounded-xl sm:rounded-2xl shadow-xs p-5 sm:p-8">
         
         {/* Header with Brand Asset */}

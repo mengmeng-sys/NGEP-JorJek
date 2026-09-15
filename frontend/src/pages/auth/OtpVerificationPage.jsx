@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import { BackHomeArrow } from '@/components/shared/BackHomeArrow';
 
 export default function OtpVerificationPage() {
   const location = useLocation();
@@ -115,7 +116,10 @@ export default function OtpVerificationPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#FBFBFB] flex flex-col justify-center items-center px-4 sm:px-6 py-8 sm:py-12">
+    <div className="min-h-screen w-full bg-[#FBFBFB] flex flex-col justify-center items-center px-4 sm:px-6 py-8 sm:py-12 relative">
+      <div className="absolute top-4 sm:top-6 left-4 sm:left-6">
+        <BackHomeArrow />
+      </div>
       <div className="w-full max-w-sm sm:max-w-md bg-white border border-gray-200 rounded-xl sm:rounded-2xl shadow-xs p-5 sm:p-8 text-center">
 
         <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-orange-50 border border-orange-100 text-[#FF4F00] flex items-center justify-center mx-auto mb-3.5 sm:mb-4">
