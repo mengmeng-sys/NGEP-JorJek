@@ -15,6 +15,7 @@ const { sessionsRouter } = require("./routes/sessions.routes");
 const { errorHandler } = require("./middleware/errorHandler");
 const { logger } = require("./middleware/logger.middleware");
 const { swaggerSpec } = require("./config/swagger");
+const { env } = require("./config/env");
 
 const app = express();
 
@@ -88,7 +89,16 @@ app.get("/api-docs.json", (_req, res) => res.json(swaggerSpec));
  *                   type: boolean
  *                   example: true
  */
-app.get("/health", (_req, res) => res.json({ ok: true }));
+app.get("/health", (_req, res) =>
+  res.json({
+    ok: true,
+    smtp: {
+      configured: Boolean(env.smtpUser),
+      host: env.smtpHost,
+      from: env.smtpFrom || env.smtpUser || null,
+    },
+  })
+);
 
 /**
  * @swagger
