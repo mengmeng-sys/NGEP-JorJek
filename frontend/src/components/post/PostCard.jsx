@@ -30,6 +30,7 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
   // Interaction states
   const [voteState, setVoteState] = useState(post.hasUpvoted ? 1 : 0);
   const [voteCount, setVoteCount] = useState(post.upvotes || 0);
+  const [commentCount, setCommentCount] = useState(post.comments || 0);
   const [isSaved, setIsSaved] = useState(post.isSaved || false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isReported, setIsReported] = useState(false);
@@ -50,15 +51,44 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
   }, []);
 
   useEffect(() => {
+    if (post.upvotes !== undefined) {
+      setVoteCount(post.upvotes);
+    }
+  }, [post.upvotes]);
+
+  useEffect(() => {
+    if (post.comments !== undefined) {
+      setCommentCount(post.comments);
+    }
+  }, [post.comments]);
+
+  useEffect(() => {
     const handleVoteUpdate = ({ target, id: targetId, value, voterId, removed }) => {
       if (voterId === user?.id) return;
       if (target === "post" && targetId === post.id) {
-        setVoteCount((prev) => removed ? prev : prev + value);
+        setVoteCount((prev) => removed ? prev - value : prev + value);
       }
     };
 
+    const handleNewComment = (comment) => {
+      if (comment.postId === post.id || comment.post_id === post.id) {
+        setCommentCount((prev) => prev + 1);
+      }
+    };
+
+    const handleCommentDeleted = ({ id: deletedId, postId }) => {
+      if (postId && postId !== post.id) return;
+      setCommentCount((prev) => Math.max(0, prev - 1));
+    };
+
     on("vote_update", handleVoteUpdate);
-    return () => off("vote_update", handleVoteUpdate);
+    on("new_comment", handleNewComment);
+    on("comment_deleted", handleCommentDeleted);
+    return () => {
+      off("vote_update", handleVoteUpdate);
+      off("new_comment", handleNewComment);
+      off("comment_deleted", handleCommentDeleted);
+    };
   }, [on, off, post.id, user?.id]);
 
   const handleUpvote = async (e) => {
@@ -382,7 +412,7 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
             <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
               <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
             </svg>
-            <span className="text-[11px] sm:text-xs">{post.comments || 0}</span>
+            <span className="text-[11px] sm:text-xs">{commentCount}</span>
           </div>
 
           {/* Share */}
