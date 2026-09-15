@@ -283,12 +283,12 @@ votesRouter.post("/vote", requireAuth, requireVerifiedEmail, async (req, res, ne
     const io = getIO();
     if (io) {
       if (postId) {
-        io.to(`post:${postId}`).emit("vote_update", { target: "post", id: postId, value: voteValue, voterId: req.userId });
+        io.to(`post:${postId}`).emit("vote_update", { target: "post", id: postId, value: voteValue, voterId: req.userId, isNew: !existing });
       }
       if (commentId) {
         const { data: comment } = await supabase.from("comments").select("post_id").eq("id", commentId).maybeSingle();
         if (comment) {
-          io.to(`post:${comment.post_id}`).emit("vote_update", { target: "comment", id: commentId, postId: comment.post_id, value: voteValue, voterId: req.userId });
+          io.to(`post:${comment.post_id}`).emit("vote_update", { target: "comment", id: commentId, postId: comment.post_id, value: voteValue, voterId: req.userId, isNew: !existing });
         }
       }
     }

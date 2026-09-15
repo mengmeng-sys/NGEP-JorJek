@@ -30,6 +30,7 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
   // Interaction states
   const [voteState, setVoteState] = useState(post.hasUpvoted ? 1 : 0);
   const [voteCount, setVoteCount] = useState(post.upvotes || 0);
+  const [voteTotal, setVoteTotal] = useState(post.voteTotal || 0);
   const [commentCount, setCommentCount] = useState(post.comments || 0);
   const [isSaved, setIsSaved] = useState(post.isSaved || false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -57,6 +58,12 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
   }, [post.upvotes]);
 
   useEffect(() => {
+    if (post.voteTotal !== undefined) {
+      setVoteTotal(post.voteTotal);
+    }
+  }, [post.voteTotal]);
+
+  useEffect(() => {
     if (post.comments !== undefined) {
       setCommentCount(post.comments);
     }
@@ -65,10 +72,15 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
   useEffect(() => {
     joinPost(post.id);
 
-    const handleVoteUpdate = ({ target, id: targetId, value, voterId, removed }) => {
+    const handleVoteUpdate = ({ target, id: targetId, value, voterId, removed, isNew }) => {
       if (voterId === user?.id) return;
       if (target === "post" && targetId === post.id) {
         setVoteCount((prev) => removed ? prev - value : prev + value);
+        if (removed) {
+          setVoteTotal((prev) => Math.max(0, prev - 1));
+        } else if (isNew) {
+          setVoteTotal((prev) => prev + 1);
+        }
       }
     };
 
@@ -424,13 +436,13 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
             <span className="text-[11px] sm:text-xs">{commentCount}</span>
           </div>
 
-          {/* Vote Count */}
+          {/* Total Votes */}
           <div className="flex items-center gap-1 sm:gap-1.5">
             <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
               <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
             </svg>
-            <span className={`text-[11px] sm:text-xs font-semibold ${voteCount > 0 ? 'text-green-600' : voteCount < 0 ? 'text-red-500' : 'text-gray-500'}`}>
-              {voteCount} {voteCount === 1 || voteCount === -1 ? 'vote' : 'votes'}
+            <span className="text-[11px] sm:text-xs text-gray-500">
+              {voteTotal} {voteTotal === 1 ? 'vote' : 'votes'}
             </span>
           </div>
 
