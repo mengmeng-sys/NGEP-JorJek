@@ -369,6 +369,19 @@ export default function Navbar() {
                         <span>Account Settings</span>
                       </Link>
 
+                      {user?.role === "SUPER_ADMIN" || user?.role === "MODERATOR" ? (
+                        <Link
+                          to="/admin"
+                          onClick={() => setIsMenuOpen(false)}
+                          className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-orange-600 hover:bg-orange-50 transition-colors"
+                        >
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                          </svg>
+                          <span>Admin Dashboard</span>
+                        </Link>
+                      ) : null}
+
                       <div className="border-t border-gray-100 pt-1 mt-1">
                         <button
                           type="button"
