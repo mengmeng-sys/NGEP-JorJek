@@ -719,7 +719,7 @@ export default function PostDetailPage() {
       if (target === "post" && targetId === id) {
         if (voterId === user?.id) return;
         setPostVoteCount((prev) => {
-          if (removed) return prev;
+          if (removed) return prev - value;
           return prev + value;
         });
         return;
@@ -728,7 +728,7 @@ export default function PostDetailPage() {
         setComments((prev) =>
           updateCommentInTree(prev, targetId, (c) => ({
             ...c,
-            votes: removed ? c.votes : c.votes + value,
+            votes: removed ? c.votes - value : c.votes + value,
           }))
         );
       }
