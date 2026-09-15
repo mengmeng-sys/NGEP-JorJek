@@ -10,10 +10,35 @@ export default function SignupPage() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [gen, setGen] = useState('');
+  const [department, setDepartment] = useState('');
+  const [specialization, setSpecialization] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [emailError, setEmailError] = useState('');
   const [submitError, setSubmitError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  const departmentOptions = [
+    {
+      name: 'Computer Science',
+      specializations: ['Software Engineering', 'Data Science'],
+    },
+    {
+      name: 'Telecommunications and Networking',
+      specializations: ['Telecommunications and Networking Engineering', 'Cybersecurity'],
+    },
+    {
+      name: 'Digital Business',
+      specializations: ['E-commerce'],
+    },
+  ];
+
+  const availableSpecializations = departmentOptions.find((d) => d.name === department)?.specializations || [];
+
+  const handleDepartmentChange = (deptName) => {
+    setDepartment(deptName);
+    setSpecialization('');
+  };
 
   // Domain restriction validator — mirrors the backend's CADT_EMAIL_DOMAIN gate.
   const validateEmailDomain = (val) => {
@@ -36,7 +61,7 @@ export default function SignupPage() {
 
   const isPasswordStrong = Object.values(passwordCriteria).every(Boolean);
   const isValidEmail = Boolean(email) && !emailError;
-  const isFormValid = isPasswordStrong && isValidEmail && Boolean(username.trim());
+  const isFormValid = isPasswordStrong && isValidEmail && Boolean(username.trim()) && Boolean(gen) && Boolean(department) && Boolean(specialization);
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -49,6 +74,9 @@ export default function SignupPage() {
         cadtEmail: email.trim(),
         password,
         role: 'STUDENT',
+        gen: Number(gen),
+        department: department.trim(),
+        specialization: specialization.trim(),
       });
       navigate('/auth/verify-otp', {
         state: {
@@ -168,6 +196,69 @@ export default function SignupPage() {
               </span>
             </div>
           </div>
+
+          {/* Gen */}
+          <div>
+            <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">
+              Generation (Gen)
+            </label>
+            <input
+              type="number"
+              min="1"
+              value={gen}
+              onChange={(e) => setGen(e.target.value)}
+              placeholder="e.g. 8"
+              className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs text-gray-900 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs"
+            />
+          </div>
+
+          {/* Department Selector */}
+          <div>
+            <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">
+              Department
+            </label>
+            <div className="grid grid-cols-1 gap-2">
+              {departmentOptions.map((dept) => (
+                <button
+                  key={dept.name}
+                  type="button"
+                  onClick={() => handleDepartmentChange(dept.name)}
+                  className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                    department === dept.name
+                      ? 'bg-[#FF4F00] border-[#FF4F00] text-white'
+                      : 'bg-white border-gray-200 text-gray-600 hover:border-[#FF4F00] hover:text-[#FF4F00]'
+                  }`}
+                >
+                  {dept.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Specialization — only shows after department is selected */}
+          {department && availableSpecializations.length > 0 && (
+            <div>
+              <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">
+                Specialization
+              </label>
+              <div className="grid grid-cols-1 gap-2">
+                {availableSpecializations.map((spec) => (
+                  <button
+                    key={spec}
+                    type="button"
+                    onClick={() => setSpecialization(spec === specialization ? '' : spec)}
+                    className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                      specialization === spec
+                        ? 'bg-[#FF4F00] border-[#FF4F00] text-white'
+                        : 'bg-white border-gray-200 text-gray-600 hover:border-[#FF4F00] hover:text-[#FF4F00]'
+                    }`}
+                  >
+                    {spec}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {submitError && (
             <p className="text-[11px] text-red-600 font-semibold bg-red-50 border border-red-100 rounded-lg px-3 py-2">

@@ -29,6 +29,11 @@ export default function SearchPage() {
     }
   })();
 
+  const urlQuery = searchParams.get("q") || "";
+  useEffect(() => {
+    setQ(urlQuery);
+  }, [urlQuery]);
+
   useEffect(() => {
     async function search() {
       if (!q.trim()) {

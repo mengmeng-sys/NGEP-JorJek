@@ -1,15 +1,29 @@
 import { useEffect, useState } from "react";
 import { notificationsApi } from "@/lib/api";
+import { useSocket } from "@/context/SocketContext";
 import { ThreeColumnLayout } from "@/components/layout/ThreeColumnLayout";
 import { getApiErrorMessage } from "@/lib/apiClient";
 
 export default function NotificationsPage() {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { on, off } = useSocket();
 
   useEffect(() => {
     load();
   }, []);
+
+  useEffect(() => {
+    const handleNotification = (notification) => {
+      setNotifications((prev) => {
+        if (prev.some((n) => n.id === notification.id)) return prev;
+        return [notification, ...prev];
+      });
+    };
+
+    on("notification", handleNotification);
+    return () => off("notification", handleNotification);
+  }, [on, off]);
 
   async function load() {
     setLoading(true);
@@ -43,6 +57,24 @@ export default function NotificationsPage() {
     }
   };
 
+  const removeNotification = async (id) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+    try {
+      await notificationsApi.remove(id);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const clearRead = async () => {
+    setNotifications((prev) => prev.filter((n) => !n.read));
+    try {
+      await notificationsApi.clearRead();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   return (
@@ -54,6 +86,15 @@ export default function NotificationsPage() {
             <p className="text-xs text-gray-500 mt-0.5">Stay updated on your coursework, replies, and sessions.</p>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
+            {notifications.some((n) => n.read) && (
+              <button
+                type="button"
+                onClick={clearRead}
+                className="text-[11px] font-bold text-gray-400 hover:text-red-600 hover:underline cursor-pointer"
+              >
+                Clear read
+              </button>
+            )}
             {unreadCount > 0 && (
               <button
                 type="button"
@@ -93,6 +134,20 @@ export default function NotificationsPage() {
                   </div>
                   <p className="text-xs text-gray-600 mt-1 leading-relaxed">{n.message || n.body || n.content}</p>
                 </div>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeNotification(n.id);
+                  }}
+                  className="text-gray-300 hover:text-red-600 p-1 -mr-1 flex-shrink-0 cursor-pointer"
+                  title="Remove notification"
+                  aria-label="Remove notification"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
                 {!n.read && <span className="w-2 h-2 rounded-full bg-[#FF4F00] mt-1.5 flex-shrink-0" />}
               </div>
             ))}

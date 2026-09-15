@@ -52,5 +52,5 @@ export function usePosts({ tag, page = 1, limit = 50 } = {}) {
     load();
   }, [load]);
 
-  return { posts, loading, error, total, refresh: load, updatePost };
+  return { posts, loading, error, total, refresh: load, updatePost, setPosts };
 }

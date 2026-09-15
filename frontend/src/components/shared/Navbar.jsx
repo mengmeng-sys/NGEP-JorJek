@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { NavLink, Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { CreatePostModal } from '@/components/post/CreatePostModal';
 import { useAuth } from '@/context/AuthContext';
+import { useSocket } from '@/context/SocketContext';
 import { notificationsApi, postsApi } from "@/lib/api";
 import { getApiErrorMessage } from "@/lib/apiClient";
 
@@ -12,6 +13,7 @@ export default function Navbar() {
 
   // Consume shared auth state and actions from AuthContext
   const { user, logout } = useAuth();
+  const { on, off, isConnected } = useSocket();
 
   // Modal & Panel visibility states
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
@@ -32,19 +34,24 @@ export default function Navbar() {
       return;
     }
 
-    const fetchNotifications = () => {
-      notificationsApi.list()
-        .then((data) => {
-          if (Array.isArray(data)) setNotifications(data);
-        })
-        .catch((err) => console.error("Notification polling failed:", err));
+    notificationsApi.list()
+      .then((data) => {
+        if (Array.isArray(data)) setNotifications(data);
+      })
+      .catch((err) => console.error("Failed to load notifications:", err));
+  }, [user]);
+
+  useEffect(() => {
+    const handleNotification = (notification) => {
+      setNotifications((prev) => {
+        if (prev.some((n) => n.id === notification.id)) return prev;
+        return [notification, ...prev];
+      });
     };
 
-    fetchNotifications();
-    const intervalId = setInterval(fetchNotifications, 5000);
-
-    return () => clearInterval(intervalId);
-  }, [user]);
+    on("notification", handleNotification);
+    return () => off("notification", handleNotification);
+  }, [on, off]);
 
   const menuRef = useRef(null);
   const notifRef = useRef(null);
@@ -79,11 +86,21 @@ export default function Navbar() {
     setNotifications((prev) =>
       prev.map((n) => (n.id === notif.id ? { ...n, read: true } : n))
     );
-    setIsNotificationsOpen(false);
     if (!notif.read) {
       notificationsApi.markRead(notif.id).catch(() => {});
     }
+    setIsNotificationsOpen(false);
     if (notif.link) navigate(notif.link);
+  };
+
+  const handleDeleteNotification = async (id) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+    notificationsApi.remove(id).catch(() => {});
+  };
+
+  const handleClearRead = async () => {
+    setNotifications((prev) => prev.filter((n) => !n.read));
+    notificationsApi.clearRead().catch(() => {});
   };
 
   const handleSearchSubmit = (e) => {
@@ -259,15 +276,27 @@ export default function Navbar() {
                             </span>
                           )}
                         </div>
-                        {unreadCount > 0 && (
-                          <button
-                            type="button"
-                            onClick={handleMarkAllRead}
-                            className="text-[11px] font-semibold text-[#FF4F00] hover:underline cursor-pointer"
-                          >
-                            Mark all as read
-                          </button>
-                        )}
+                        <div className="flex items-center gap-2.5">
+                          {notifications.some((n) => n.read) && (
+                            <button
+                              type="button"
+                              onClick={handleClearRead}
+                              className="text-[11px] font-semibold text-gray-400 hover:text-red-600 hover:underline cursor-pointer"
+                              title="Remove all read notifications"
+                            >
+                              Clear read
+                            </button>
+                          )}
+                          {unreadCount > 0 && (
+                            <button
+                              type="button"
+                              onClick={handleMarkAllRead}
+                              className="text-[11px] font-semibold text-[#FF4F00] hover:underline cursor-pointer"
+                            >
+                              Mark all as read
+                            </button>
+                          )}
+                        </div>
                       </div>
 
                       <div className="max-h-72 overflow-y-auto divide-y divide-gray-50">
@@ -300,6 +329,20 @@ export default function Navbar() {
                                   {notif.message || notif.content}
                                 </p>
                               </div>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeleteNotification(notif.id);
+                                }}
+                                className="text-gray-300 hover:text-red-600 p-1 -m-1 flex-shrink-0 cursor-pointer"
+                                title="Remove notification"
+                                aria-label="Remove notification"
+                              >
+                                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                              </button>
                               {!notif.read && (
                                 <span className="w-2 h-2 rounded-full bg-[#FF4F00] mt-1.5 flex-shrink-0" />
                               )}
@@ -578,6 +621,7 @@ export default function Navbar() {
               title: postPayload.title,
               content: postPayload.details ?? postPayload.content,
               tags: postPayload.tags || [],
+              allowMentoring: postPayload.allowMentoring,
             });
             setIsPostModalOpen(false);
             navigate(`/posts/${created.id}`);

@@ -1,16 +1,12 @@
 import React from 'react';
 import { useAuth } from '@/hooks/useAuth';
 
-export function GettingStartedCard({
-  hasUpvoted = false,
-  hasSaved = false,
-  hasCommented = false,
-  onOpenAuth,
-}) {
-  const { user } = useAuth();
+export function GettingStartedCard({ onOpenAuth }) {
+  const { user, onboarding, isOnboardingComplete } = useAuth();
   const isLoggedIn = Boolean(user && (user.displayName || user.email || user.id));
 
-  // Checklist items configuration
+  if (isOnboardingComplete()) return null;
+
   const tasks = [
     {
       id: 'profile',
@@ -20,17 +16,17 @@ export function GettingStartedCard({
     {
       id: 'upvote',
       label: 'Upvote a helpful post',
-      completed: isLoggedIn && hasUpvoted,
+      completed: isLoggedIn && onboarding.hasUpvoted,
     },
     {
       id: 'save',
       label: 'Save a resource for later',
-      completed: isLoggedIn && hasSaved,
+      completed: isLoggedIn && onboarding.hasSaved,
     },
     {
       id: 'comment',
       label: 'Leave your first comment',
-      completed: isLoggedIn && hasCommented,
+      completed: isLoggedIn && onboarding.hasCommented,
     },
   ];
 

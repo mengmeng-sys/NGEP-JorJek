@@ -1,18 +1,25 @@
 /**
- * PHASE 2 — deliberately disabled for the Sep 17 demo.
- * See JorJek_Project_Scope.pdf, Section 4: the button stays visible so the
- * mentoring-bridge vision is still communicated, but it does nothing yet.
- * The backend route it would call (POST /sessions) intentionally 501s —
- * see backend/src/routes/sessions.routes.js.
+ * PHASE 2 — the booking form is not live yet (see sessions.routes.js: the
+ * backend route it calls intentionally 501s). The button now routes to the
+ * Request Session page, which shows the real booking UI blurred behind a
+ * "Coming Soon!" overlay so the Phase 2 vision is still communicated.
  *
- * When Phase 2 starts: wire this up to open a time-slot proposal form and
- * POST /sessions, per the booking flow in JorJek.pdf.
+ * When Phase 2 starts: the RequestSessionPage form will POST to /sessions.
  */
-// eslint-disable-next-line no-unused-vars
+import React from "react";
+import { useNavigate } from "react-router-dom";
+
 export function RequestSessionButton({ mentorId, commentId }) {
+  const navigate = useNavigate();
+
   return (
-    <button disabled title="Coming soon — session booking launches in Phase 2">
-      Request Session (Coming Soon)
+    <button
+      type="button"
+      onClick={() => navigate(`/request-session/${mentorId || ""}`)}
+      title="Request a mentoring session"
+      className="text-[10px] sm:text-[11px] font-bold text-[#FF4F00] hover:text-orange-700 transition-colors cursor-pointer"
+    >
+      Request Session
     </button>
   );
 }

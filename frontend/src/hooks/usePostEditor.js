@@ -23,6 +23,7 @@ export function usePostEditor(applyUpdated) {
         title: payload.title,
         content: payload.details ?? payload.content,
         type: payload.type,
+        allowMentoring: payload.allowMentoring,
         tags: (payload.tags || []).map((t) => String(t).replace(/^#/, "")),
       });
       if (typeof applyUpdated === "function") applyUpdated(updated);

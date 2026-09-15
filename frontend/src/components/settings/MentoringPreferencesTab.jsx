@@ -59,7 +59,9 @@ export function MentoringPreferencesTab() {
   };
 
   return (
-    <div className="w-full">
+    <div className="relative w-full">
+      {/* Blurred content until the feature ships */}
+      <div className="blur-md opacity-70 select-none pointer-events-none" aria-hidden="true">
       {/* Tab Header */}
       <div className="border-b border-gray-100 pb-4 sm:pb-5 mb-5 sm:mb-6">
         <h2 className="text-base sm:text-lg font-bold text-gray-900 leading-tight">
@@ -270,6 +272,14 @@ export function MentoringPreferencesTab() {
           </button>
         </div>
 
+      </div>
+      </div>
+
+      {/* Coming Soon overlay */}
+      <div className="absolute inset-0 z-10 flex items-center justify-center">
+        <span className="px-8 py-4 rounded-2xl bg-white/90 border border-gray-200 shadow-lg text-3xl sm:text-4xl font-black text-[#FF4F00] tracking-tight">
+          Coming Soon!
+        </span>
       </div>
     </div>
   );

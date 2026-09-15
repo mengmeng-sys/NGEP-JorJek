@@ -13,6 +13,9 @@ create table public.users (
   display_name text not null,
   role text not null default 'STUDENT' check (role in ('STUDENT', 'PROFESSOR')),
   bio text,
+  gen integer,
+  department text,
+  specialization text,
   karma integer not null default 0,
   show_profile_to_guests boolean not null default true,
   allow_direct_requests boolean not null default true,
@@ -41,6 +44,7 @@ create table public.posts (
   type text not null default 'question' check (type in ('question', 'offer', 'resource')),
   title text not null,
   body text not null,
+  allow_mentoring boolean not null default false,
   created_at timestamptz not null default now(),
   updated_at timestamptz
 );

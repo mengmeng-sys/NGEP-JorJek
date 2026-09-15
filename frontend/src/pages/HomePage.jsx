@@ -1,17 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { usePosts } from "@/hooks/usePosts";
 import { usePostEditor } from "@/hooks/usePostEditor";
+import { useSocket } from "@/context/SocketContext";
 import { PostCard } from "@/components/post/PostCard";
 import { CreatePostModal } from "@/components/post/CreatePostModal";
 import { ThreeColumnLayout } from "@/components/layout/ThreeColumnLayout";
+import { normalizePost } from "@/lib/adapters";
 
 export default function HomePage() {
-  const { posts, loading, updatePost } = usePosts();
+  const { posts, loading, updatePost, setPosts } = usePosts();
   const { isPostModalOpen, editingPost, openEdit, closeEdit, saveEdit } = usePostEditor(updatePost);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const selectedTag = searchParams.get('tag');
+  const { on, off } = useSocket();
+
+  useEffect(() => {
+    const handleNewPost = (newPost) => {
+      const normalized = normalizePost(newPost);
+      setPosts((prev) => {
+        if (prev.some((p) => p.id === normalized.id)) return prev;
+        if (selectedTag && !normalized.tags.some((t) => t.toLowerCase() === selectedTag.toLowerCase())) return prev;
+        return [normalized, ...prev];
+      });
+    };
+
+    const handlePostDeleted = ({ id }) => {
+      setPosts((prev) => prev.filter((p) => p.id !== id));
+    };
+
+    const handlePostUpdated = (updatedPost) => {
+      const normalized = normalizePost(updatedPost);
+      setPosts((prev) =>
+        prev.map((p) => (p.id === normalized.id ? { ...p, ...normalized } : p))
+      );
+    };
+
+    on("new_post", handleNewPost);
+    on("post_deleted", handlePostDeleted);
+    on("post_updated", handlePostUpdated);
+    return () => {
+      off("new_post", handleNewPost);
+      off("post_deleted", handlePostDeleted);
+      off("post_updated", handlePostUpdated);
+    };
+  }, [on, off, selectedTag, setPosts]);
 
   const [sortBy, setSortBy] = useState('hot');
   const sortOptions = [

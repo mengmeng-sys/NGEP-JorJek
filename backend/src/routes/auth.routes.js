@@ -7,6 +7,7 @@ const { sendMail } = require("../config/mailer");
 const { generateOtp, otpEmailHtml, successEmailHtml } = require("../utils/otp");
 const { requireCadtEmail } = require("../middleware/cadtEmailGate.middleware");
 const { requireAuth } = require("../middleware/auth.middleware");
+const { getIO } = require("../lib/socket");
 
 const OTP_EXPIRY_MINUTES = 10;
 const REFRESH_TOKEN_DAYS = 30;
@@ -34,6 +35,10 @@ function userSafe(row) {
     email: row.email,
     displayName: row.display_name,
     role: row.role,
+    bio: row.bio || null,
+    gen: row.gen ?? null,
+    department: row.department || null,
+    specialization: row.specialization || null,
     emailVerified: row.email_verified,
     showProfileToGuests: row.show_profile_to_guests ?? true,
     allowDirectRequests: row.allow_direct_requests ?? true,
@@ -102,7 +107,7 @@ function userSafe(row) {
  */
 authRouter.post("/signup", requireCadtEmail, async (req, res, next) => {
   try {
-    const { cadtEmail, password, displayName, role } = req.body;
+    const { cadtEmail, password, displayName, role, gen, department, specialization } = req.body;
     if (!password || password.length < 6) {
       return res.status(400).json({ error: "Password must be at least 6 characters" });
     }
@@ -117,6 +122,9 @@ authRouter.post("/signup", requireCadtEmail, async (req, res, next) => {
         password_hash: passwordHash,
         display_name: displayName,
         role: role ?? "STUDENT",
+        gen: gen ?? null,
+        department: department ?? null,
+        specialization: specialization ?? null,
         email_verified: false,
         otp_code: otp,
         otp_expires_at: otpExpiry(),
@@ -134,7 +142,13 @@ authRouter.post("/signup", requireCadtEmail, async (req, res, next) => {
       html: otpEmailHtml(otp, "verify"),
     }).catch((e) => console.error("Failed to send verification OTP:", e.message));
 
-    res.status(201).json({ token, refreshToken, user: userSafe(user) });
+    const io = getIO();
+    if (io) {
+      io.emit("user_registered", userSafe(user));
+    }
+
+    const devPayload = process.env.NODE_ENV !== "production" ? { devOtp: otp } : {};
+    res.status(201).json({ token, refreshToken, user: userSafe(user), ...devPayload });
   } catch (err) {
     next(err);
   }
@@ -375,7 +389,7 @@ authRouter.get("/me", requireAuth, async (req, res, next) => {
   try {
     const { data: user, error } = await supabase
       .from("users")
-      .select("id,email,display_name,role,bio,karma,email_verified,show_profile_to_guests,allow_direct_requests,show_online_status,receive_email_notifications,created_at")
+      .select("id,email,display_name,role,bio,gen,department,specialization,karma,email_verified,show_profile_to_guests,allow_direct_requests,show_online_status,receive_email_notifications,created_at")
       .eq("id", req.userId)
       .maybeSingle();
     if (error) throw error;
@@ -387,6 +401,9 @@ authRouter.get("/me", requireAuth, async (req, res, next) => {
       displayName: user.display_name,
       role: user.role,
       bio: user.bio,
+      gen: user.gen,
+      department: user.department,
+      specialization: user.specialization,
       karma: user.karma,
       emailVerified: user.email_verified,
       showProfileToGuests: user.show_profile_to_guests,
@@ -474,13 +491,14 @@ authRouter.post("/resend-otp", async (req, res, next) => {
       .eq("id", user.id);
     if (updateErr) throw updateErr;
 
-    await sendMail({
+    sendMail({
       to: cadtEmail,
       subject: "JorJek — New Verification Code",
       html: otpEmailHtml(otp, "resend"),
-    });
+    }).catch((e) => console.error("Failed to send resend OTP email:", e.message));
 
-    res.json({ message: "OTP sent" });
+    const devPayload = process.env.NODE_ENV !== "production" ? { devOtp: otp } : {};
+    res.json({ message: "OTP sent", ...devPayload });
   } catch (err) {
     next(err);
   }
@@ -566,7 +584,7 @@ authRouter.post("/verify-email", async (req, res, next) => {
       .eq("id", user.id);
     if (updateErr) throw updateErr;
 
-    await sendMail({
+    sendMail({
       to: cadtEmail,
       subject: "JorJek — Email Verified Successfully",
       html: successEmailHtml("verified"),
@@ -613,7 +631,7 @@ authRouter.post("/verify-email", async (req, res, next) => {
  *                   type: string
  *                   example: If an account exists, an OTP has been sent
  */
-authRouter.post("/forgot-password", async (req, res, next) => {
+authRouter.post("/forgot-password", requireCadtEmail, async (req, res, next) => {
   try {
     const { cadtEmail } = req.body;
     if (!cadtEmail) {
@@ -637,13 +655,14 @@ authRouter.post("/forgot-password", async (req, res, next) => {
       .eq("id", user.id);
     if (updateErr) throw updateErr;
 
-    await sendMail({
+    sendMail({
       to: cadtEmail,
       subject: "JorJek — Password Reset",
       html: otpEmailHtml(otp, "reset"),
-    });
+    }).catch((e) => console.error("Failed to send reset OTP email:", e.message));
 
-    res.json({ message: "If an account exists, an OTP has been sent" });
+    const devPayload = process.env.NODE_ENV !== "production" ? { devOtp: otp } : {};
+    res.json({ message: "If an account exists, an OTP has been sent", ...devPayload });
   } catch (err) {
     next(err);
   }
@@ -705,7 +724,7 @@ authRouter.post("/forgot-password", async (req, res, next) => {
  *             schema:
  *               $ref: "#/components/schemas/Error"
  */
-authRouter.post("/reset-password", async (req, res, next) => {
+authRouter.post("/reset-password", requireCadtEmail, async (req, res, next) => {
   try {
     const { cadtEmail, otp, newPassword } = req.body;
     if (!cadtEmail || !otp || !newPassword) {
@@ -742,7 +761,7 @@ authRouter.post("/reset-password", async (req, res, next) => {
       .eq("id", user.id);
     if (updateErr) throw updateErr;
 
-    await sendMail({
+    sendMail({
       to: cadtEmail,
       subject: "JorJek — Password Reset Successful",
       html: successEmailHtml("passwordReset"),

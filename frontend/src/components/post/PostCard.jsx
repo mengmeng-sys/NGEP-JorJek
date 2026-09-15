@@ -1,11 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import { useSocket } from '@/context/SocketContext';
+import { ReportModal } from '@/components/shared/ReportModal';
 import { votesApi, reportsApi, postsApi } from '@/lib/api';
+import { copyToClipboard } from '@/lib/clipboard';
 
 export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, markOnboardingComplete } = useAuth();
 
   const initials = post.author
     ? post.author.split(' ').map((n) => n[0]).join('').toUpperCase()
@@ -30,6 +33,9 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
   const [isSaved, setIsSaved] = useState(post.isSaved || false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isReported, setIsReported] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+
+  const { on, off } = useSocket();
 
   // Close dropdown on outside click
   const menuRef = useRef(null);
@@ -42,6 +48,18 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    const handleVoteUpdate = ({ target, id: targetId, value, voterId, removed }) => {
+      if (voterId === user?.id) return;
+      if (target === "post" && targetId === post.id) {
+        setVoteCount((prev) => removed ? prev : prev + value);
+      }
+    };
+
+    on("vote_update", handleVoteUpdate);
+    return () => off("vote_update", handleVoteUpdate);
+  }, [on, off, post.id, user?.id]);
 
   const handleUpvote = async (e) => {
     e.stopPropagation();
@@ -63,6 +81,7 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
         await votesApi.remove({ postId: post.id });
       } else {
         await votesApi.cast({ postId: post.id }, 1);
+        markOnboardingComplete('hasUpvoted');
       }
     } catch {
       setVoteState(prevState);
@@ -110,8 +129,12 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
     setIsSaved(updated);
     if (onToggleSave) onToggleSave(post.id, updated);
     try {
-      if (updated) await postsApi.save(post.id);
-      else await postsApi.unsave(post.id);
+      if (updated) {
+        await postsApi.save(post.id);
+        markOnboardingComplete('hasSaved');
+      } else {
+        await postsApi.unsave(post.id);
+      }
     } catch {
       setIsSaved(prev);
       alert('Could not update saved posts. Please try again.');
@@ -130,27 +153,28 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
     if (onEdit) onEdit(post);
   };
 
-  const handleReport = async (e) => {
+  const handleReport = (e) => {
     e.stopPropagation();
     setIsMenuOpen(false);
     if (!user) {
       navigate('/auth/login');
       return;
     }
-    try {
-      await reportsApi.create({ postId: post.id, reason: 'User-reported from the feed' });
-      setIsReported(true);
-      alert('Thank you. This post has been flagged for moderator review.');
-    } catch {
-      alert('Could not submit the report. Please try again.');
-    }
+    setIsReportModalOpen(true);
   };
 
-  const handleCopyLink = (e) => {
+  const handleReportSubmit = async (reason) => {
+    await reportsApi.create({ postId: post.id, reason });
+    setIsReported(true);
+    setIsReportModalOpen(false);
+  };
+
+  const handleCopyLink = async (e) => {
     e.stopPropagation();
     setIsMenuOpen(false);
-    navigator.clipboard.writeText(`${window.location.origin}/posts/${post.id}`);
-    alert('Post link copied to clipboard!');
+    const url = `${window.location.origin}/posts/${post.id}`;
+    const ok = await copyToClipboard(url);
+    alert(ok ? 'Post link copied to clipboard!' : 'Could not copy the link. Please copy the URL manually.');
   };
 
   const postTags = post.tags || (post.tag ? [post.tag.replace(/^#/, '')] : []);
@@ -394,13 +418,13 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
           </button>
         </div>
 
-        {/* Action Button: Hide 'Request Mentoring' if own post */}
-        {!isOwner && (
+        {/* Action Button: only when author opted into mentoring requests */}
+        {!isOwner && post.allowMentoring && (
           <button
             type="button"
             onClick={(e) => {
               e.stopPropagation();
-              navigate(`/user/${userProfileSlug}`);
+              navigate(`/request-session/${post.userId || ''}`);
             }}
             className="text-[#FF4F00] bg-white border border-[#FF4F00] rounded-xl px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-[11px] sm:text-xs font-bold hover:bg-orange-50 transition-colors whitespace-nowrap ml-auto sm:ml-0 cursor-pointer active:scale-95"
           >
@@ -408,6 +432,14 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
           </button>
         )}
       </div>
+
+      <ReportModal
+        targetType="post"
+        targetName={post.author}
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+        onSubmit={handleReportSubmit}
+      />
     </div>
   );
 }

@@ -3,6 +3,7 @@ const { supabase } = require("../config/db");
 const { requireAuth } = require("../middleware/auth.middleware");
 const { requireVerifiedEmail } = require("../middleware/verifiedEmail.middleware");
 const { notify } = require("../services/notification.service");
+const { getIO } = require("../lib/socket");
 
 const commentsRouter = Router();
 
@@ -188,9 +189,24 @@ commentsRouter.post("/posts/:postId/comments", requireAuth, requireVerifiedEmail
       .maybeSingle();
     if (postError) throw postError;
 
-    if (post && post.author_id !== req.userId) {
+    if (parentId) {
+      const { data: parentComment } = await supabase
+        .from("comments")
+        .select("author_id")
+        .eq("id", parentId)
+        .maybeSingle();
+      if (parentComment && parentComment.author_id !== req.userId) {
+        await notify(parentComment.author_id, "reply", { postId: post.id, commentId: comment.id, parentId });
+      }
+    } else if (post && post.author_id !== req.userId) {
       await notify(post.author_id, "reply", { postId: post.id, commentId: comment.id });
     }
+
+    const io = getIO();
+    if (io) {
+      io.to(`post:${req.params.postId}`).emit("new_comment", comment);
+    }
+
     res.status(201).json(comment);
   } catch (err) {
     next(err);
@@ -277,9 +293,14 @@ commentsRouter.patch("/comments/:id", requireAuth, requireVerifiedEmail, async (
       .from("comments")
       .update({ body })
       .eq("id", req.params.id)
-      .select(`*, author:users(${USER_SAFE})`)
+      .select(`*, author:users(${USER_SAFE}), post_id`)
       .single();
     if (error) throw error;
+
+    const io = getIO();
+    if (io) {
+      io.to(`post:${comment.post_id}`).emit("comment_updated", comment);
+    }
 
     res.json(comment);
   } catch (err) {
@@ -330,7 +351,7 @@ commentsRouter.delete("/comments/:id", requireAuth, requireVerifiedEmail, async 
   try {
     const { data: existing, error: findError } = await supabase
       .from("comments")
-      .select("id, author_id")
+      .select("id, author_id, post_id")
       .eq("id", req.params.id)
       .maybeSingle();
     if (findError) throw findError;
@@ -341,6 +362,11 @@ commentsRouter.delete("/comments/:id", requireAuth, requireVerifiedEmail, async 
 
     const { error } = await supabase.from("comments").delete().eq("id", req.params.id);
     if (error) throw error;
+
+    const io = getIO();
+    if (io) {
+      io.to(`post:${existing.post_id}`).emit("comment_deleted", { id: req.params.id });
+    }
 
     res.status(204).send();
   } catch (err) {

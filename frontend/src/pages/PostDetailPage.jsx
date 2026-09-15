@@ -3,16 +3,48 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { ThreeColumnLayout } from '@/components/layout/ThreeColumnLayout';
 import { CreatePostModal } from '@/components/post/CreatePostModal';
 import { DeletePostModal } from '@/components/post/DeletePostModal';
+import { ReportModal } from '@/components/shared/ReportModal';
 import { useAuth } from '@/context/AuthContext';
+import { useSocket } from '@/context/SocketContext';
 import { postsApi, commentsApi, votesApi, reportsApi } from '@/lib/api';
-import { buildCommentTree, initialsFrom } from '@/lib/adapters';
+import { buildCommentTree, normalizeComment, normalizePost, initialsFrom } from '@/lib/adapters';
 import { getApiErrorMessage } from '@/lib/apiClient';
+import { copyToClipboard } from '@/lib/clipboard';
+
+function addReplyToTree(comment, parentId, reply) {
+  if (comment.id === parentId) {
+    return { ...comment, replies: [...(comment.replies || []), reply] };
+  }
+  if (comment.replies?.length) {
+    return { ...comment, replies: comment.replies.map((r) => addReplyToTree(r, parentId, reply)) };
+  }
+  return comment;
+}
+
+function removeCommentFromTree(comments, deletedId) {
+  return comments
+    .filter((c) => c.id !== deletedId)
+    .map((c) => ({
+      ...c,
+      replies: c.replies?.length ? removeCommentFromTree(c.replies, deletedId) : [],
+    }));
+}
+
+function updateCommentInTree(comments, targetId, updater) {
+  return comments.map((c) => {
+    if (c.id === targetId) return updater(c);
+    if (c.replies?.length) return { ...c, replies: updateCommentInTree(c.replies, targetId, updater) };
+    return c;
+  });
+}
 
 // Subcomponent for handling each individual comment thread
 function CommentThread({ comment, postId, currentUser, onRefresh }) {
   const navigate = useNavigate();
+  const { markOnboardingComplete } = useAuth();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isReported, setIsReported] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
   // Voting state for parent comment
   const [voteState, setVoteState] = useState(comment.myVote || 0);
@@ -23,6 +55,17 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
   const [replyText, setReplyText] = useState('');
   const [submittingReply, setSubmittingReply] = useState(false);
   const [replies, setReplies] = useState(comment.replies || []);
+
+  useEffect(() => {
+    setReplies(comment.replies || []);
+  }, [comment.replies]);
+
+  // Edit state
+  const [isEditing, setIsEditing] = useState(false);
+  const [editText, setEditText] = useState(comment.body);
+  const [submittingEdit, setSubmittingEdit] = useState(false);
+
+  const isCommentOwner = currentUser && currentUser.id === comment.author?.id;
 
   const handleVote = async (value) => {
     if (!currentUser) {
@@ -51,18 +94,18 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
     }
   };
 
-  const handleReport = async () => {
+  const handleReport = () => {
     if (!currentUser) {
       navigate('/auth/login');
       return;
     }
-    try {
-      await reportsApi.create({ commentId: comment.id, reason: 'Reported from comment thread' });
-      setIsReported(true);
-      alert('Thank you. This comment has been flagged for moderator review.');
-    } catch {
-      alert('Could not submit the report. Please try again.');
-    }
+    setIsReportModalOpen(true);
+  };
+
+  const handleReportSubmit = async (reason) => {
+    await reportsApi.create({ commentId: comment.id, reason });
+    setIsReported(true);
+    setIsReportModalOpen(false);
   };
 
   const handleSendReply = async (e) => {
@@ -75,13 +118,36 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
     setSubmittingReply(true);
     try {
       await commentsApi.create(postId, replyText.trim(), comment.id);
+      markOnboardingComplete('hasCommented');
       setReplyText('');
       setReplyingToUser(null);
-      onRefresh?.();
     } catch (err) {
       alert(getApiErrorMessage(err));
     } finally {
       setSubmittingReply(false);
+    }
+  };
+
+  const handleEdit = async (e) => {
+    e.preventDefault();
+    if (!editText.trim()) return;
+    setSubmittingEdit(true);
+    try {
+      await commentsApi.update(comment.id, editText.trim());
+      setIsEditing(false);
+    } catch (err) {
+      alert(getApiErrorMessage(err));
+    } finally {
+      setSubmittingEdit(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm('Delete this comment?')) return;
+    try {
+      await commentsApi.remove(comment.id);
+    } catch (err) {
+      alert(getApiErrorMessage(err));
     }
   };
 
@@ -105,20 +171,78 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
           <span className="text-gray-400 text-[11px] sm:text-xs">{comment.timestamp}</span>
         </div>
 
-        <button
-          type="button"
-          onClick={handleReport}
-          title="Report comment"
-          className={`p-1 rounded transition-colors group flex-shrink-0 cursor-pointer ${
-            isReported ? 'text-red-600 bg-red-50' : 'text-gray-300 hover:text-red-600 hover:bg-red-50'
-          }`}
-        >
-          <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform group-hover:scale-110" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-          </svg>
-        </button>
+        <div className="flex items-center gap-1 flex-shrink-0">
+          {isCommentOwner && !isEditing && (
+            <>
+              <button
+                type="button"
+                onClick={() => { setIsEditing(true); setEditText(comment.body); }}
+                title="Edit comment"
+                className="p-1 rounded text-gray-300 hover:text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer"
+              >
+                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                onClick={handleDelete}
+                title="Delete comment"
+                className="p-1 rounded text-gray-300 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+              >
+                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+            </>
+          )}
+          <button
+            type="button"
+            onClick={handleReport}
+            title="Report comment"
+            className={`p-1 rounded transition-colors group flex-shrink-0 cursor-pointer ${
+              isReported ? 'text-red-600 bg-red-50' : 'text-gray-300 hover:text-red-600 hover:bg-red-50'
+            }`}
+          >
+            <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform group-hover:scale-110" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>
+          </button>
+        </div>
       </div>
 
+      {isEditing ? (
+        <div className="pl-7 sm:pl-9">
+          <form onSubmit={handleEdit}>
+            <textarea
+              autoFocus
+              value={editText}
+              onChange={(e) => setEditText(e.target.value)}
+              className="w-full bg-white border border-gray-200 rounded-xl p-2.5 sm:p-3 text-xs sm:text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all min-h-[80px] resize-none"
+            />
+            <div className="flex justify-end gap-2 mt-2">
+              <button
+                type="button"
+                onClick={() => setIsEditing(false)}
+                className="px-3 py-1.5 text-xs font-semibold text-gray-500 hover:text-gray-800 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={!editText.trim() || submittingEdit}
+                className={`px-3.5 sm:px-4 py-1.5 rounded-xl text-xs font-bold text-white transition-colors ${
+                  editText.trim() && !submittingEdit
+                    ? 'bg-[#FF4F00] hover:bg-[#E64700] shadow-xs cursor-pointer'
+                    : 'bg-orange-200 cursor-not-allowed'
+                }`}
+              >
+                {submittingEdit ? 'Saving…' : 'Save'}
+              </button>
+            </div>
+          </form>
+        </div>
+      ) : (
       <div className="pl-7 sm:pl-9 text-xs sm:text-sm text-gray-700">
         <div className={`space-y-2 sm:space-y-3 leading-relaxed break-words ${!isExpanded ? 'line-clamp-3 overflow-hidden' : ''}`}>
           {comment.body}
@@ -174,6 +298,7 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
           </button>
         </div>
       </div>
+      )}
 
       {replies.length > 0 && (
         <div className="mt-3 sm:mt-4 ml-4 sm:ml-9 pl-3 sm:pl-4 border-l-2 border-gray-100 space-y-3.5 sm:space-y-4">
@@ -235,6 +360,14 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
           </div>
         </form>
       )}
+
+      <ReportModal
+        targetType="comment"
+        targetName={comment.author?.displayName}
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+        onSubmit={handleReportSubmit}
+      />
     </div>
   );
 }
@@ -242,8 +375,16 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
 function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
   const navigate = useNavigate();
   const [isReported, setIsReported] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [voteState, setVoteState] = useState(reply.myVote || 0);
   const [voteCount, setVoteCount] = useState(reply.votes || 0);
+
+  // Edit state
+  const [isEditing, setIsEditing] = useState(false);
+  const [editText, setEditText] = useState(reply.body);
+  const [submittingEdit, setSubmittingEdit] = useState(false);
+
+  const isCommentOwner = currentUser && currentUser.id === reply.author?.id;
 
   const handleVote = async (value) => {
     if (!currentUser) {
@@ -271,16 +412,40 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
     }
   };
 
-  const handleReport = async () => {
+  const handleReport = () => {
     if (!currentUser) {
       navigate('/auth/login');
       return;
     }
+    setIsReportModalOpen(true);
+  };
+
+  const handleReportSubmit = async (reason) => {
+    await reportsApi.create({ commentId: reply.id, reason });
+    setIsReported(true);
+    setIsReportModalOpen(false);
+  };
+
+  const handleEdit = async (e) => {
+    e.preventDefault();
+    if (!editText.trim()) return;
+    setSubmittingEdit(true);
     try {
-      await reportsApi.create({ commentId: reply.id, reason: 'Reported from comment thread' });
-      setIsReported(true);
-    } catch {
-      /* silent */
+      await commentsApi.update(reply.id, editText.trim());
+      setIsEditing(false);
+    } catch (err) {
+      alert(getApiErrorMessage(err));
+    } finally {
+      setSubmittingEdit(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm('Delete this reply?')) return;
+    try {
+      await commentsApi.remove(reply.id);
+    } catch (err) {
+      alert(getApiErrorMessage(err));
     }
   };
 
@@ -304,20 +469,78 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
           <span className="text-gray-400 text-[10px] sm:text-[11px]">{reply.timestamp}</span>
         </div>
 
-        <button
-          type="button"
-          onClick={handleReport}
-          title="Report reply"
-          className={`p-0.5 rounded transition-colors group flex-shrink-0 cursor-pointer ${
-            isReported ? 'text-red-600 bg-red-50' : 'text-gray-300 hover:text-red-600 hover:bg-red-50'
-          }`}
-        >
-          <svg className="w-3.5 h-3.5 transition-transform group-hover:scale-110" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-          </svg>
-        </button>
+        <div className="flex items-center gap-0.5 flex-shrink-0">
+          {isCommentOwner && !isEditing && (
+            <>
+              <button
+                type="button"
+                onClick={() => { setIsEditing(true); setEditText(reply.body); }}
+                title="Edit reply"
+                className="p-0.5 rounded text-gray-300 hover:text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer"
+              >
+                <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                onClick={handleDelete}
+                title="Delete reply"
+                className="p-0.5 rounded text-gray-300 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+              >
+                <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+            </>
+          )}
+          <button
+            type="button"
+            onClick={handleReport}
+            title="Report reply"
+            className={`p-0.5 rounded transition-colors group flex-shrink-0 cursor-pointer ${
+              isReported ? 'text-red-600 bg-red-50' : 'text-gray-300 hover:text-red-600 hover:bg-red-50'
+            }`}
+          >
+            <svg className="w-3.5 h-3.5 transition-transform group-hover:scale-110" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>
+          </button>
+        </div>
       </div>
 
+      {isEditing ? (
+        <div className="pl-6 sm:pl-8">
+          <form onSubmit={handleEdit}>
+            <textarea
+              autoFocus
+              value={editText}
+              onChange={(e) => setEditText(e.target.value)}
+              className="w-full bg-white border border-gray-200 rounded-lg p-2 text-xs text-gray-800 placeholder-gray-400 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all min-h-[60px] resize-none"
+            />
+            <div className="flex justify-end gap-2 mt-1.5">
+              <button
+                type="button"
+                onClick={() => setIsEditing(false)}
+                className="px-2.5 py-1 text-[11px] font-semibold text-gray-500 hover:text-gray-800 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={!editText.trim() || submittingEdit}
+                className={`px-3 py-1 rounded-lg text-[11px] font-bold text-white transition-colors ${
+                  editText.trim() && !submittingEdit
+                    ? 'bg-[#FF4F00] hover:bg-[#E64700] cursor-pointer'
+                    : 'bg-orange-200 cursor-not-allowed'
+                }`}
+              >
+                {submittingEdit ? 'Saving…' : 'Save'}
+              </button>
+            </div>
+          </form>
+        </div>
+      ) : (
       <div className="pl-6 sm:pl-8 text-xs text-gray-700 leading-relaxed break-words">
         <p>
           {reply.replyingTo && (
@@ -360,10 +583,11 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
             onClick={() => onReplyClick({ id: reply.id, name: reply.author?.displayName || 'Student' })}
             className="hover:text-gray-900 text-[11px] font-semibold transition-colors cursor-pointer"
           >
-            Reply
+             Reply
           </button>
         </div>
       </div>
+      )}
 
       {reply.replies?.length > 0 && (
         <div className="mt-2 ml-4 sm:ml-8 pl-2 sm:pl-3 border-l-2 border-gray-100 space-y-3">
@@ -379,6 +603,14 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
           ))}
         </div>
       )}
+
+      <ReportModal
+        targetType="comment"
+        targetName={reply.author?.displayName}
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+        onSubmit={handleReportSubmit}
+      />
     </div>
   );
 }
@@ -386,7 +618,8 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
 export default function PostDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, markOnboardingComplete } = useAuth();
+  const { joinPost, leavePost, on, off } = useSocket();
 
   const [post, setPost] = useState(null);
   const [postLoading, setPostLoading] = useState(true);
@@ -400,6 +633,7 @@ export default function PostDetailPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isReported, setIsReported] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const menuRef = useRef(null);
 
   // Close dropdown on outside click
@@ -452,6 +686,84 @@ export default function PostDetailPage() {
     if (id) refreshComments();
   }, [id, refreshComments]);
 
+  useEffect(() => {
+    if (!id) return;
+
+    joinPost(id);
+
+    const handleNewComment = (rawComment) => {
+      const comment = normalizeComment(rawComment);
+      if (!comment) return;
+      setComments((prev) => {
+        const exists = prev.some((c) => c.id === comment.id) || prev.some((c) => c.replies?.some((r) => r.id === comment.id));
+        if (exists) return prev;
+        const newComment = { ...comment, timestamp: "just now", isLong: comment.body?.length > 200 };
+        if (comment.parentId) {
+          return prev.map((c) => addReplyToTree(c, comment.parentId, newComment));
+        }
+        return [...prev, newComment];
+      });
+    };
+
+    const handleCommentDeleted = ({ id: deletedId }) => {
+      setComments((prev) => removeCommentFromTree(prev, deletedId));
+    };
+
+    const handleCommentUpdated = (rawComment) => {
+      const comment = normalizeComment(rawComment);
+      if (!comment) return;
+      setComments((prev) => updateCommentInTree(prev, comment.id, (c) => ({ ...c, body: comment.body })));
+    };
+
+    const handleVoteUpdate = ({ target, id: targetId, value, voterId, removed }) => {
+      if (target === "post" && targetId === id) {
+        if (voterId === user?.id) return;
+        setPostVoteCount((prev) => {
+          if (removed) return prev;
+          return prev + value;
+        });
+        return;
+      }
+      if (target === "comment") {
+        setComments((prev) =>
+          updateCommentInTree(prev, targetId, (c) => ({
+            ...c,
+            votes: removed ? c.votes : c.votes + value,
+          }))
+        );
+      }
+    };
+
+    const handlePostDeleted = ({ id: deletedPostId }) => {
+      if (deletedPostId === id) navigate('/');
+    };
+
+    const handlePostUpdated = (rawPost) => {
+      if (rawPost.id !== id && rawPost.id !== undefined) return;
+      const normalized = normalizePost(rawPost);
+      if (normalized) {
+        setPost((prev) => (prev ? { ...prev, ...normalized } : prev));
+      }
+    };
+
+    on("new_comment", handleNewComment);
+    on("comment_deleted", handleCommentDeleted);
+    on("comment_updated", handleCommentUpdated);
+    on("vote_update", handleVoteUpdate);
+    on("post_deleted", handlePostDeleted);
+    on("post_updated", handlePostUpdated);
+
+    return () => {
+      off("new_comment", handleNewComment);
+      off("comment_deleted", handleCommentDeleted);
+      off("comment_updated", handleCommentUpdated);
+      off("vote_update", handleVoteUpdate);
+      off("post_deleted", handlePostDeleted);
+      off("post_updated", handlePostUpdated);
+      leavePost(id);
+    };
+  }, [id, joinPost, leavePost, on, off, user?.id, navigate]);
+
   // Post Interaction States
   const [postVoteState, setPostVoteState] = useState(0);
   const [postVoteCount, setPostVoteCount] = useState(0);
@@ -486,6 +798,7 @@ export default function PostDetailPage() {
         await votesApi.remove({ postId: post.id });
       } else {
         await votesApi.cast({ postId: post.id }, value);
+        if (value === 1) markOnboardingComplete('hasUpvoted');
       }
     } catch {
       setPostVoteState(prevState);
@@ -494,8 +807,12 @@ export default function PostDetailPage() {
     }
   };
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(window.location.href);
+  const handleCopyLink = async () => {
+    const ok = await copyToClipboard(window.location.href);
+    if (!ok) {
+      alert('Could not copy the link. Please copy the URL manually.');
+      return;
+    }
     setIsCopied(true);
     setIsMenuOpen(false);
     setTimeout(() => setIsCopied(false), 2000);
@@ -510,8 +827,12 @@ export default function PostDetailPage() {
     const prev = isSaved;
     setIsSaved(updated);
     try {
-      if (updated) await postsApi.save(id);
-      else await postsApi.unsave(id);
+      if (updated) {
+        await postsApi.save(id);
+        markOnboardingComplete('hasSaved');
+      } else {
+        await postsApi.unsave(id);
+      }
     } catch {
       setIsSaved(prev);
       alert('Could not update saved posts. Please try again.');
@@ -533,6 +854,7 @@ export default function PostDetailPage() {
         title: updatedPayload.title,
         content: updatedPayload.details ?? updatedPayload.content,
         type: updatedPayload.type,
+        allowMentoring: updatedPayload.allowMentoring,
         tags: (updatedPayload.tags || []).map((t) => String(t).replace(/^#/, '')),
       });
       setPost(updated);
@@ -541,19 +863,19 @@ export default function PostDetailPage() {
     }
   };
 
-  const handleReport = async () => {
+  const handleReport = () => {
     if (!user) {
       navigate('/auth/login');
       return;
     }
     setIsMenuOpen(false);
-    try {
-      await reportsApi.create({ postId: id, reason: 'User-reported from post detail' });
-      setIsReported(true);
-      alert('Thank you. This post has been flagged for moderator review.');
-    } catch {
-      alert('Could not submit the report. Please try again.');
-    }
+    setIsReportModalOpen(true);
+  };
+
+  const handleReportSubmit = async (reason) => {
+    await reportsApi.create({ postId: id, reason });
+    setIsReported(true);
+    setIsReportModalOpen(false);
   };
 
   const handleAddComment = async () => {
@@ -565,8 +887,8 @@ export default function PostDetailPage() {
     setSubmittingComment(true);
     try {
       await commentsApi.create(id, commentText.trim());
+      markOnboardingComplete('hasCommented');
       setCommentText('');
-      await refreshComments();
     } catch (err) {
       alert(getApiErrorMessage(err));
     } finally {
@@ -672,12 +994,12 @@ export default function PostDetailPage() {
                 </div>
               </div>
 
-              {/* Top Right: CTA (If not owner) + Three-Dot Menu */}
+              {/* Top Right: CTA (Only when author opted into mentoring requests) */}
               <div className="flex items-center gap-2 flex-shrink-0">
-                {!isOwner && (
+                {!isOwner && post.allowMentoring && (
                   <button
                     type="button"
-                    onClick={() => navigate(`/user/${authorProfileSlug}`)}
+                    onClick={() => navigate(`/request-session/${post.userId || ''}`)}
                     className="text-[#FF4F00] border border-[#FF4F00] rounded-xl px-3 sm:px-4 py-1.5 text-xs font-bold hover:bg-orange-50 active:bg-orange-100 transition-colors cursor-pointer"
                   >
                     Request Session
@@ -955,6 +1277,15 @@ export default function PostDetailPage() {
         postTitle={post.title}
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
+      />
+
+      {/* Report Modal */}
+      <ReportModal
+        targetType="post"
+        targetName={post?.author}
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+        onSubmit={handleReportSubmit}
       />
     </ThreeColumnLayout>
   );
