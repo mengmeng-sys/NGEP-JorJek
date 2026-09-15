@@ -77,12 +77,15 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
     if (voteState === value) {
       setVoteState(0);
       setVoteCount((prev) => prev - value);
+    } else if (voteState === -value) {
+      setVoteState(0);
+      setVoteCount((prev) => prev + value);
     } else {
-      setVoteCount((prev) => prev + (voteState === 0 ? value : value * 2));
       setVoteState(value);
+      setVoteCount((prev) => prev + value);
     }
     try {
-      if (prevState === value) {
+      if (prevState !== 0) {
         await votesApi.remove({ commentId: comment.id });
       } else {
         await votesApi.cast({ commentId: comment.id }, value);
@@ -396,12 +399,15 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
     if (voteState === value) {
       setVoteState(0);
       setVoteCount((prev) => prev - value);
+    } else if (voteState === -value) {
+      setVoteState(0);
+      setVoteCount((prev) => prev + value);
     } else {
-      setVoteCount((prev) => prev + (voteState === 0 ? value : value * 2));
       setVoteState(value);
+      setVoteCount((prev) => prev + value);
     }
     try {
-      if (prevState === value) {
+      if (prevState !== 0) {
         await votesApi.remove({ commentId: reply.id });
       } else {
         await votesApi.cast({ commentId: reply.id }, value);
@@ -789,12 +795,15 @@ export default function PostDetailPage() {
     if (postVoteState === value) {
       setPostVoteState(0);
       setPostVoteCount((prev) => prev - value);
+    } else if (postVoteState === -value) {
+      setPostVoteState(0);
+      setPostVoteCount((prev) => prev + value);
     } else {
-      setPostVoteCount((prev) => prev + (postVoteState === 0 ? value : value * 2));
       setPostVoteState(value);
+      setPostVoteCount((prev) => prev + value);
     }
     try {
-      if (prevState === value) {
+      if (prevState !== 0) {
         await votesApi.remove({ postId: post.id });
       } else {
         await votesApi.cast({ postId: post.id }, value);

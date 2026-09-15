@@ -105,12 +105,15 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
     if (voteState === 1) {
       setVoteState(0);
       setVoteCount((prev) => prev - 1);
+    } else if (voteState === -1) {
+      setVoteState(0);
+      setVoteCount((prev) => prev + 1);
     } else {
-      setVoteCount((prev) => prev + (voteState === -1 ? 2 : 1));
       setVoteState(1);
+      setVoteCount((prev) => prev + 1);
     }
     try {
-      if (prevState === 1) {
+      if (prevState === 1 || prevState === -1) {
         await votesApi.remove({ postId: post.id });
       } else {
         await votesApi.cast({ postId: post.id }, 1);
@@ -134,12 +137,15 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
     if (voteState === -1) {
       setVoteState(0);
       setVoteCount((prev) => prev + 1);
+    } else if (voteState === 1) {
+      setVoteState(0);
+      setVoteCount((prev) => prev - 1);
     } else {
-      setVoteCount((prev) => prev - (voteState === 1 ? 2 : 1));
       setVoteState(-1);
+      setVoteCount((prev) => prev - 1);
     }
     try {
-      if (prevState === -1) {
+      if (prevState === -1 || prevState === 1) {
         await votesApi.remove({ postId: post.id });
       } else {
         await votesApi.cast({ postId: post.id }, -1);
