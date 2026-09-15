@@ -283,12 +283,12 @@ votesRouter.post("/vote", requireAuth, requireVerifiedEmail, async (req, res, ne
     const io = getIO();
     if (io) {
       if (postId) {
-        io.to(`post:${postId}`).emit("vote_update", { target: "post", id: postId, value: voteValue, voterId: req.userId });
+        io.to(`post:${postId}`).emit("vote_update", { target: "post", id: postId, value: voteValue, voterId: req.userId, isNew: !existing });
       }
       if (commentId) {
         const { data: comment } = await supabase.from("comments").select("post_id").eq("id", commentId).maybeSingle();
         if (comment) {
-          io.to(`post:${comment.post_id}`).emit("vote_update", { target: "comment", id: commentId, postId: comment.post_id, value: voteValue, voterId: req.userId });
+          io.to(`post:${comment.post_id}`).emit("vote_update", { target: "comment", id: commentId, postId: comment.post_id, value: voteValue, voterId: req.userId, isNew: !existing });
         }
       }
     }
@@ -345,6 +345,16 @@ votesRouter.delete("/vote", requireAuth, requireVerifiedEmail, async (req, res, 
   try {
     const { postId, commentId } = req.body;
 
+    // Fetch existing vote value before deleting
+    let existingVoteValue = 0;
+    if (postId) {
+      const { data: existingVote } = await supabase.from("votes").select("value").eq("user_id", req.userId).eq("post_id", postId).is("comment_id", null).maybeSingle();
+      existingVoteValue = existingVote ? Number(existingVote.value) || 0 : 0;
+    } else if (commentId) {
+      const { data: existingVote } = await supabase.from("votes").select("value").eq("user_id", req.userId).eq("comment_id", commentId).is("post_id", null).maybeSingle();
+      existingVoteValue = existingVote ? Number(existingVote.value) || 0 : 0;
+    }
+
     let query = supabase.from("votes").delete().eq("user_id", req.userId);
     if (postId) {
       query = query.eq("post_id", postId).is("comment_id", null);
@@ -370,12 +380,12 @@ votesRouter.delete("/vote", requireAuth, requireVerifiedEmail, async (req, res, 
     const io = getIO();
     if (io) {
       if (postId) {
-        io.to(`post:${postId}`).emit("vote_update", { target: "post", id: postId, value: 0, voterId: req.userId, removed: true });
+        io.to(`post:${postId}`).emit("vote_update", { target: "post", id: postId, value: existingVoteValue, voterId: req.userId, removed: true });
       }
       if (commentId) {
         const { data: comment } = await supabase.from("comments").select("post_id").eq("id", commentId).maybeSingle();
         if (comment) {
-          io.to(`post:${comment.post_id}`).emit("vote_update", { target: "comment", id: commentId, postId: comment.post_id, value: 0, voterId: req.userId, removed: true });
+          io.to(`post:${comment.post_id}`).emit("vote_update", { target: "comment", id: commentId, postId: comment.post_id, value: existingVoteValue, voterId: req.userId, removed: true });
         }
       }
     }

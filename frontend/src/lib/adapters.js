@@ -122,6 +122,7 @@ export function normalizePost(raw, currentUserId = null) {
     timestamp: formatTimestamp(raw.created_at),
     createdAt: raw.created_at,
     upvotes: voteScore(votes),
+    voteTotal: votes.length,
     myVote: currentUserVote(votes, currentUserId),
     hasUpvoted: currentUserId ? currentUserVote(votes, currentUserId) === 1 : Boolean(raw.hasUpvoted),
     hasDownvoted: currentUserId ? currentUserVote(votes, currentUserId) === -1 : false,

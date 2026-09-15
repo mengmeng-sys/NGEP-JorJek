@@ -50,6 +50,11 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
   const [voteState, setVoteState] = useState(comment.myVote || 0);
   const [voteCount, setVoteCount] = useState(comment.votes || 0);
 
+  // Sync local vote state when comment prop changes (real-time updates)
+  useEffect(() => {
+    setVoteCount(comment.votes || 0);
+  }, [comment.votes]);
+
   // Active reply target
   const [replyingToUser, setReplyingToUser] = useState(null);
   const [replyText, setReplyText] = useState('');
@@ -77,12 +82,15 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
     if (voteState === value) {
       setVoteState(0);
       setVoteCount((prev) => prev - value);
+    } else if (voteState === -value) {
+      setVoteState(0);
+      setVoteCount((prev) => prev + value);
     } else {
-      setVoteCount((prev) => prev + (voteState === 0 ? value : value * 2));
       setVoteState(value);
+      setVoteCount((prev) => prev + value);
     }
     try {
-      if (prevState === value) {
+      if (prevState !== 0) {
         await votesApi.remove({ commentId: comment.id });
       } else {
         await votesApi.cast({ commentId: comment.id }, value);
@@ -379,6 +387,11 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
   const [voteState, setVoteState] = useState(reply.myVote || 0);
   const [voteCount, setVoteCount] = useState(reply.votes || 0);
 
+  // Sync local vote state when reply prop changes (real-time updates)
+  useEffect(() => {
+    setVoteCount(reply.votes || 0);
+  }, [reply.votes]);
+
   // Edit state
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(reply.body);
@@ -396,12 +409,15 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
     if (voteState === value) {
       setVoteState(0);
       setVoteCount((prev) => prev - value);
+    } else if (voteState === -value) {
+      setVoteState(0);
+      setVoteCount((prev) => prev + value);
     } else {
-      setVoteCount((prev) => prev + (voteState === 0 ? value : value * 2));
       setVoteState(value);
+      setVoteCount((prev) => prev + value);
     }
     try {
-      if (prevState === value) {
+      if (prevState !== 0) {
         await votesApi.remove({ commentId: reply.id });
       } else {
         await votesApi.cast({ commentId: reply.id }, value);
@@ -715,21 +731,29 @@ export default function PostDetailPage() {
       setComments((prev) => updateCommentInTree(prev, comment.id, (c) => ({ ...c, body: comment.body })));
     };
 
-    const handleVoteUpdate = ({ target, id: targetId, value, voterId, removed }) => {
+    const handleVoteUpdate = ({ target, id: targetId, value, voterId, removed, isNew }) => {
       if (target === "post" && targetId === id) {
         if (voterId === user?.id) return;
         setPostVoteCount((prev) => {
-          if (removed) return prev;
+          if (removed) return prev - value;
           return prev + value;
         });
+        if (removed) {
+          setPostVoteTotal((prev) => Math.max(0, prev - 1));
+        } else if (isNew) {
+          setPostVoteTotal((prev) => prev + 1);
+        }
         return;
       }
       if (target === "comment") {
         setComments((prev) =>
-          updateCommentInTree(prev, targetId, (c) => ({
-            ...c,
-            votes: removed ? c.votes : c.votes + value,
-          }))
+          updateCommentInTree(prev, targetId, (c) => {
+            if (voterId === user?.id) return c;
+            return {
+              ...c,
+              votes: removed ? c.votes - value : c.votes + value,
+            };
+          })
         );
       }
     };
@@ -767,6 +791,7 @@ export default function PostDetailPage() {
   // Post Interaction States
   const [postVoteState, setPostVoteState] = useState(0);
   const [postVoteCount, setPostVoteCount] = useState(0);
+  const [postVoteTotal, setPostVoteTotal] = useState(0);
   const [isSaved, setIsSaved] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [sortBy, setSortBy] = useState('top');
@@ -775,6 +800,7 @@ export default function PostDetailPage() {
     if (post) {
       setPostVoteState(post.myVote || 0);
       setPostVoteCount(post.upvotes || 0);
+      setPostVoteTotal(post.voteTotal || 0);
       setIsSaved(Boolean(post.isSaved));
     }
   }, [post]);
@@ -786,15 +812,22 @@ export default function PostDetailPage() {
     }
     const prevState = postVoteState;
     const prevCount = postVoteCount;
+    const prevTotal = postVoteTotal;
     if (postVoteState === value) {
       setPostVoteState(0);
       setPostVoteCount((prev) => prev - value);
+      setPostVoteTotal((prev) => Math.max(0, prev - 1));
+    } else if (postVoteState === -value) {
+      setPostVoteState(0);
+      setPostVoteCount((prev) => prev + value);
+      setPostVoteTotal((prev) => Math.max(0, prev - 1));
     } else {
-      setPostVoteCount((prev) => prev + (postVoteState === 0 ? value : value * 2));
       setPostVoteState(value);
+      setPostVoteCount((prev) => prev + value);
+      setPostVoteTotal((prev) => prev + 1);
     }
     try {
-      if (prevState === value) {
+      if (prevState !== 0) {
         await votesApi.remove({ postId: post.id });
       } else {
         await votesApi.cast({ postId: post.id }, value);
@@ -803,6 +836,7 @@ export default function PostDetailPage() {
     } catch {
       setPostVoteState(prevState);
       setPostVoteCount(prevCount);
+      setPostVoteTotal(prevTotal);
       alert('Could not update your vote. Please try again.');
     }
   };
@@ -1163,6 +1197,14 @@ export default function PostDetailPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                 </svg>
                 <span>{comments.length} comments</span>
+              </div>
+
+              {/* Total Votes */}
+              <div className="flex items-center gap-1 sm:gap-1.5 text-xs text-gray-500 font-semibold">
+                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+                <span>{postVoteTotal} {postVoteTotal === 1 ? 'vote' : 'votes'}</span>
               </div>
 
               {/* Share Button */}

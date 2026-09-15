@@ -365,7 +365,7 @@ commentsRouter.delete("/comments/:id", requireAuth, requireVerifiedEmail, async 
 
     const io = getIO();
     if (io) {
-      io.to(`post:${existing.post_id}`).emit("comment_deleted", { id: req.params.id });
+      io.to(`post:${existing.post_id}`).emit("comment_deleted", { id: req.params.id, postId: existing.post_id });
     }
 
     res.status(204).send();
