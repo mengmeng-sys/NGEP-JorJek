@@ -100,6 +100,23 @@ app.get("/health", (_req, res) =>
   })
 );
 
+app.get("/health/smtp-test", async (_req, res) => {
+  const { sendMail } = require("./config/mailer");
+  const { generateOtp, otpEmailHtml } = require("./utils/otp");
+  const otp = generateOtp();
+  const to = env.smtpUser || "unknown";
+  try {
+    await sendMail({
+      to,
+      subject: "JorJek — SMTP test from Render",
+      html: otpEmailHtml(otp, "verify"),
+    });
+    res.json({ ok: true, to, otp });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
 /**
  * @swagger
  * /sessions:
