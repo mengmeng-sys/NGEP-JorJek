@@ -424,6 +424,16 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
             <span className="text-[11px] sm:text-xs">{commentCount}</span>
           </div>
 
+          {/* Vote Count */}
+          <div className="flex items-center gap-1 sm:gap-1.5">
+            <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
+            <span className={`text-[11px] sm:text-xs font-semibold ${voteCount > 0 ? 'text-green-600' : voteCount < 0 ? 'text-red-500' : 'text-gray-500'}`}>
+              {voteCount} {voteCount === 1 || voteCount === -1 ? 'vote' : 'votes'}
+            </span>
+          </div>
+
           {/* Share */}
           <button
             type="button"
