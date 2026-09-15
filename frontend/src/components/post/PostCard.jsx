@@ -114,15 +114,19 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
     }
     const prevState = voteState;
     const prevCount = voteCount;
+    const prevTotal = voteTotal;
     if (voteState === 1) {
       setVoteState(0);
       setVoteCount((prev) => prev - 1);
+      setVoteTotal((prev) => Math.max(0, prev - 1));
     } else if (voteState === -1) {
       setVoteState(0);
       setVoteCount((prev) => prev + 1);
+      setVoteTotal((prev) => Math.max(0, prev - 1));
     } else {
       setVoteState(1);
       setVoteCount((prev) => prev + 1);
+      setVoteTotal((prev) => prev + 1);
     }
     try {
       if (prevState === 1 || prevState === -1) {
@@ -134,6 +138,7 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
     } catch {
       setVoteState(prevState);
       setVoteCount(prevCount);
+      setVoteTotal(prevTotal);
       alert('Could not update your vote. Please try again.');
     }
   };
@@ -146,15 +151,19 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
     }
     const prevState = voteState;
     const prevCount = voteCount;
+    const prevTotal = voteTotal;
     if (voteState === -1) {
       setVoteState(0);
       setVoteCount((prev) => prev + 1);
+      setVoteTotal((prev) => Math.max(0, prev - 1));
     } else if (voteState === 1) {
       setVoteState(0);
       setVoteCount((prev) => prev - 1);
+      setVoteTotal((prev) => Math.max(0, prev - 1));
     } else {
       setVoteState(-1);
       setVoteCount((prev) => prev - 1);
+      setVoteTotal((prev) => prev + 1);
     }
     try {
       if (prevState === -1 || prevState === 1) {
@@ -165,6 +174,7 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
     } catch {
       setVoteState(prevState);
       setVoteCount(prevCount);
+      setVoteTotal(prevTotal);
       alert('Could not update your vote. Please try again.');
     }
   };
