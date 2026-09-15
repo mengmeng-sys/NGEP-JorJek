@@ -34,8 +34,10 @@ export function LeftSidebar({ savedCount }) {
 
   useEffect(() => {
     let cancelled = false;
+    // Only tags an admin has marked "Featured" (Tags & Topics admin page)
+    // show up here — that's the admin's control over this list.
     tagsApi
-      .list()
+      .list({ featured: true })
       .then((data) => {
         const backendTags = Array.isArray(data?.tags)
           ? data.tags.map((t) => String(t.name || t.slug || '').replace(/^#/, '')).filter(Boolean)

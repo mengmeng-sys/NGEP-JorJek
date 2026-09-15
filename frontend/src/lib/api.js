@@ -108,7 +108,8 @@ export const votesApi = {
 };
 
 export const tagsApi = {
-  list: () => apiFetch("/tags?limit=100"),
+  list: ({ featured } = {}) =>
+    apiFetch(`/tags?limit=100${featured ? "&featured=true" : ""}`),
   follow: (tagName) =>
     apiFetch(`/tags/${encodeURIComponent(tagName)}/follow`, { method: "POST" }),
 };

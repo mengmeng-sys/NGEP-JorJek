@@ -155,12 +155,12 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
     <div className="border-b border-gray-100 pb-5 sm:pb-6 last:border-b-0">
       <div className="flex items-center justify-between gap-2 mb-2">
         <div className="flex items-center gap-2 min-w-0 flex-wrap">
-          <div className="h-6 w-6 sm:h-7 sm:w-7 bg-[#111827] text-white font-bold flex items-center justify-center rounded-full text-[10px] sm:text-xs flex-shrink-0">
+          <div className="h-6 w-6 sm:h-7 sm:w-7 bg-[#111827] text-white font-bold flex items-center justify-center rounded-full text-[10px] sm:text-xs shrink-0">
             {comment.author?.initials || initialsFrom(comment.author?.displayName || 'U')}
           </div>
           <span className="font-bold text-gray-900 text-xs sm:text-sm truncate">{comment.author?.displayName || 'Student'}</span>
           <span
-            className={`text-[8px] sm:text-[9px] uppercase font-bold px-1.5 py-0.5 rounded tracking-wide flex-shrink-0 ${
+            className={`text-[8px] sm:text-[9px] uppercase font-bold px-1.5 py-0.5 rounded tracking-wide shrink-0 ${
               comment.author?.role === 'PROFESSOR'
                 ? 'bg-orange-50 text-[#FF4F00] border border-orange-100'
                 : 'bg-gray-100 text-gray-500'
@@ -171,7 +171,7 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
           <span className="text-gray-400 text-[11px] sm:text-xs">{comment.timestamp}</span>
         </div>
 
-        <div className="flex items-center gap-1 flex-shrink-0">
+        <div className="flex items-center gap-1 shrink-0">
           {isCommentOwner && !isEditing && (
             <>
               <button
@@ -200,7 +200,7 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
             type="button"
             onClick={handleReport}
             title="Report comment"
-            className={`p-1 rounded transition-colors group flex-shrink-0 cursor-pointer ${
+            className={`p-1 rounded transition-colors group shrink-0 cursor-pointer ${
               isReported ? 'text-red-600 bg-red-50' : 'text-gray-300 hover:text-red-600 hover:bg-red-50'
             }`}
           >
@@ -218,7 +218,7 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
               autoFocus
               value={editText}
               onChange={(e) => setEditText(e.target.value)}
-              className="w-full bg-white border border-gray-200 rounded-xl p-2.5 sm:p-3 text-xs sm:text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all min-h-[80px] resize-none"
+              className="w-full bg-white border border-gray-200 rounded-xl p-2.5 sm:p-3 text-xs sm:text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all min-h-20 resize-none"
             />
             <div className="flex justify-end gap-2 mt-2">
               <button
@@ -244,7 +244,7 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
         </div>
       ) : (
       <div className="pl-7 sm:pl-9 text-xs sm:text-sm text-gray-700">
-        <div className={`space-y-2 sm:space-y-3 leading-relaxed break-words ${!isExpanded ? 'line-clamp-3 overflow-hidden' : ''}`}>
+        <div className={`space-y-2 sm:space-y-3 leading-relaxed wrap-break-words ${!isExpanded ? 'line-clamp-3 overflow-hidden' : ''}`}>
           {comment.body}
         </div>
 
@@ -324,7 +324,7 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
             <button
               type="button"
               onClick={() => setReplyingToUser(null)}
-              className="text-[11px] sm:text-xs text-gray-400 hover:text-gray-600 flex-shrink-0 ml-2 cursor-pointer"
+              className="text-[11px] sm:text-xs text-gray-400 hover:text-gray-600 shrink-0 ml-2 cursor-pointer"
             >
               Cancel
             </button>
@@ -335,7 +335,7 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
             value={replyText}
             onChange={(e) => setReplyText(e.target.value)}
             placeholder={`Write your reply to ${replyingToUser.name}...`}
-            className="w-full bg-white border border-gray-200 rounded-xl p-2.5 sm:p-3 text-xs text-gray-800 placeholder-gray-400 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all min-h-[65px] resize-none"
+            className="w-full bg-white border border-gray-200 rounded-xl p-2.5 sm:p-3 text-xs text-gray-800 placeholder-gray-400 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all min-h-16.25 resize-none"
           />
 
           <div className="flex justify-end gap-2 mt-2">
@@ -453,12 +453,12 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
     <div>
       <div className="flex items-center justify-between gap-2 mb-1">
         <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-wrap">
-          <div className="h-5 w-5 sm:h-6 sm:w-6 bg-[#111827] text-white font-bold flex items-center justify-center rounded-full text-[9px] sm:text-[10px] flex-shrink-0">
+          <div className="h-5 w-5 sm:h-6 sm:w-6 bg-[#111827] text-white font-bold flex items-center justify-center rounded-full text-[9px] sm:text-[10px] shrink-0">
             {reply.author?.initials || initialsFrom(reply.author?.displayName || 'U')}
           </div>
           <span className="font-bold text-gray-900 text-xs truncate">{reply.author?.displayName || 'Student'}</span>
           <span
-            className={`text-[8px] uppercase font-bold px-1.5 py-0.5 rounded tracking-wide flex-shrink-0 ${
+            className={`text-[8px] uppercase font-bold px-1.5 py-0.5 rounded tracking-wide shrink-0 ${
               reply.author?.role === 'PROFESSOR'
                 ? 'bg-orange-50 text-[#FF4F00] border border-orange-100'
                 : 'bg-gray-100 text-gray-500'
@@ -469,7 +469,7 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
           <span className="text-gray-400 text-[10px] sm:text-[11px]">{reply.timestamp}</span>
         </div>
 
-        <div className="flex items-center gap-0.5 flex-shrink-0">
+        <div className="flex items-center gap-0.5 shrink-0">
           {isCommentOwner && !isEditing && (
             <>
               <button
@@ -498,7 +498,7 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
             type="button"
             onClick={handleReport}
             title="Report reply"
-            className={`p-0.5 rounded transition-colors group flex-shrink-0 cursor-pointer ${
+            className={`p-0.5 rounded transition-colors group shrink-0 cursor-pointer ${
               isReported ? 'text-red-600 bg-red-50' : 'text-gray-300 hover:text-red-600 hover:bg-red-50'
             }`}
           >
@@ -516,7 +516,7 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
               autoFocus
               value={editText}
               onChange={(e) => setEditText(e.target.value)}
-              className="w-full bg-white border border-gray-200 rounded-lg p-2 text-xs text-gray-800 placeholder-gray-400 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all min-h-[60px] resize-none"
+              className="w-full bg-white border border-gray-200 rounded-lg p-2 text-xs text-gray-800 placeholder-gray-400 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all min-h-15 resize-none"
             />
             <div className="flex justify-end gap-2 mt-1.5">
               <button
@@ -541,7 +541,7 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
           </form>
         </div>
       ) : (
-      <div className="pl-6 sm:pl-8 text-xs text-gray-700 leading-relaxed break-words">
+      <div className="pl-6 sm:pl-8 text-xs text-gray-700 leading-relaxed wrap-break-words">
         <p>
           {reply.replyingTo && (
             <span className="text-[#FF4F00] font-bold mr-1.5">@{reply.replyingTo}</span>
@@ -970,7 +970,7 @@ export default function PostDetailPage() {
               <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
                 <Link
                   to={`/user/${authorProfileSlug}`}
-                  className="h-9 w-9 sm:h-10 sm:w-10 bg-[#111827] text-white font-bold flex items-center justify-center rounded-full text-xs sm:text-sm flex-shrink-0 hover:ring-2 hover:ring-offset-2 hover:ring-gray-800 transition-all"
+                  className="h-9 w-9 sm:h-10 sm:w-10 bg-[#111827] text-white font-bold flex items-center justify-center rounded-full text-xs sm:text-sm shrink-0 hover:ring-2 hover:ring-offset-2 hover:ring-gray-800 transition-all"
                 >
                   {post.initials}
                 </Link>
@@ -982,7 +982,7 @@ export default function PostDetailPage() {
                     >
                       {post.author}
                     </Link>
-                    <span className="bg-purple-50 text-[#8B5CF6] text-[9px] sm:text-[10px] uppercase font-bold px-2 py-0.5 rounded border border-purple-100 flex-shrink-0">
+                    <span className="bg-purple-50 text-[#8B5CF6] text-[9px] sm:text-[10px] uppercase font-bold px-2 py-0.5 rounded border border-purple-100 shrink-0">
                       {post.role}
                     </span>
                   </div>
@@ -995,7 +995,7 @@ export default function PostDetailPage() {
               </div>
 
               {/* Top Right: CTA (Only when author opted into mentoring requests) */}
-              <div className="flex items-center gap-2 flex-shrink-0">
+              <div className="flex items-center gap-2 shrink-0">
                 {!isOwner && post.allowMentoring && (
                   <button
                     type="button"
@@ -1099,11 +1099,11 @@ export default function PostDetailPage() {
             )}
 
             {/* Post Title & Content */}
-            <h1 className="text-base sm:text-xl font-bold text-gray-900 mb-2 sm:mb-3 leading-snug break-words">
+            <h1 className="text-base sm:text-xl font-bold text-gray-900 mb-2 sm:mb-3 leading-snug wrap-break-words">
               {post.title}
             </h1>
 
-            <div className="text-xs sm:text-sm text-gray-700 leading-relaxed break-words space-y-3">
+            <div className="text-xs sm:text-sm text-gray-700 leading-relaxed wrap-break-words space-y-3">
               <p>{post.content}</p>
             </div>
 
@@ -1206,7 +1206,7 @@ export default function PostDetailPage() {
             rows={3}
             value={commentText}
             onChange={(e) => setCommentText(e.target.value)}
-            className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl p-3 text-xs sm:text-sm text-gray-800 placeholder-gray-400 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all min-h-[80px] sm:min-h-[90px] resize-none mb-3"
+            className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl p-3 text-xs sm:text-sm text-gray-800 placeholder-gray-400 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all min-h-20 sm:min-h-22.5 resize-none mb-3"
             placeholder="Share your knowledge or ask a follow-up..."
           />
           <div className="flex justify-end">

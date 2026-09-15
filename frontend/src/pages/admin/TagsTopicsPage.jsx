@@ -51,6 +51,9 @@ export default function TagsTopicsPage() {
       <h1>Tags & Topics</h1>
       <p className="admin-subtitle">
         Category CRUD for skill tags and featured banner-topic settings (SRS 4).
+        Mark a tag <b>★ Featured</b> to make it appear in the "Skill Tags" list on every
+        user's home feed sidebar — tags left "Not featured" stay hidden from that list
+        (they still exist and can be searched/followed directly).
       </p>
 
       {toast && (

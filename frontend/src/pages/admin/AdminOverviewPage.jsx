@@ -1,6 +1,61 @@
 import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/apiClient";
 
+// Small inline icons for the metric cards — same approach as AdminLayout.jsx.
+function UsersIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2" />
+      <circle cx="10" cy="7" r="4" />
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+      <path d="M17 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+  );
+}
+
+function PostIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+    </svg>
+  );
+}
+
+function CommentIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M8 10h8M8 14h5" />
+    </svg>
+  );
+}
+
+function FlagIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 22V4" />
+      <path d="M4 4h13l-2.5 4L17 12H4" />
+    </svg>
+  );
+}
+
+function CapIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M2 9l10-5 10 5-10 5-10-5z" />
+      <path d="M6 11v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5" />
+    </svg>
+  );
+}
+
+const METRICS = [
+  { key: "users", label: "Total users", icon: UsersIcon, accent: true },
+  { key: "posts", label: "Posts", icon: PostIcon, accent: false },
+  { key: "comments", label: "Comments", icon: CommentIcon, accent: false },
+  { key: "reportsPending", label: "Pending reports", icon: FlagIcon, accent: true },
+  { key: "mentorsPending", label: "Mentor applications", icon: CapIcon, accent: false },
+];
+
 export default function AdminOverviewPage() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
@@ -25,26 +80,17 @@ export default function AdminOverviewPage() {
       </p>
 
       <div className="admin-metrics">
-        <div className="admin-card">
-          <div className="metric-label">Total users</div>
-          <div className="metric-value metric-accent">{totals.users}</div>
-        </div>
-        <div className="admin-card">
-          <div className="metric-label">Posts</div>
-          <div className="metric-value">{totals.posts}</div>
-        </div>
-        <div className="admin-card">
-          <div className="metric-label">Comments</div>
-          <div className="metric-value">{totals.comments}</div>
-        </div>
-        <div className="admin-card">
-          <div className="metric-label">Pending reports</div>
-          <div className="metric-value metric-accent">{totals.reportsPending}</div>
-        </div>
-        <div className="admin-card">
-          <div className="metric-label">Mentor applications</div>
-          <div className="metric-value">{totals.mentorsPending}</div>
-        </div>
+        {METRICS.map(({ key, label, icon: Icon, accent }) => (
+          <div className="admin-card" key={key}>
+            <div className="admin-card-head">
+              <div className="admin-card-icon">
+                <Icon />
+              </div>
+            </div>
+            <div className="metric-label">{label}</div>
+            <div className={`metric-value ${accent ? "metric-accent" : ""}`}>{totals[key]}</div>
+          </div>
+        ))}
       </div>
 
       <div className="admin-metrics">

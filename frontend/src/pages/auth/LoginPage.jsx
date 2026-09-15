@@ -18,8 +18,9 @@ export default function LoginPage() {
     setError('');
     setSubmitting(true);
     try {
-      await login(email.trim(), password);
-      navigate('/');
+      const loggedInUser = await login(email.trim(), password);
+      const isAdmin = loggedInUser?.role === 'SUPER_ADMIN' || loggedInUser?.role === 'MODERATOR';
+      navigate(isAdmin ? '/admin' : '/');
     } catch (err) {
       setError(err?.message || 'Sign in failed. Check your credentials and try again.');
     } finally {
@@ -29,7 +30,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen w-full grid grid-cols-1 lg:grid-cols-2 bg-[#FBFBFB]">
-      
+
       {/* Left Column: Academic Branding Hero (Desktop Only) */}
       <div className="hidden lg:flex flex-col justify-between bg-gradient-to-br from-[#111827] via-[#161F30] to-[#1F2937] p-10 xl:p-14 text-white relative overflow-hidden">
         {/* Subtle Decorative Gradient Glow */}
@@ -38,10 +39,10 @@ export default function LoginPage() {
 
         <div className="relative z-10">
           <Link to="/" className="inline-block group">
-            <img 
-              src="/jorjek_logo.jpg" 
-              alt="JorJek" 
-              className="h-10 w-auto object-contain rounded-lg transition-transform group-hover:scale-105" 
+            <img
+              src="/jorjek_logo.jpg"
+              alt="JorJek"
+              className="h-10 w-auto object-contain rounded-lg transition-transform group-hover:scale-105"
             />
           </Link>
           <p className="text-[11px] text-gray-400 mt-2 uppercase tracking-widest font-bold">
@@ -78,14 +79,14 @@ export default function LoginPage() {
           <BackHomeArrow />
         </div>
         <div className="w-full max-w-sm sm:max-w-md bg-white sm:bg-transparent border sm:border-0 border-gray-200 rounded-2xl p-6 sm:p-0 shadow-xs sm:shadow-none space-y-5 sm:space-y-6">
-          
+
           {/* Mobile Header Brand */}
           <div className="lg:hidden text-center mb-4">
             <Link to="/" className="inline-block group">
-              <img 
-                src="/jorjek_logo.jpg" 
-                alt="JorJek" 
-                className="h-10 w-auto mx-auto object-contain transition-transform group-hover:scale-105" 
+              <img
+                src="/jorjek_logo.jpg"
+                alt="JorJek"
+                className="h-10 w-auto mx-auto object-contain transition-transform group-hover:scale-105"
               />
             </Link>
           </div>

@@ -2,6 +2,9 @@
  * JorJek Admin Dashboard — design tokens (SRS v1.0.0, Section 4):
  *   Primary Accent #FF4F00 · Background #FBFBFB · Borders #E5E7EB · Text #111827
  * Scoped to admin pages only; the public forum styles are untouched.
+ *
+ * Redesign note: the six color tokens below are unchanged from the original —
+ * only layout, spacing, radius, shadow, motion and iconography changed.
  */
 :root {
   --jd-accent: #ff4f00;
@@ -15,7 +18,15 @@
   --jd-danger: #dc2626;
   --jd-warning: #d97706;
   --jd-radius: 8px;
+  --jd-radius-lg: 14px;
   --jd-shadow: 0 1px 2px rgba(17, 24, 39, 0.06);
+  --jd-shadow-md: 0 4px 16px rgba(17, 24, 39, 0.07), 0 1px 2px rgba(17, 24, 39, 0.05);
+  --jd-shadow-lg: 0 16px 40px rgba(17, 24, 39, 0.12);
+  --jd-ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+  box-sizing: border-box;
 }
 
 .admin-shell {
@@ -25,13 +36,13 @@
   color: var(--jd-text);
 }
 
-/* Sidebar navigation (SRS 4) */
+/* ───────────────────────── Sidebar ───────────────────────── */
 .admin-sidebar {
-  width: 240px;
+  width: 252px;
   flex-shrink: 0;
   background: var(--jd-surface);
   border-right: 1px solid var(--jd-border);
-  padding: 24px 12px;
+  padding: 20px 14px;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -41,84 +52,235 @@
 }
 
 .admin-sidebar .admin-brand {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--jd-text);
-  padding: 0 12px 18px;
+  padding: 6px 8px 20px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid var(--jd-border);
+}
+
+.admin-sidebar .admin-brand .admin-logo {
+  height: 30px;
+  width: auto;
+  max-width: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+.admin-nav {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  flex-direction: column;
+  gap: 2px;
 }
 
-.admin-sidebar .admin-brand .dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--jd-accent);
-  display: inline-block;
+.admin-nav-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--jd-text-muted);
+  padding: 12px 12px 6px;
 }
 
-.admin-sidebar a {
+/* Shared base for both NavLink items and the logout button, so a real link
+   and a button-triggered action look and feel identical in the sidebar. */
+.admin-side-link {
+  position: relative;
   color: var(--jd-text-muted);
   text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 13.5px;
+  font-weight: 600;
   padding: 10px 12px;
   border-radius: var(--jd-radius);
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 11px;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s var(--jd-ease), color 0.15s var(--jd-ease);
 }
 
-.admin-sidebar a:hover {
+.admin-side-link:hover {
   background: var(--jd-accent-soft);
   color: var(--jd-text);
 }
 
-.admin-sidebar a.active {
+.admin-side-link.active {
+  background: var(--jd-accent-soft);
+  color: var(--jd-accent);
+  font-weight: 700;
+}
+
+.admin-side-link.active::before {
+  content: "";
+  position: absolute;
+  left: -14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 18px;
+  border-radius: 3px;
+  background: var(--jd-accent);
+}
+
+.admin-side-link .admin-nav-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: inherit;
+}
+
+.admin-side-link .admin-nav-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.admin-side-link.active .admin-nav-icon {
+  color: var(--jd-accent);
+}
+
+/* Account / sign-out block, pinned to the bottom of the sidebar */
+.admin-account {
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid var(--jd-border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-account-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 8px;
+}
+
+.admin-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
   background: var(--jd-accent);
   color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-.admin-sidebar .admin-back {
-  margin-top: auto;
-  border-top: 1px solid var(--jd-border);
-  padding-top: 16px;
+.admin-account-info {
+  overflow: hidden;
 }
 
-/* Content column */
+.admin-account-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--jd-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-account-role {
+  font-size: 11px;
+  color: var(--jd-text-muted);
+}
+
+.admin-logout:hover {
+  background: #fee2e2;
+  color: var(--jd-danger);
+}
+
+.admin-logout:hover .admin-nav-icon {
+  color: var(--jd-danger);
+}
+
+/* ───────────────────────── Content column ───────────────────────── */
 .admin-main {
   flex: 1;
-  padding: 32px 40px;
-  max-width: 1280px;
+  padding: 36px 44px 60px;
+  max-width: 1320px;
+  animation: jd-fade-in 0.25s var(--jd-ease);
+}
+
+@keyframes jd-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .admin-main h1 {
-  font-size: 24px;
-  font-weight: 700;
-  margin: 0 0 4px;
+  font-size: 25px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  margin: 0 0 6px;
 }
 
 .admin-main .admin-subtitle {
   color: var(--jd-text-muted);
-  margin: 0 0 24px;
+  margin: 0 0 28px;
+  padding-bottom: 24px;
   font-size: 14px;
+  border-bottom: 1px solid var(--jd-border);
 }
 
 /* Metric cards (Overview) */
 .admin-metrics {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
   gap: 16px;
-  margin-bottom: 28px;
+  margin-bottom: 20px;
 }
 
 .admin-card {
   background: var(--jd-surface);
   border: 1px solid var(--jd-border);
-  border-radius: var(--jd-radius);
+  border-radius: var(--jd-radius-lg);
   box-shadow: var(--jd-shadow);
   padding: 18px 20px;
+  transition: transform 0.15s var(--jd-ease), box-shadow 0.15s var(--jd-ease);
+}
+
+.admin-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--jd-shadow-md);
+}
+
+.admin-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.admin-card-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--jd-accent-soft);
+  color: var(--jd-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.admin-card-icon svg {
+  width: 17px;
+  height: 17px;
 }
 
 .admin-card .metric-label {
@@ -129,7 +291,8 @@
 
 .admin-card .metric-value {
   font-size: 28px;
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: -0.01em;
 }
 
 .admin-card .metric-accent {
@@ -139,18 +302,19 @@
 .admin-panel {
   background: var(--jd-surface);
   border: 1px solid var(--jd-border);
-  border-radius: var(--jd-radius);
+  border-radius: var(--jd-radius-lg);
   box-shadow: var(--jd-shadow);
   margin-bottom: 24px;
   overflow: hidden;
 }
 
 .admin-panel > h2 {
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 14.5px;
+  font-weight: 700;
   padding: 16px 20px;
   margin: 0;
   border-bottom: 1px solid var(--jd-border);
+  background: var(--jd-bg);
 }
 
 .admin-panel-body {
@@ -161,34 +325,43 @@
 .admin-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px;
+  font-size: 13.5px;
 }
 
 .admin-table th {
   text-align: left;
   color: var(--jd-text-muted);
-  font-weight: 600;
-  font-size: 12px;
+  font-weight: 700;
+  font-size: 11.5px;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
   border-bottom: 1px solid var(--jd-border);
-  padding: 10px 12px;
+  padding: 12px;
+  background: var(--jd-bg);
 }
 
 .admin-table td {
   border-bottom: 1px solid var(--jd-border);
-  padding: 12px;
+  padding: 13px 12px;
 }
 
 .admin-table tr:last-child td {
   border-bottom: none;
 }
 
+.admin-table tbody tr {
+  transition: background 0.12s var(--jd-ease);
+}
+
+.admin-table tbody tr:hover {
+  background: var(--jd-bg);
+}
+
 /* Filters */
 .admin-filters {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 10px;
   align-items: center;
   padding: 16px 20px;
   border-bottom: 1px solid var(--jd-border);
@@ -202,6 +375,14 @@
   font-size: 14px;
   background: var(--jd-surface);
   color: var(--jd-text);
+  transition: border-color 0.15s var(--jd-ease), box-shadow 0.15s var(--jd-ease);
+}
+
+.admin-filters input:focus,
+.admin-filters select:focus {
+  outline: none;
+  border-color: var(--jd-accent);
+  box-shadow: 0 0 0 3px var(--jd-accent-soft);
 }
 
 .admin-filters input {
@@ -217,24 +398,30 @@
   border-radius: var(--jd-radius);
   padding: 8px 14px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: background 0.15s var(--jd-ease), transform 0.1s var(--jd-ease), box-shadow 0.15s var(--jd-ease);
 }
 
 .jd-btn:hover {
   background: #f3f4f6;
 }
 
+.jd-btn:active {
+  transform: scale(0.97);
+}
+
 .jd-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
 }
 
 .jd-btn-primary {
   background: var(--jd-accent);
   border-color: var(--jd-accent);
   color: #fff;
+  box-shadow: 0 1px 2px rgba(255, 79, 0, 0.25);
 }
 
 .jd-btn-primary:hover {
@@ -318,9 +505,17 @@
 .jd-mentor-card {
   background: var(--jd-surface);
   border: 1px solid var(--jd-border);
-  border-radius: var(--jd-radius);
+  border-left: 3px solid var(--jd-border);
+  border-radius: var(--jd-radius-lg);
   box-shadow: var(--jd-shadow);
   padding: 18px 20px;
+  transition: box-shadow 0.15s var(--jd-ease), border-left-color 0.15s var(--jd-ease);
+}
+
+.jd-report-card:hover,
+.jd-mentor-card:hover {
+  box-shadow: var(--jd-shadow-md);
+  border-left-color: var(--jd-accent);
 }
 
 .jd-report-card .target-type {
@@ -393,21 +588,36 @@
 .jd-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(17, 24, 39, 0.45);
+  background: rgba(17, 24, 39, 0.5);
+  backdrop-filter: blur(2px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 50;
+  animation: jd-fade-in 0.15s var(--jd-ease);
 }
 
 .jd-modal {
   background: var(--jd-surface);
-  border-radius: 12px;
+  border-radius: 16px;
   width: 520px;
   max-width: 92vw;
   max-height: 90vh;
   overflow: auto;
   padding: 24px;
+  box-shadow: var(--jd-shadow-lg);
+  animation: jd-modal-in 0.18s var(--jd-ease);
+}
+
+@keyframes jd-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .jd-modal h3 {
@@ -439,6 +649,13 @@
   font-family: inherit;
 }
 
+.jd-modal textarea:focus,
+.jd-modal input:focus {
+  outline: none;
+  border-color: var(--jd-accent);
+  box-shadow: 0 0 0 3px var(--jd-accent-soft);
+}
+
 .jd-option-row {
   display: flex;
   flex-wrap: wrap;
@@ -452,6 +669,7 @@
   cursor: pointer;
   font-size: 13px;
   background: var(--jd-surface);
+  transition: border-color 0.15s var(--jd-ease), background 0.15s var(--jd-ease), color 0.15s var(--jd-ease);
 }
 
 .jd-option.selected {
@@ -496,4 +714,71 @@
   padding: 10px 14px;
   font-size: 13px;
   margin-bottom: 16px;
+}
+
+/* "Coming soon" preview gate — blurs a page's real content behind a short
+   message, without hiding that the feature exists at all. */
+.jd-coming-soon-wrap {
+  position: relative;
+  min-height: 420px;
+  max-height: 70vh;
+  overflow: hidden;
+  border-radius: var(--jd-radius-lg);
+}
+
+.jd-coming-soon-content {
+  filter: blur(6px) saturate(0.85);
+  pointer-events: none;
+  user-select: none;
+}
+
+.jd-coming-soon-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: linear-gradient(to bottom, rgba(251, 251, 251, 0.35), rgba(251, 251, 251, 0.88));
+}
+
+.jd-coming-soon-card {
+  background: var(--jd-surface);
+  border: 1px solid var(--jd-border);
+  border-radius: var(--jd-radius-lg);
+  box-shadow: var(--jd-shadow-lg);
+  padding: 32px 40px;
+  text-align: center;
+  max-width: 380px;
+}
+
+.jd-coming-soon-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--jd-accent-soft);
+  color: var(--jd-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+
+.jd-coming-soon-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.jd-coming-soon-card h2 {
+  font-size: 20px;
+  font-weight: 800;
+  margin: 0 0 8px;
+  color: var(--jd-text);
+}
+
+.jd-coming-soon-card p {
+  font-size: 13.5px;
+  color: var(--jd-text-muted);
+  margin: 0;
+  line-height: 1.5;
 }

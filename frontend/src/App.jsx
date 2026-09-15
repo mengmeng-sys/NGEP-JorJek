@@ -1,6 +1,6 @@
 import React from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { AuthProvider } from "@/context/AuthContext";
+import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { SocketProvider } from "@/context/SocketContext";
 import Navbar from "@/components/shared/Navbar";
 
@@ -37,7 +37,20 @@ import MentorPipelinePage from "@/pages/admin/MentorPipelinePage";
 import TagsTopicsPage from "@/pages/admin/TagsTopicsPage";
 
 export default function App() {
+  return (
+    <AuthProvider>
+      <SocketProvider>
+        <AppRoutes />
+      </SocketProvider>
+    </AuthProvider>
+  );
+}
+
+// Split out from App so it can call useAuth() — AuthProvider is created by
+// App itself, so App's own body sits outside that context; a child does not.
+function AppRoutes() {
   const { pathname } = useLocation();
+  const { isAdmin, loading } = useAuth();
   const hideNavbar = pathname.startsWith('/auth/login')
     || pathname.startsWith('/auth/signup')
     || pathname.startsWith('/auth/forgot-password')
@@ -45,69 +58,74 @@ export default function App() {
     || pathname.startsWith('/auth/tech-interests')
     || pathname.startsWith('/admin');
 
+  // SUPER_ADMIN/MODERATOR accounts live in the admin dashboard only — bounce
+  // them out of every user-facing route (direct URL entry, back/forward,
+  // bookmarks, a stale link, not just the one redirect right after login).
+  // Wait for the auth check to finish first so a real user isn't bounced
+  // while `isAdmin` is still settling on page load.
+  if (!loading && isAdmin && !pathname.startsWith('/admin')) {
+    return <Navigate to="/admin" replace />;
+  }
+
   return (
-    <AuthProvider>
-      <SocketProvider>
-      <div className="min-h-screen bg-[#FBFBFB]">
-        {/* Global Responsive Header (hidden on auth pages) */}
-        {!hideNavbar && <Navbar />}
+    <div className="min-h-screen bg-[#FBFBFB]">
+      {/* Global Responsive Header (hidden on auth pages) */}
+      {!hideNavbar && <Navbar />}
 
-        <Routes>
-          {/* Core Feeds & Discovery */}
-          <Route path="/" element={<HomePage />} />
-          <Route path="/popular" element={<PopularPage />} />
-          <Route path="/explore" element={<ExplorePage />} />
-          <Route path="/saved" element={<SavedPage />} />
+      <Routes>
+        {/* Core Feeds & Discovery */}
+        <Route path="/" element={<HomePage />} />
+        <Route path="/popular" element={<PopularPage />} />
+        <Route path="/explore" element={<ExplorePage />} />
+        <Route path="/saved" element={<SavedPage />} />
 
-          {/* Discussions & Posts */}
-          <Route path="/posts" element={<Navigate to="/" replace />} />
-          <Route path="/posts/:id" element={<PostDetailPage />} />
-          <Route path="/tags/:tag" element={<TagFeedPage />} />
+        {/* Discussions & Posts */}
+        <Route path="/posts" element={<Navigate to="/" replace />} />
+        <Route path="/posts/:id" element={<PostDetailPage />} />
+        <Route path="/tags/:tag" element={<TagFeedPage />} />
 
-          {/* User Profiles & Management */}
-          <Route path="/user/:username" element={<UserProfilePage />} />
-          <Route path="/user" element={<UserProfilePage />} />
-          <Route path="/profile" element={<Navigate to="/user" replace />} />
-          <Route path="/settings" element={<SettingsPage />} />
+        {/* User Profiles & Management */}
+        <Route path="/user/:username" element={<UserProfilePage />} />
+        <Route path="/user" element={<UserProfilePage />} />
+        <Route path="/profile" element={<Navigate to="/user" replace />} />
+        <Route path="/settings" element={<SettingsPage />} />
 
-          {/* Mentoring Sessions */}
-          <Route path="/request-session/:mentorId" element={<RequestSessionPage />} />
+        {/* Mentoring Sessions */}
+        <Route path="/request-session/:mentorId" element={<RequestSessionPage />} />
 
-          {/* Platform Info & Footer */}
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/privacy" element={<PrivacyPage />} />
-          <Route path="/terms" element={<TermsPage />} />
+        {/* Platform Info & Footer */}
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/terms" element={<TermsPage />} />
 
-          {/* Utility Views */}
-          <Route path="/search" element={<SearchPage />} />
-          <Route path="/notifications" element={<NotificationsPage />} />
+        {/* Utility Views */}
+        <Route path="/search" element={<SearchPage />} />
+        <Route path="/notifications" element={<NotificationsPage />} />
 
-          {/* Authentication Flow */}
-          <Route path="/auth/login" element={<LoginPage />} />
-          <Route path="/auth/signup" element={<SignupPage />} />
-          <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="/auth/verify-otp" element={<OtpVerificationPage />} />
-          <Route path="/auth/tech-interests" element={<TechInterestsPage />} />
+        {/* Authentication Flow */}
+        <Route path="/auth/login" element={<LoginPage />} />
+        <Route path="/auth/signup" element={<SignupPage />} />
+        <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/auth/verify-otp" element={<OtpVerificationPage />} />
+        <Route path="/auth/tech-interests" element={<TechInterestsPage />} />
 
-          {/* Canonical Redirects */}
-          <Route path="/login" element={<Navigate to="/auth/login" replace />} />
-          <Route path="/signup" element={<Navigate to="/auth/signup" replace />} />
+        {/* Canonical Redirects */}
+        <Route path="/login" element={<Navigate to="/auth/login" replace />} />
+        <Route path="/signup" element={<Navigate to="/auth/signup" replace />} />
 
-          {/* Admin Dashboard */}
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<AdminOverviewPage />} />
-            <Route path="users" element={<UserDirectoryPage />} />
-            <Route path="moderation" element={<ModerationFeedPage />} />
-            <Route path="mentors" element={<MentorPipelinePage />} />
-            <Route path="tags" element={<TagsTopicsPage />} />
-          </Route>
+        {/* Admin Dashboard */}
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<AdminOverviewPage />} />
+          <Route path="users" element={<UserDirectoryPage />} />
+          <Route path="moderation" element={<ModerationFeedPage />} />
+          <Route path="mentors" element={<MentorPipelinePage />} />
+          <Route path="tags" element={<TagsTopicsPage />} />
+        </Route>
 
-          {/* 404 Fallback */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </div>
-      </SocketProvider>
-    </AuthProvider>
+        {/* 404 Fallback */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </div>
   );
 }
