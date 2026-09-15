@@ -737,10 +737,13 @@ export default function PostDetailPage() {
       }
       if (target === "comment") {
         setComments((prev) =>
-          updateCommentInTree(prev, targetId, (c) => ({
-            ...c,
-            votes: removed ? c.votes - value : c.votes + value,
-          }))
+          updateCommentInTree(prev, targetId, (c) => {
+            if (voterId === user?.id) return c;
+            return {
+              ...c,
+              votes: removed ? c.votes - value : c.votes + value,
+            };
+          })
         );
       }
     };
