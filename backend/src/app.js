@@ -31,7 +31,11 @@ if (process.env.FRONTEND_URL) {
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+    const allowed =
+      !origin ||
+      ALLOWED_ORIGINS.includes(origin) ||
+      /^https:\/\/.*\.vercel\.app$/.test(origin);
+    if (allowed) {
       callback(null, true);
     } else {
       callback(new Error(`Origin ${origin} not allowed by CORS`));
@@ -43,7 +47,11 @@ app.use(cors({
 
 app.use((req, res, next) => {
   const origin = req.headers.origin;
-  if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+  const allowed =
+    !origin ||
+    ALLOWED_ORIGINS.includes(origin) ||
+    /^https:\/\/.*\.vercel\.app$/.test(origin);
+  if (allowed) {
     res.header("Access-Control-Allow-Origin", origin || "*");
     res.header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
     res.header("Access-Control-Allow-Headers", "Content-Type", "Authorization");
