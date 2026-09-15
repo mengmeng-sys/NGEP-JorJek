@@ -76,7 +76,7 @@ postsRouter.get("/", optionalAuth, async (req, res, next) => {
     let query = supabase
       .from("posts")
       .select(`*, author:users!posts_author_id_fkey(${USER_SAFE}), tags:post_tags(tag:skill_tags(*)), comments:comments(id), votes(*)`, { count: "exact" })
-      .order("created_at", { ascending: false })
+      .order("created_at", { ascending: true })
       .range(from, from + limit - 1);
 
     if (tag) {
@@ -84,7 +84,7 @@ postsRouter.get("/", optionalAuth, async (req, res, next) => {
         .from("posts")
         .select(`*, author:users!posts_author_id_fkey(${USER_SAFE}), tags:post_tags!inner(tag:skill_tags!inner(*)), comments:comments(id), votes(*)`, { count: "exact" })
         .eq("tags.tag.name", String(tag))
-        .order("created_at", { ascending: false })
+        .order("created_at", { ascending: true })
         .range(from, from + limit - 1);
     }
 
