@@ -50,6 +50,11 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
   const [voteState, setVoteState] = useState(comment.myVote || 0);
   const [voteCount, setVoteCount] = useState(comment.votes || 0);
 
+  // Sync local vote state when comment prop changes (real-time updates)
+  useEffect(() => {
+    setVoteCount(comment.votes || 0);
+  }, [comment.votes]);
+
   // Active reply target
   const [replyingToUser, setReplyingToUser] = useState(null);
   const [replyText, setReplyText] = useState('');
@@ -381,6 +386,11 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [voteState, setVoteState] = useState(reply.myVote || 0);
   const [voteCount, setVoteCount] = useState(reply.votes || 0);
+
+  // Sync local vote state when reply prop changes (real-time updates)
+  useEffect(() => {
+    setVoteCount(reply.votes || 0);
+  }, [reply.votes]);
 
   // Edit state
   const [isEditing, setIsEditing] = useState(false);
