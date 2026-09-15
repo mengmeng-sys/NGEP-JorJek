@@ -36,7 +36,7 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
   const [isReported, setIsReported] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
-  const { on, off } = useSocket();
+  const { on, off, joinPost, leavePost } = useSocket();
 
   // Close dropdown on outside click
   const menuRef = useRef(null);
@@ -63,6 +63,8 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
   }, [post.comments]);
 
   useEffect(() => {
+    joinPost(post.id);
+
     const handleVoteUpdate = ({ target, id: targetId, value, voterId, removed }) => {
       if (voterId === user?.id) return;
       if (target === "post" && targetId === post.id) {
@@ -88,8 +90,9 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
       off("vote_update", handleVoteUpdate);
       off("new_comment", handleNewComment);
       off("comment_deleted", handleCommentDeleted);
+      leavePost(post.id);
     };
-  }, [on, off, post.id, user?.id]);
+  }, [on, off, joinPost, leavePost, post.id, user?.id]);
 
   const handleUpvote = async (e) => {
     e.stopPropagation();
