@@ -65,7 +65,7 @@ export default function ExplorePage() {
 
         {/* Page Header */}
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center text-[#FF4F00] flex-shrink-0">
+          <div className="w-8 h-8 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center text-[#FF4F00] shrink-0">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.2">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9 9 0 100-18 9 9 0 000 18z" />
               <path strokeLinecap="round" strokeLinejoin="round" d="M16.24 7.76l-2.12 6.36-6.36 2.12 2.12-6.36 6.36-2.12z" />
@@ -96,7 +96,7 @@ export default function ExplorePage() {
                 <Link
                   key={tag.name}
                   to={`/?tag=${encodeURIComponent(tag.name.replace('#', ''))}`}
-                  className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 hover:border-orange-300 hover:shadow-xs transition-all flex flex-col justify-between min-h-[85px] sm:min-h-[95px] group active:scale-[0.98]"
+                  className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 hover:border-orange-300 hover:shadow-xs transition-all flex flex-col justify-between min-h-21.25 sm:min-h-23.75 group active:scale-[0.98]"
                 >
                   <span className="text-sm sm:text-base font-bold text-[#FF4F00] group-hover:text-[#E64700] leading-tight truncate">
                     {tag.name}
@@ -129,7 +129,7 @@ export default function ExplorePage() {
               suggestedMentors.map((mentor) => (
                 <div
                   key={mentor.id || mentor.displayName}
-                  className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-4 sm:p-5 w-[165px] sm:w-[195px] flex-shrink-0 flex flex-col items-center text-center shadow-xs snap-start hover:border-gray-300 transition-all justify-between"
+                  className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-4 sm:p-5 w-41.25 sm:w-48.75 shrink-0 flex flex-col items-center text-center shadow-xs snap-start hover:border-gray-300 transition-all justify-between"
                 >
                   <div className="flex flex-col items-center w-full">
                     {/* Avatar */}

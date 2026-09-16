@@ -25,6 +25,7 @@ import RequestSessionPage from "@/pages/RequestSessionPage";
 import LoginPage from "@/pages/auth/LoginPage";
 import ForgotPasswordPage from "@/pages/auth/ForgotPasswordPage";
 import SignupPage from "@/pages/auth/SignupPage";
+import OtpVerificationPage from "@/pages/auth/OtpVerificationPage";
 import TechInterestsPage from "@/pages/auth/TechInterestsPage";
 
 // Admin Dashboard

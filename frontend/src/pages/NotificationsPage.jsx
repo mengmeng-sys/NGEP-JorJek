@@ -90,7 +90,7 @@ export default function NotificationsPage() {
                 : 'All caught up!'}
             </p>
           </div>
-          <div className="flex items-center gap-2 flex-shrink-0">
+          <div className="flex items-center gap-2 shrink-0">
             {notifications.some((n) => n.read) && (
               <button
                 type="button"
@@ -141,11 +141,11 @@ export default function NotificationsPage() {
                 }`}
               >
                 {/* Avatar with type badge */}
-                <div className="relative flex-shrink-0">
+                <div className="relative shrink-0">
                   <div className={`h-11 w-11 rounded-full flex items-center justify-center text-white text-sm font-bold ${
                     n.isReply
-                      ? 'bg-gradient-to-br from-violet-500 to-purple-600'
-                      : 'bg-gradient-to-br from-orange-400 to-[#FF4F00]'
+                      ? 'bg-linear-to-br from-violet-500 to-purple-600'
+                      : 'bg-linear-to-br from-orange-400 to-[#FF4F00]'
                   }`}>
                     {n.actorInitials || 'U'}
                   </div>
@@ -197,7 +197,7 @@ export default function NotificationsPage() {
                 </div>
 
                 {/* Right side actions */}
-                <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                <div className="flex flex-col items-end gap-2 shrink-0">
                   <button
                     type="button"
                     onClick={(e) => {

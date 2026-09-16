@@ -51,7 +51,7 @@ export default function TermsPage() {
                 <span className="text-[#FF4F00] font-black">{sec.number}.</span>
                 <span>{sec.title}</span>
               </h2>
-              <p className="leading-relaxed text-gray-600 break-words">
+              <p className="leading-relaxed text-gray-600 wrap-break-words">
                 {sec.content}
               </p>
             </section>

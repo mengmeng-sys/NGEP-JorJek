@@ -71,7 +71,7 @@ export default function RequestSessionPage() {
                 {/* Mentor Summary Card */}
                 <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-4 sm:p-5 shadow-xs mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="h-11 w-11 sm:h-12 sm:w-12 bg-[#111827] text-white font-bold flex items-center justify-center rounded-full text-xs sm:text-sm flex-shrink-0">
+                    <div className="h-11 w-11 sm:h-12 sm:w-12 bg-[#111827] text-white font-bold flex items-center justify-center rounded-full text-xs sm:text-sm shrink-0">
                       {initials}
                     </div>
                     <div className="min-w-0">

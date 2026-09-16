@@ -97,7 +97,7 @@ export default function ContactPage() {
                 required
                 rows={4}
                 placeholder="Describe your question or issue in detail..."
-                className="w-full border border-gray-200 rounded-xl p-3 sm:p-3.5 text-xs text-gray-800 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] bg-[#FAFAFA] focus:bg-white transition-all resize-none shadow-2xs min-h-[110px]"
+                className="w-full border border-gray-200 rounded-xl p-3 sm:p-3.5 text-xs text-gray-800 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] bg-[#FAFAFA] focus:bg-white transition-all resize-none shadow-2xs min-h-27.5"
               />
             </div>
 

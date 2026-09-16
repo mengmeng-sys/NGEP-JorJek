@@ -72,7 +72,7 @@ export default function SearchPage() {
       <div className="w-full space-y-3.5 sm:space-y-4">
         <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-3.5 sm:p-4 shadow-xs">
           <div className="relative flex items-center w-full h-11 rounded-xl border border-gray-200 bg-[#FAFAFA] focus-within:bg-white focus-within:border-[#FF4F00] focus-within:ring-1 focus-within:ring-[#FF4F00] transition-all">
-            <div className="grid place-items-center h-full w-11 text-gray-400 flex-shrink-0">
+            <div className="grid place-items-center h-full w-11 text-gray-400 shrink-0">
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>

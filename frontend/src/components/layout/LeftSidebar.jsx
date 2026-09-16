@@ -7,7 +7,9 @@ const defaultTags = ['JavaScript', 'Python', 'React', 'SQL', 'C++', 'Machine Lea
 
 export async function fetchSkillTags() {
   try {
-    const data = await tagsApi.list();
+    // Featured-only — this is what feeds the sidebar's Skill Tags list, so it
+    // must match the admin's "Featured" curation, not every tag in the system.
+    const data = await tagsApi.list({ featured: true });
     const tags = Array.isArray(data?.tags)
       ? data.tags.map((t) => String(t.name || t.slug || '').replace(/^#/, '')).filter(Boolean)
       : [];
@@ -33,8 +35,14 @@ export function LeftSidebar({ savedCount, skillTags: externalTags = [] }) {
       return;
     }
     let cancelled = false;
+    // Same "Featured" filter as fetchSkillTags() above — only tags an admin
+    // has marked Featured (Tags & Topics admin page) belong in this list.
+    // This is the ONLY tag fetch in this component now; a second, duplicate
+    // fetch used to live in its own effect further down and raced this one,
+    // which is why the sidebar sometimes showed every tag instead of just
+    // the curated set.
     tagsApi
-      .list()
+      .list({ featured: true })
       .then((data) => {
         const backendTags = Array.isArray(data?.tags)
           ? data.tags.map((t) => String(t.name || t.slug || '').replace(/^#/, '')).filter(Boolean)
@@ -65,24 +73,6 @@ export function LeftSidebar({ savedCount, skillTags: externalTags = [] }) {
   }, [user, authLoading]);
 
   const displayCount = savedCount ?? fetchedCount ?? 0;
-
-  useEffect(() => {
-    let cancelled = false;
-    // Only tags an admin has marked "Featured" (Tags & Topics admin page)
-    // show up here — that's the admin's control over this list.
-    tagsApi
-      .list({ featured: true })
-      .then((data) => {
-        const backendTags = Array.isArray(data?.tags)
-          ? data.tags.map((t) => String(t.name || t.slug || '').replace(/^#/, '')).filter(Boolean)
-          : [];
-        if (!cancelled && backendTags.length > 0) setSkillTags(backendTags);
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   const getNavLinkClass = ({ isActive }) =>
     `flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-bold transition-colors ${

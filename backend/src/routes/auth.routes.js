@@ -4,44 +4,21 @@ const jwt = require("jsonwebtoken");
 const { supabase } = require("../config/db");
 const { env } = require("../config/env");
 const { requireAuth } = require("../middleware/auth.middleware");
+const { requireCadtEmail } = require("../middleware/cadtEmailGate.middleware");
 const { signAccessToken, signRefreshToken, userSafe } = require("../lib/token");
-
-const REFRESH_TOKEN_DAYS = 30;
 
 const authRouter = Router();
 
-<<<<<<< HEAD
+const OTP_EXPIRY_MINUTES = 10;
+
 // ─── helpers ──────────────────────────────────────────────────────────
-function signAccessToken(userId, tokenVersion) {
-  return jwt.sign({ sub: userId, ver: tokenVersion }, env.jwtSecret, { expiresIn: "7d" });
-}
-
-function signRefreshToken(userId, tokenVersion) {
-  return jwt.sign({ sub: userId, ver: tokenVersion }, env.jwtRefreshSecret, { expiresIn: `${REFRESH_TOKEN_DAYS}d` });
-}
-
+// signAccessToken / signRefreshToken / userSafe now live in ../lib/token
+// (imported above) so they're shared with other route files — keeping a
+// second copy here is what caused the "already declared" crash.
 function otpExpiry() {
   const d = new Date();
   d.setMinutes(d.getMinutes() + OTP_EXPIRY_MINUTES);
   return d.toISOString();
-}
-
-function userSafe(row) {
-  return {
-    id: row.id,
-    email: row.email,
-    displayName: row.display_name,
-    role: row.role,
-    bio: row.bio || null,
-    gen: row.gen ?? null,
-    department: row.department || null,
-    specialization: row.specialization || null,
-    emailVerified: row.email_verified,
-    showProfileToGuests: row.show_profile_to_guests ?? true,
-    allowDirectRequests: row.allow_direct_requests ?? true,
-    showOnlineStatus: row.show_online_status ?? false,
-    receiveEmailNotifications: row.receive_email_notifications ?? true,
-  };
 }
 
 // ─── POST /auth/signup ────────────────────────────────────────────────
@@ -196,8 +173,6 @@ authRouter.post("/signup", requireCadtEmail, async (req, res, next) => {
  *             schema:
  *               $ref: "#/components/schemas/Error"
  */
-=======
->>>>>>> e2a0731909e604507861a3ff77a53766367d8eb7
 authRouter.post("/login", async (req, res, next) => {
   try {
     const { cadtEmail, password } = req.body;

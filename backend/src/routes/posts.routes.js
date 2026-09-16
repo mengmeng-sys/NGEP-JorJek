@@ -75,13 +75,8 @@ postsRouter.get("/", optionalAuth, async (req, res, next) => {
 
     let query = supabase
       .from("posts")
-<<<<<<< Updated upstream
       .select(`*, author:users!posts_author_id_fkey(${USER_SAFE}), tags:post_tags(tag:skill_tags(*)), comments:comments(id), votes(*), saved_posts:saved_posts(post_id)`, { count: "exact" })
-      .order("created_at", { ascending: true })
-=======
-      .select(`*, author:users!posts_author_id_fkey(${USER_SAFE}), tags:post_tags(tag:skill_tags(*)), comments:comments(id), votes(*)`, { count: "exact" })
       .order("created_at", { ascending: false })
->>>>>>> Stashed changes
       .range(from, from + limit - 1);
 
     if (tag) {

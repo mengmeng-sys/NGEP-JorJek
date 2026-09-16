@@ -69,25 +69,18 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen w-full grid grid-cols-1 lg:grid-cols-2 bg-[#FBFBFB]">
-<<<<<<< HEAD
 
       {/* Left Column: Academic Branding Hero (Desktop Only) */}
-=======
->>>>>>> e2a0731909e604507861a3ff77a53766367d8eb7
-      <div className="hidden lg:flex flex-col justify-between bg-gradient-to-br from-[#111827] via-[#161F30] to-[#1F2937] p-10 xl:p-14 text-white relative overflow-hidden">
+      <div className="hidden lg:flex flex-col justify-between bg-linear-to-br from-[#111827] via-[#161F30] to-[#1F2937] p-10 xl:p-14 text-white relative overflow-hidden">
         <div className="absolute -top-24 -left-24 w-96 h-96 bg-[#FF4F00]/15 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10">
           <Link to="/" className="inline-block group">
-<<<<<<< HEAD
             <img
               src="/jorjek_logo.jpg"
               alt="JorJek"
               className="h-10 w-auto object-contain rounded-lg transition-transform group-hover:scale-105"
             />
-=======
-            <img src="/jorjek_logo.jpg" alt="JorJek" className="h-10 w-auto object-contain rounded-lg transition-transform group-hover:scale-105" />
->>>>>>> e2a0731909e604507861a3ff77a53766367d8eb7
           </Link>
           <p className="text-[11px] text-gray-400 mt-2 uppercase tracking-widest font-bold">CADT Academic Knowledge Network</p>
         </div>
@@ -110,7 +103,6 @@ export default function LoginPage() {
           <BackHomeArrow />
         </div>
         <div className="w-full max-w-sm sm:max-w-md bg-white sm:bg-transparent border sm:border-0 border-gray-200 rounded-2xl p-6 sm:p-0 shadow-xs sm:shadow-none space-y-5 sm:space-y-6">
-<<<<<<< HEAD
 
           {/* Mobile Header Brand */}
           <div className="lg:hidden text-center mb-4">
@@ -120,11 +112,6 @@ export default function LoginPage() {
                 alt="JorJek"
                 className="h-10 w-auto mx-auto object-contain transition-transform group-hover:scale-105"
               />
-=======
-          <div className="lg:hidden text-center mb-4">
-            <Link to="/" className="inline-block group">
-              <img src="/jorjek_logo.jpg" alt="JorJek" className="h-10 w-auto mx-auto object-contain transition-transform group-hover:scale-105" />
->>>>>>> e2a0731909e604507861a3ff77a53766367d8eb7
             </Link>
           </div>
 

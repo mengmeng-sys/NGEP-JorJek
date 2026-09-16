@@ -64,7 +64,7 @@ export default function SavedPage() {
         {/* Responsive Header Banner */}
         <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-4 sm:p-5 shadow-xs">
           <div className="flex items-center gap-2.5 sm:gap-3">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center text-[#FF4F00] flex-shrink-0">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center text-[#FF4F00] shrink-0">
               <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
               </svg>
@@ -83,12 +83,12 @@ export default function SavedPage() {
         </div>
 
         {loading ? (
-          <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-8 sm:p-14 flex flex-col items-center justify-center text-center shadow-xs min-h-[360px] sm:min-h-[400px]">
+          <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-8 sm:p-14 flex flex-col items-center justify-center text-center shadow-xs min-h-90 sm:min-h-100">
             <div className="w-8 h-8 border-[3px] border-orange-200 border-t-[#FF4F00] rounded-full animate-spin mb-4" />
             <p className="text-xs text-gray-400 font-semibold">Loading your saved posts…</p>
           </div>
         ) : error ? (
-          <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-8 sm:p-14 flex flex-col items-center justify-center text-center shadow-xs min-h-[360px] sm:min-h-[400px]">
+          <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-8 sm:p-14 flex flex-col items-center justify-center text-center shadow-xs min-h-90 sm:min-h-100">
             <p className="text-xs text-red-600 font-semibold bg-red-50 border border-red-100 rounded-lg px-3 py-2 mb-5">
               {error}
             </p>
@@ -101,7 +101,7 @@ export default function SavedPage() {
             </button>
           </div>
         ) : savedPosts.length === 0 ? (
-          <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-8 sm:p-14 flex flex-col items-center justify-center text-center shadow-xs min-h-[360px] sm:min-h-[400px]">
+          <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-8 sm:p-14 flex flex-col items-center justify-center text-center shadow-xs min-h-90 sm:min-h-100">
             <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-orange-50/70 border border-orange-100 text-[#FF4F00] flex items-center justify-center mb-4">
               <svg
                 className="w-7 h-7 sm:w-8 sm:h-8"

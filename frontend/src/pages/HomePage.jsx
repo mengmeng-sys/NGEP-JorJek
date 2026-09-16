@@ -115,7 +115,7 @@ export default function HomePage() {
             <button
               type="button"
               onClick={() => navigate('/')}
-              className="text-[11px] sm:text-xs font-bold text-gray-500 hover:text-gray-900 transition-colors flex-shrink-0 cursor-pointer"
+              className="text-[11px] sm:text-xs font-bold text-gray-500 hover:text-gray-900 transition-colors shrink-0 cursor-pointer"
             >
               Clear ×
             </button>
@@ -127,7 +127,7 @@ export default function HomePage() {
           
           {/* Scrollable Sort Pills on Mobile */}
           <div className="flex items-center gap-1.5 sm:gap-3 overflow-x-auto no-scrollbar py-0.5 -mx-1 px-1 sm:mx-0 sm:px-0">
-            <span className="hidden sm:inline text-xs font-medium text-gray-400 mr-1 flex-shrink-0">
+            <span className="hidden sm:inline text-xs font-medium text-gray-400 mr-1 shrink-0">
               Sort:
             </span>
 
@@ -138,7 +138,7 @@ export default function HomePage() {
                   key={option.id}
                   type="button"
                   onClick={() => setSortBy(option.id)}
-                  className={`px-3 py-1.5 rounded-lg sm:rounded-xl text-xs font-bold transition-all flex-shrink-0 cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-lg sm:rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
                     isActive
                       ? 'bg-[#FF4F00] text-white shadow-2xs'
                       : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
@@ -151,7 +151,7 @@ export default function HomePage() {
           </div>
 
           {/* Post Counter Badge */}
-          <span className="text-[11px] sm:text-xs text-gray-400 font-medium whitespace-nowrap pl-2 border-l border-gray-100 sm:border-l-0 flex-shrink-0">
+          <span className="text-[11px] sm:text-xs text-gray-400 font-medium whitespace-nowrap pl-2 border-l border-gray-100 sm:border-l-0 shrink-0">
             {sortedPosts.length} <span className="hidden xs:inline">posts</span>
           </span>
         </div>

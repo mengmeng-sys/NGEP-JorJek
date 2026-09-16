@@ -379,7 +379,7 @@ export default function UserProfilePage() {
             <>
               <div className="flex flex-col md:flex-row md:items-start justify-between gap-5 sm:gap-6">
                 <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 sm:gap-5">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-[#8B5CF6] text-white text-xl sm:text-2xl font-black flex items-center justify-center flex-shrink-0 shadow-xs">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-[#8B5CF6] text-white text-xl sm:text-2xl font-black flex items-center justify-center shrink-0 shadow-xs">
                     {fullProfile.avatarInitials}
                   </div>
 
@@ -432,7 +432,7 @@ export default function UserProfilePage() {
                     <p className="text-xs text-gray-400">{fullProfile.university}</p>
 
                     {fullProfile.bio && (
-                      <p className="text-xs sm:text-sm text-gray-600 max-w-xl pt-1 leading-relaxed break-words">
+                      <p className="text-xs sm:text-sm text-gray-600 max-w-xl pt-1 leading-relaxed wrap-break-words">
                         {fullProfile.bio}
                       </p>
                     )}
@@ -440,7 +440,7 @@ export default function UserProfilePage() {
                 </div>
 
                 {/* Action CTAs */}
-                <div className="flex sm:flex-row md:flex-col gap-2 w-full md:w-auto flex-shrink-0">
+                <div className="flex sm:flex-row md:flex-col gap-2 w-full md:w-auto shrink-0">
                   {!isOwnProfile ? (
                     <button
                       type="button"

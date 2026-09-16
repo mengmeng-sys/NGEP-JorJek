@@ -1206,13 +1206,8 @@ export default function PostDetailPage() {
               {post.title}
             </h1>
 
-<<<<<<< HEAD
-            <div className="text-xs sm:text-sm text-gray-700 leading-relaxed wrap-break-words space-y-3">
-              <p>{post.content}</p>
-            </div>
-=======
             {post.content ? (
-              <div className="text-xs sm:text-sm text-gray-700 leading-relaxed break-words space-y-3">
+              <div className="text-xs sm:text-sm text-gray-700 leading-relaxed wrap-break-words space-y-3">
                 <p className={isLongPost && !isBodyExpanded ? 'line-clamp-4' : ''}>{post.content}</p>
                 {isLongPost && (
                   <button
@@ -1239,7 +1234,6 @@ export default function PostDetailPage() {
                 )}
               </div>
             ) : null}
->>>>>>> e2a0731909e604507861a3ff77a53766367d8eb7
 
             {/* Attached Image */}
             {post.image_url && (
