@@ -121,7 +121,7 @@ export function LeftSidebar({ savedCount }) {
         <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-3 px-4">
           Skill Tags
         </p>
-        <div className="flex flex-col space-y-1">
+        <div className="flex flex-col space-y-1 max-h-[40vh] lg:max-h-none overflow-y-auto">
           {skillTags.map((tag) => {
             const isSelected = activeTag != null && activeTag.toLowerCase() === tag.toLowerCase();
             return (
