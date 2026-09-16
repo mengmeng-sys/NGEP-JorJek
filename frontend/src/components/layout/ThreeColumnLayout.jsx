@@ -21,8 +21,10 @@ export function ThreeColumnLayout({ children, onOpenAuth }) {
             <LeftSidebar skillTags={skillTags} />
           </aside>
 
-          <main className="w-full lg:col-span-6 xl:col-span-7 h-full overflow-y-auto py-4 no-scrollbar min-w-0">
-            {children}
+          <main className="w-full lg:col-span-6 xl:col-span-7 h-full overflow-y-auto no-scrollbar min-w-0">
+            <div className="py-4">
+              {children}
+            </div>
           </main>
 
           <aside className="hidden lg:block lg:col-span-3 xl:col-span-3 h-full overflow-y-auto py-4 no-scrollbar">
