@@ -17,17 +17,21 @@ export async function fetchSkillTags() {
   }
 }
 
-export function LeftSidebar({ savedCount, skillTags: externalTags }) {
+export function LeftSidebar({ savedCount, skillTags: externalTags = [] }) {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { user, isLoading: authLoading } = useAuth();
   const activeTag = searchParams.get('tag');
 
-  const [skillTags, setSkillTags] = useState(externalTags || defaultTags);
+  const hasExternalTags = externalTags.length > 0;
+  const [skillTags, setSkillTags] = useState(hasExternalTags ? externalTags : defaultTags);
   const [fetchedCount, setFetchedCount] = useState(null);
 
   useEffect(() => {
-    if (externalTags) return;
+    if (hasExternalTags) {
+      setSkillTags(externalTags);
+      return;
+    }
     let cancelled = false;
     tagsApi
       .list()
@@ -41,7 +45,7 @@ export function LeftSidebar({ savedCount, skillTags: externalTags }) {
     return () => {
       cancelled = true;
     };
-  }, [externalTags]);
+  }, [hasExternalTags, externalTags]);
 
   useEffect(() => {
     let cancelled = false;
