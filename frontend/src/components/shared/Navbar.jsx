@@ -160,7 +160,7 @@ export default function Navbar() {
         <div className="w-full px-4 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-3 sm:gap-6">
           
           {/* 1. Left: Sidebar Toggle Icon + Logo */}
-          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <button
               type="button"
               onClick={() => setIsSidebarDrawerOpen(true)}
@@ -202,7 +202,7 @@ export default function Navbar() {
           </div>
 
           {/* 3. Right: Action CTAs */}
-          <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
             
             {/* Mobile Search Expand Trigger */}
             <button
@@ -276,7 +276,7 @@ export default function Navbar() {
                     </svg>
 
                     {unreadCount > 0 && (
-                      <span className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#FF4F00] px-1 text-[9px] font-black text-white shadow-xs">
+                      <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#FF4F00] px-1 text-[9px] font-black text-white shadow-xs">
                         {unreadCount}
                       </span>
                     )}
@@ -284,7 +284,7 @@ export default function Navbar() {
 
                   {/* Notifications Flyout */}
                   {isNotificationsOpen && (
-                    <div className="fixed sm:absolute top-16 sm:top-auto sm:right-0 inset-x-4 sm:inset-x-auto sm:w-[420px] bg-white border border-gray-200 rounded-2xl shadow-2xl z-50 overflow-hidden">
+                    <div className="fixed sm:absolute top-16 sm:top-auto sm:right-0 inset-x-4 sm:inset-x-auto sm:w-105 bg-white border border-gray-200 rounded-2xl shadow-2xl z-50 overflow-hidden">
                       {/* Header */}
                       <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100 bg-gray-50/50">
                         <div className="flex items-center gap-2.5">
@@ -318,7 +318,7 @@ export default function Navbar() {
                       </div>
 
                       {/* Notification List */}
-                      <div className="max-h-[380px] overflow-y-auto">
+                      <div className="max-h-95 overflow-y-auto">
                         {notifications.length === 0 ? (
                           <div className="py-12 flex flex-col items-center gap-2">
                             <svg className="w-10 h-10 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
@@ -337,9 +337,9 @@ export default function Navbar() {
                               }`}
                             >
                               {/* Avatar with type icon */}
-                              <div className="relative flex-shrink-0">
+                              <div className="relative shrink-0">
                                 <div className={`h-10 w-10 rounded-full flex items-center justify-center text-white text-xs font-bold ${
-                                  notif.isReply ? 'bg-gradient-to-br from-violet-500 to-purple-600' : 'bg-gradient-to-br from-orange-400 to-[#FF4F00]'
+                                  notif.isReply ? 'bg-linear-to-br from-violet-500 to-purple-600' : 'bg-linear-to-br from-orange-400 to-[#FF4F00]'
                                 }`}>
                                   {notif.actorInitials || 'U'}
                                 </div>
@@ -386,7 +386,7 @@ export default function Navbar() {
                               </div>
 
                               {/* Actions */}
-                              <div className="flex flex-col items-center gap-1 flex-shrink-0">
+                              <div className="flex flex-col items-center gap-1 shrink-0">
                                 {!notif.read && (
                                   <span className="w-2.5 h-2.5 rounded-full bg-[#FF4F00] ring-4 ring-orange-100" />
                                 )}
