@@ -1207,25 +1207,30 @@ export default function PostDetailPage() {
             </h1>
 
             {post.content ? (
-              <div className="text-xs sm:text-sm text-gray-700 leading-relaxed wrap-break-words space-y-3">
-                <p className={isLongPost && !isBodyExpanded ? 'line-clamp-4' : ''}>{post.content}</p>
+              <div className="relative text-xs sm:text-sm text-gray-700 leading-relaxed wrap-break-words">
+                <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isLongPost && !isBodyExpanded ? 'max-h-24' : 'max-h-[2000px]'}`}>
+                  <p>{post.content}</p>
+                </div>
+                {isLongPost && !isBodyExpanded && (
+                  <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white to-transparent pointer-events-none" />
+                )}
                 {isLongPost && (
                   <button
                     type="button"
                     onClick={() => setIsBodyExpanded(!isBodyExpanded)}
-                    className="inline-flex items-center gap-1 text-xs font-bold text-[#FF4F00] hover:text-orange-700 transition-colors cursor-pointer"
+                    className="mt-2 inline-flex items-center gap-1.5 text-xs font-bold text-[#FF4F00] hover:text-orange-700 transition-colors cursor-pointer group"
                   >
                     {isBodyExpanded ? (
                       <>
                         See less
-                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                        <svg className="w-3.5 h-3.5 transition-transform group-hover:-translate-y-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
                         </svg>
                       </>
                     ) : (
                       <>
                         See more
-                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                        <svg className="w-3.5 h-3.5 transition-transform group-hover:translate-y-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                         </svg>
                       </>

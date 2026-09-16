@@ -42,7 +42,7 @@ export const postsApi = {
     const postBody = {
       type: payload.type || "question",
       title: payload.title,
-      body: payload.content || payload.body,
+      body: payload.content ?? payload.body ?? "",
       tagNames: safeArray(payload.tags).map((t) => String(t).replace(/^#/, "")),
     };
     if (payload.allowMentoring !== undefined) postBody.allowMentoring = payload.allowMentoring;
