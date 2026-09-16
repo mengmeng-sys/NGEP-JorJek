@@ -13,6 +13,8 @@ export const authApi = {
   login: (cadtEmail, password) =>
     apiFetch("/auth/login", { method: "POST", body: { cadtEmail, password } }),
   logout: () => apiFetch("/auth/logout", { method: "POST" }),
+  microsoftCheck: (idToken) =>
+    apiFetch("/auth/microsoft/check", { method: "POST", body: { idToken } }),
   microsoftSignup: (payload) =>
     apiFetch("/auth/microsoft/signup", { method: "POST", body: payload }),
   microsoftLogin: (idToken) =>

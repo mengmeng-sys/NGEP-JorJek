@@ -4,6 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useMsal } from '@azure/msal-react';
 import { loginRequest } from '@/config/msalConfig';
 import { BackHomeArrow } from '@/components/shared/BackHomeArrow';
+import { authApi } from '@/lib/api';
 
 export default function SignupPage() {
   const navigate = useNavigate();
@@ -25,14 +26,28 @@ export default function SignupPage() {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    instance.handleRedirectPromise().then((res) => {
+    instance.handleRedirectPromise().then(async (res) => {
       if (res?.account) {
         instance.setActiveAccount(res.account);
         setAccount(res.account);
         setMsEmail(res.account.username);
         setMsName(res.account.name || '');
         setUsername(res.account.name || '');
-        setMicrosoftVerified(true);
+        try {
+          let idToken = res.idToken;
+          if (!idToken) {
+            const tokenRes = await instance.acquireTokenSilent(loginRequest);
+            idToken = tokenRes.idToken;
+          }
+          const check = await authApi.microsoftCheck(idToken);
+          if (check.exists) {
+            navigate('/auth/login');
+          } else {
+            setMicrosoftVerified(true);
+          }
+        } catch {
+          setMicrosoftVerified(true);
+        }
       }
     }).catch(() => {});
   }, [instance]);

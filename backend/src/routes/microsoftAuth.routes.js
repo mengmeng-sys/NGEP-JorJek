@@ -11,6 +11,30 @@ function isCadtEmail(email) {
   return email.toLowerCase().endsWith(env.cadtEmailDomain.toLowerCase());
 }
 
+router.post("/check", async (req, res, next) => {
+  try {
+    const { idToken } = req.body;
+    if (!idToken) return res.status(400).json({ error: "Microsoft authentication required" });
+
+    let ms;
+    try {
+      ms = await validateMicrosoftIdToken(idToken);
+    } catch {
+      return res.status(401).json({ error: "Microsoft authentication failed" });
+    }
+
+    const { data: user } = await supabase
+      .from("users")
+      .select("id")
+      .eq("email", ms.email)
+      .maybeSingle();
+
+    res.json({ exists: !!user, email: ms.email });
+  } catch (err) {
+    next(err);
+  }
+});
+
 router.post("/signup", async (req, res, next) => {
   try {
     const { idToken, displayName, password, role, gen, department, specialization } = req.body;
