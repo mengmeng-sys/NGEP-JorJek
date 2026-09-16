@@ -42,7 +42,7 @@ export const postsApi = {
     const postBody = {
       type: payload.type || "question",
       title: payload.title,
-      body: payload.content || payload.body,
+      body: payload.content ?? payload.body ?? "",
       tagNames: safeArray(payload.tags).map((t) => String(t).replace(/^#/, "")),
     };
     if (payload.allowMentoring !== undefined) postBody.allowMentoring = payload.allowMentoring;
@@ -122,6 +122,10 @@ export const searchApi = {
 
 export const usersApi = {
   topMentors: async () => safeArray(await apiFetch("/users/top-mentors")).map(normalizeMentor),
+  search: async (q) => {
+    const data = await apiFetch(`/users/search?q=${encodeURIComponent(q)}`);
+    return safeArray(data.users);
+  },
   get: async (idOrSlug) => {
     // Backend has no "get by handle" endpoint, so resolve a slug/id from the
     // paginated user list. Walk every page until we find a match so the profile
