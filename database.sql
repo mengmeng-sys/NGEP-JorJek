@@ -43,7 +43,7 @@ create table public.posts (
   author_id uuid not null references public.users(id) on delete cascade,
   type text not null default 'question' check (type in ('question', 'offer', 'resource')),
   title text not null,
-  body text not null,
+  body text,
   allow_mentoring boolean not null default false,
   created_at timestamptz not null default now(),
   updated_at timestamptz

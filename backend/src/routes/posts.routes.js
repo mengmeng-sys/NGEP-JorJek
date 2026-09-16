@@ -216,7 +216,7 @@ postsRouter.post("/", requireAuth, requireVerifiedEmail, async (req, res, next) 
       author_id: req.userId,
       type: (type ?? "question").toLowerCase(),
       title,
-      body,
+      body: body ?? "",
     };
     if (req.body.allowMentoring !== undefined && (await canStoreAllowMentoring())) {
       insertPayload.allow_mentoring = Boolean(allowMentoring);

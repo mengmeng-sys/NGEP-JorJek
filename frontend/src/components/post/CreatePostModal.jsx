@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null }) {
   const isEditing = Boolean(initialData);
   const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
+  const [showPublishConfirm, setShowPublishConfirm] = useState(false);
 
   const [title, setTitle] = useState('');
   const [details, setDetails] = useState('');
@@ -168,8 +169,29 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
     if (!title.trim()) return;
     if (isTitleOverLimit) return;
 
-    commitTagInput();
+    if (!isEditing) {
+      setShowPublishConfirm(true);
+    } else {
+      commitTagInput();
+      if (onPublish) {
+        onPublish({
+          ...(initialData || {}),
+          title: title.trim(),
+          content: details.trim(),
+          tags: selectedTags,
+          allowMentoring: isMentoringEnabled,
+          image_url: imagePreview,
+          imageFile: selectedImage,
+          imagePreview,
+        });
+      }
+      onClose();
+    }
+  };
 
+  const handleConfirmPublish = () => {
+    setShowPublishConfirm(false);
+    commitTagInput();
     if (onPublish) {
       onPublish({
         ...(initialData || {}),
@@ -265,7 +287,7 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
           {/* Details */}
           <div>
             <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">
-              Details
+              Details <span className="text-gray-400 font-normal normal-case">(optional)</span>
             </label>
             <textarea
               rows={4}
@@ -460,6 +482,39 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
           </div>
         </form>
       </div>
+
+      {/* Publish Confirmation */}
+      {showPublishConfirm && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-gray-950/60 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden p-6 text-center animate-in zoom-in-95 duration-150">
+            <div className="w-12 h-12 rounded-2xl bg-orange-50 border border-orange-100 text-[#FF4F00] flex items-center justify-center mx-auto mb-3.5">
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+            </div>
+            <h3 className="text-base font-bold text-gray-900">Ready to publish?</h3>
+            <p className="text-xs text-gray-500 mt-1.5 leading-relaxed">
+              Your post will be visible to all CADT students. Make sure everything looks good before publishing.
+            </p>
+            <div className="flex items-center gap-2.5 mt-5">
+              <button
+                type="button"
+                onClick={() => setShowPublishConfirm(false)}
+                className="flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors cursor-pointer"
+              >
+                Go Back
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmPublish}
+                className="flex-1 py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-[#FF4F00] hover:bg-[#E64700] transition-colors cursor-pointer"
+              >
+                Publish Now
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Discard Confirmation */}
       {showDiscardConfirm && (
