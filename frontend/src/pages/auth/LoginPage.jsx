@@ -45,20 +45,6 @@ export default function LoginPage() {
   };
 
   const account = accounts[0];
-  useEffect(() => {
-    if (account && inProgress === 'none') {
-      instance.acquireTokenSilent(loginRequest).then(async (res) => {
-        try {
-          await loginMicrosoft(res.idToken);
-          navigate('/');
-        } catch (err) {
-          setError(err?.message || 'Microsoft sign in failed.');
-        }
-      }).catch(() => {
-        instance.acquireTokenRedirect(loginRequest);
-      });
-    }
-  }, [account, inProgress]);
 
   return (
     <div className="min-h-screen w-full grid grid-cols-1 lg:grid-cols-2 bg-[#FBFBFB]">
