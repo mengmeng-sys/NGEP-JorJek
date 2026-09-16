@@ -9,7 +9,7 @@ export function LeftSidebar({ savedCount }) {
   const { user, isLoading: authLoading } = useAuth();
   const activeTag = searchParams.get('tag');
 
-  const fallbackTags = [];
+  const fallbackTags = ['JavaScript', 'Python', 'React', 'SQL', 'C++', 'Machine Learning', 'Figma', 'Cybersecurity'];
   const [skillTags, setSkillTags] = useState(fallbackTags);
   const [fetchedCount, setFetchedCount] = useState(null);
 
