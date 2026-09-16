@@ -81,7 +81,12 @@ export default function SignupPage() {
       });
       navigate('/');
     } catch (err) {
-      setSubmitError(err?.message || 'We could not create your account. Please try again.');
+      const msg = err?.message || '';
+      if (msg.toLowerCase().includes('already exists') || msg.includes('409')) {
+        navigate('/auth/login');
+      } else {
+        setSubmitError(msg || 'We could not create your account. Please try again.');
+      }
     } finally {
       setSubmitting(false);
     }
