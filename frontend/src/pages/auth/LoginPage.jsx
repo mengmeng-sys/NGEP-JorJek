@@ -17,12 +17,25 @@ export default function LoginPage() {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    instance.handleRedirectPromise().then((res) => {
+    instance.handleRedirectPromise().then(async (res) => {
       if (res?.account) {
         instance.setActiveAccount(res.account);
-        loginMicrosoft(res.idToken).then(() => navigate('/')).catch((err) => {
-          setError(err?.message || 'Microsoft sign in failed.');
-        });
+        try {
+          let idToken = res.idToken;
+          if (!idToken) {
+            const tokenRes = await instance.acquireTokenSilent(loginRequest);
+            idToken = tokenRes.idToken;
+          }
+          await loginMicrosoft(idToken);
+          navigate('/');
+        } catch (err) {
+          const msg = err?.message || '';
+          if (msg.toLowerCase().includes('no account') || msg.includes('404')) {
+            navigate('/auth/signup');
+          } else {
+            setError(msg || 'Microsoft sign in failed.');
+          }
+        }
       }
     }).catch(() => {});
   }, [instance]);

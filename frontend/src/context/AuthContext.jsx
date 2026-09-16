@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { authApi, usersApi } from "@/lib/api";
 import { normalizeUser, handleFrom, initialsFrom } from "@/lib/adapters";
+import { msalInstance } from "@/config/msalConfig";
 
 const AuthContext = createContext(null);
 
@@ -185,6 +186,10 @@ export function AuthProvider({ children }) {
     } finally {
       clearSession();
       setUser(null);
+      const accounts = msalInstance.getAllAccounts();
+      if (accounts.length > 0) {
+        await msalInstance.logoutRedirect({ account: accounts[0] }).catch(() => {});
+      }
     }
   };
 
