@@ -681,7 +681,7 @@ export default function Navbar() {
         onClose={() => setIsPostModalOpen(false)}
         onPublish={async (postPayload) => {
           try {
-            const created = await postsApi.create({
+            await postsApi.create({
               type: postPayload.type || 'question',
               title: postPayload.title,
               content: postPayload.details ?? postPayload.content,
@@ -689,7 +689,12 @@ export default function Navbar() {
               allowMentoring: postPayload.allowMentoring,
             });
             setIsPostModalOpen(false);
-            navigate(`/posts/${created.id}`);
+            // Go back to the feed instead of the new post's own page: HomePage's
+            // usePosts() re-fetches on mount (GET /posts, ordered created_at DESC),
+            // so the post you just made is guaranteed to show up at the top —
+            // not dependent on the socket.io "new_post" broadcast having already
+            // reached this tab, which it can't have while this modal was open.
+            navigate('/');
           } catch (err) {
             alert(getApiErrorMessage(err));
           }
