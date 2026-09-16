@@ -17,7 +17,14 @@ export default function LoginPage() {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    instance.handleRedirectPromise().catch(() => {});
+    instance.handleRedirectPromise().then((res) => {
+      if (res?.account) {
+        instance.setActiveAccount(res.account);
+        loginMicrosoft(res.idToken).then(() => navigate('/')).catch((err) => {
+          setError(err?.message || 'Microsoft sign in failed.');
+        });
+      }
+    }).catch(() => {});
   }, [instance]);
 
   const handleLogin = async (e) => {
