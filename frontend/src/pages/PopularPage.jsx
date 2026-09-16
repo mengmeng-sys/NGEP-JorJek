@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ThreeColumnLayout } from '@/components/layout/ThreeColumnLayout';
 import { PostCard } from '@/components/post/PostCard';
 import { CreatePostModal } from '@/components/post/CreatePostModal';
+import { DeletePostModal } from '@/components/post/DeletePostModal';
 import { postsApi } from '@/lib/api';
 import { usePostEditor } from '@/hooks/usePostEditor';
 
@@ -9,6 +10,18 @@ export default function PopularPage() {
   const [timeframe, setTimeframe] = useState('week'); // 'today' | 'week' | 'all'
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [postToDelete, setPostToDelete] = useState(null);
+
+  const handleConfirmDelete = async () => {
+    if (!postToDelete) return;
+    try {
+      await postsApi.remove(postToDelete);
+      setPosts((prev) => prev.filter((p) => p.id !== postToDelete));
+    } catch (err) {
+      alert('Could not delete post.');
+    }
+    setPostToDelete(null);
+  };
   const { isPostModalOpen, editingPost, openEdit, closeEdit, saveEdit } = usePostEditor((updated) =>
     setPosts((prev) => prev.map((p) => (p.id === updated.id ? updated : p)))
   );
@@ -115,7 +128,7 @@ export default function PopularPage() {
         ) : (
           <div className="space-y-3 sm:space-y-4">
             {posts.map((post) => (
-              <PostCard key={post.id} post={post} onEdit={openEdit} />
+              <PostCard key={post.id} post={post} onEdit={openEdit} onDelete={() => setPostToDelete(post.id)} />
             ))}
           </div>
         )}
@@ -127,6 +140,12 @@ export default function PopularPage() {
         initialData={editingPost}
         onClose={closeEdit}
         onPublish={saveEdit}
+      />
+
+      <DeletePostModal
+        isOpen={postToDelete !== null}
+        onClose={() => setPostToDelete(null)}
+        onConfirm={handleConfirmDelete}
       />
     </ThreeColumnLayout>
   );

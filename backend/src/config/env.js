@@ -13,6 +13,9 @@ const env = {
   smtpUser: process.env.SMTP_USER ?? "",
   smtpPass: process.env.SMTP_PASS ?? "",
   smtpFrom: process.env.SMTP_FROM ?? "",
+  resendApiKey: process.env.RESEND_API_KEY ?? "",
+  resendFrom: process.env.RESEND_FROM ?? "",
+  microsoftClientId: process.env.MICROSOFT_CLIENT_ID ?? "",
 };
 
 module.exports = { env };

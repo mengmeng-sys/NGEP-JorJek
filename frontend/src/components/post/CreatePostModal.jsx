@@ -2,11 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 
 export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null }) {
   const isEditing = Boolean(initialData);
-
-  // Tracks where the pointer went DOWN. A click-drag to select text can end on
-  // the overlay even when it started inside the modal; only close the modal if
-  // the interaction began on the overlay itself.
-  const pointerOrigin = useRef("panel");
+  const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
 
   const [title, setTitle] = useState('');
   const [details, setDetails] = useState('');
@@ -156,9 +152,21 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
+  const titleWordCount = title.trim() ? title.trim().split(/\s+/).length : 0;
+  const isTitleOverLimit = titleWordCount > 30;
+
+  const handleTitleChange = (e) => {
+    const value = e.target.value;
+    const words = value.trim() ? value.trim().split(/\s+/).length : 0;
+    if (words <= 30 || !value.trim()) {
+      setTitle(value);
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!title.trim()) return;
+    if (isTitleOverLimit) return;
 
     commitTagInput();
 
@@ -177,17 +185,26 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
     onClose();
   };
 
+  const hasContent = title.trim() || details.trim() || selectedTags.length > 1 || imagePreview;
+
+  const handleAttemptClose = () => {
+    if (hasContent) {
+      setShowDiscardConfirm(true);
+    } else {
+      onClose();
+    }
+  };
+
+  const handleConfirmDiscard = () => {
+    setShowDiscardConfirm(false);
+    onClose();
+  };
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-gray-950/70 backdrop-blur-xs animate-in fade-in duration-150"
-      onMouseDown={() => { pointerOrigin.current = "overlay"; }}
-      onTouchStart={() => { pointerOrigin.current = "overlay"; }}
-      onClick={() => { if (pointerOrigin.current === "overlay") onClose(); }}
     >
       <div
-        onClick={(e) => e.stopPropagation()}
-        onMouseDown={() => { pointerOrigin.current = "panel"; }}
-        onTouchStart={() => { pointerOrigin.current = "panel"; }}
         className="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col h-[92vh] sm:h-auto sm:max-h-[88vh] animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200"
       >
         {/* Header */}
@@ -206,7 +223,7 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
             </div>
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleAttemptClose}
               className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-colors cursor-pointer"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -220,17 +237,29 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
         <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-5 overflow-y-auto flex-1 overscroll-contain">
           {/* Title */}
           <div>
-            <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">
-              Title <span className="text-[#FF4F00]">*</span>
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider">
+                Title <span className="text-[#FF4F00]">*</span>
+              </label>
+              <span className={`text-[10px] font-medium ${isTitleOverLimit ? 'text-red-500' : 'text-gray-400'}`}>
+                {titleWordCount}/30 words
+              </span>
+            </div>
             <input
               type="text"
               required
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={handleTitleChange}
               placeholder="Ask a question or share coursework..."
-              className="w-full border border-gray-200 rounded-xl p-2.5 sm:p-3 text-xs sm:text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all bg-[#FAFAFA] focus:bg-white shadow-2xs"
+              className={`w-full border rounded-xl p-2.5 sm:p-3 text-xs sm:text-sm text-gray-900 placeholder-gray-400 outline-none transition-all bg-[#FAFAFA] focus:bg-white shadow-2xs ${
+                isTitleOverLimit
+                  ? 'border-red-300 focus:border-red-500 focus:ring-1 focus:ring-red-500'
+                  : 'border-gray-200 focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00]'
+              }`}
             />
+            {isTitleOverLimit && (
+              <p className="text-[10px] text-red-500 font-medium mt-1">Title must be 30 words or fewer.</p>
+            )}
           </div>
 
           {/* Details */}
@@ -411,16 +440,16 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
             <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
               <button
                 type="button"
-                onClick={onClose}
+                onClick={handleAttemptClose}
                 className="flex-1 sm:flex-none px-4 py-2.5 text-xs font-semibold text-gray-500 hover:text-gray-900 transition-colors text-center cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                disabled={!title.trim()}
+                disabled={!title.trim() || isTitleOverLimit}
                 className={`flex-1 sm:flex-none px-6 py-2.5 rounded-xl text-xs font-bold transition-all text-center ${
-                  title.trim()
+                  title.trim() && !isTitleOverLimit
                     ? 'bg-[#FF4F00] text-white hover:bg-[#E64700] shadow-xs cursor-pointer active:scale-98'
                     : 'bg-orange-200 text-white cursor-not-allowed'
                 }`}
@@ -431,6 +460,39 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
           </div>
         </form>
       </div>
+
+      {/* Discard Confirmation */}
+      {showDiscardConfirm && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-gray-950/60 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden p-6 text-center animate-in zoom-in-95 duration-150">
+            <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-100 text-amber-500 flex items-center justify-center mx-auto mb-3.5">
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+            </div>
+            <h3 className="text-base font-bold text-gray-900">Discard post?</h3>
+            <p className="text-xs text-gray-500 mt-1.5 leading-relaxed">
+              You have unsaved changes. Are you sure you want to close this? Your work will be lost.
+            </p>
+            <div className="flex items-center gap-2.5 mt-5">
+              <button
+                type="button"
+                onClick={() => setShowDiscardConfirm(false)}
+                className="flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors cursor-pointer"
+              >
+                Keep Editing
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDiscard}
+                className="flex-1 py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-red-600 hover:bg-red-700 transition-colors cursor-pointer"
+              >
+                Discard
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

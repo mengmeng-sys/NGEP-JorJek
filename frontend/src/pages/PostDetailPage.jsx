@@ -3,6 +3,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { ThreeColumnLayout } from '@/components/layout/ThreeColumnLayout';
 import { CreatePostModal } from '@/components/post/CreatePostModal';
 import { DeletePostModal } from '@/components/post/DeletePostModal';
+import { DeleteCommentModal } from '@/components/comment/DeleteCommentModal';
 import { ReportModal } from '@/components/shared/ReportModal';
 import { useAuth } from '@/context/AuthContext';
 import { useSocket } from '@/context/SocketContext';
@@ -10,6 +11,15 @@ import { postsApi, commentsApi, votesApi, reportsApi } from '@/lib/api';
 import { buildCommentTree, normalizeComment, normalizePost, initialsFrom } from '@/lib/adapters';
 import { getApiErrorMessage } from '@/lib/apiClient';
 import { copyToClipboard } from '@/lib/clipboard';
+
+function countComments(comments) {
+  let count = 0;
+  for (const c of comments) {
+    count += 1;
+    if (c.replies?.length) count += countComments(c.replies);
+  }
+  return count;
+}
 
 function addReplyToTree(comment, parentId, reply) {
   if (comment.id === parentId) {
@@ -71,6 +81,10 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
   const [submittingEdit, setSubmittingEdit] = useState(false);
 
   const isCommentOwner = currentUser && currentUser.id === comment.author?.id;
+
+  useEffect(() => {
+    setEditText(comment.body);
+  }, [comment.body]);
 
   const handleVote = async (value) => {
     if (!currentUser) {
@@ -150,8 +164,9 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
     }
   };
 
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
   const handleDelete = async () => {
-    if (!window.confirm('Delete this comment?')) return;
     try {
       await commentsApi.remove(comment.id);
     } catch (err) {
@@ -176,7 +191,10 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
           >
             {comment.author?.role || 'STUDENT'}
           </span>
-          <span className="text-gray-400 text-[11px] sm:text-xs">{comment.timestamp}</span>
+          <span className="text-gray-400 text-[11px] sm:text-xs flex items-center gap-1">
+            <span>•</span>
+            {comment.timestamp}
+          </span>
         </div>
 
         <div className="flex items-center gap-1 shrink-0">
@@ -194,7 +212,7 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
               </button>
               <button
                 type="button"
-                onClick={handleDelete}
+                onClick={() => setIsDeleteModalOpen(true)}
                 title="Delete comment"
                 className="p-1 rounded text-gray-300 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
               >
@@ -255,6 +273,15 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
         <div className={`space-y-2 sm:space-y-3 leading-relaxed wrap-break-words ${!isExpanded ? 'line-clamp-3 overflow-hidden' : ''}`}>
           {comment.body}
         </div>
+
+        {comment.isEdited && (
+          <span className="inline-flex items-center gap-1 mt-1.5 text-[10px] text-gray-400 font-medium">
+            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            Edited
+          </span>
+        )}
 
         {comment.isLong && (
           <button
@@ -376,6 +403,12 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
         onClose={() => setIsReportModalOpen(false)}
         onSubmit={handleReportSubmit}
       />
+      <DeleteCommentModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDelete}
+        isReply={false}
+      />
     </div>
   );
 }
@@ -398,6 +431,10 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
   const [submittingEdit, setSubmittingEdit] = useState(false);
 
   const isCommentOwner = currentUser && currentUser.id === reply.author?.id;
+
+  useEffect(() => {
+    setEditText(reply.body);
+  }, [reply.body]);
 
   const handleVote = async (value) => {
     if (!currentUser) {
@@ -456,8 +493,9 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
     }
   };
 
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
   const handleDelete = async () => {
-    if (!window.confirm('Delete this reply?')) return;
     try {
       await commentsApi.remove(reply.id);
     } catch (err) {
@@ -482,7 +520,10 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
           >
             {reply.author?.role || 'STUDENT'}
           </span>
-          <span className="text-gray-400 text-[10px] sm:text-[11px]">{reply.timestamp}</span>
+          <span className="text-gray-400 text-[11px] sm:text-xs flex items-center gap-1">
+            <span>•</span>
+            {reply.timestamp}
+          </span>
         </div>
 
         <div className="flex items-center gap-0.5 shrink-0">
@@ -500,7 +541,7 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
               </button>
               <button
                 type="button"
-                onClick={handleDelete}
+                onClick={() => setIsDeleteModalOpen(true)}
                 title="Delete reply"
                 className="p-0.5 rounded text-gray-300 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
               >
@@ -565,6 +606,15 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
           {reply.body}
         </p>
 
+        {reply.isEdited && (
+          <span className="inline-flex items-center gap-1 mt-1 text-[10px] text-gray-400 font-medium">
+            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            Edited
+          </span>
+        )}
+
         <div className="flex items-center gap-2.5 sm:gap-3 pt-1.5 text-gray-500 font-medium">
           <div className="flex items-center gap-0.5 sm:gap-1 bg-gray-50 px-1.5 py-0.5 rounded-md border border-gray-100">
             <button
@@ -627,6 +677,12 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
         onClose={() => setIsReportModalOpen(false)}
         onSubmit={handleReportSubmit}
       />
+      <DeleteCommentModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDelete}
+        isReply={true}
+      />
     </div>
   );
 }
@@ -650,7 +706,10 @@ export default function PostDetailPage() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isReported, setIsReported] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [isBodyExpanded, setIsBodyExpanded] = useState(false);
   const menuRef = useRef(null);
+
+  const isLongPost = post?.content?.split(/\s+/).length > 50;
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -728,7 +787,7 @@ export default function PostDetailPage() {
     const handleCommentUpdated = (rawComment) => {
       const comment = normalizeComment(rawComment);
       if (!comment) return;
-      setComments((prev) => updateCommentInTree(prev, comment.id, (c) => ({ ...c, body: comment.body })));
+      setComments((prev) => updateCommentInTree(prev, comment.id, (c) => ({ ...c, body: comment.body, updatedAt: comment.updatedAt, isEdited: comment.isEdited })));
     };
 
     const handleVoteUpdate = ({ target, id: targetId, value, voterId, removed, isNew }) => {
@@ -770,12 +829,19 @@ export default function PostDetailPage() {
       }
     };
 
+    const handleSaveUpdate = ({ postId, saves }) => {
+      if (postId === id) {
+        setSaveCount(saves);
+      }
+    };
+
     on("new_comment", handleNewComment);
     on("comment_deleted", handleCommentDeleted);
     on("comment_updated", handleCommentUpdated);
     on("vote_update", handleVoteUpdate);
     on("post_deleted", handlePostDeleted);
     on("post_updated", handlePostUpdated);
+    on("save_update", handleSaveUpdate);
 
     return () => {
       off("new_comment", handleNewComment);
@@ -784,6 +850,7 @@ export default function PostDetailPage() {
       off("vote_update", handleVoteUpdate);
       off("post_deleted", handlePostDeleted);
       off("post_updated", handlePostUpdated);
+      off("save_update", handleSaveUpdate);
       leavePost(id);
     };
   }, [id, joinPost, leavePost, on, off, user?.id, navigate]);
@@ -793,6 +860,7 @@ export default function PostDetailPage() {
   const [postVoteCount, setPostVoteCount] = useState(0);
   const [postVoteTotal, setPostVoteTotal] = useState(0);
   const [isSaved, setIsSaved] = useState(false);
+  const [saveCount, setSaveCount] = useState(0);
   const [isCopied, setIsCopied] = useState(false);
   const [sortBy, setSortBy] = useState('top');
 
@@ -802,6 +870,7 @@ export default function PostDetailPage() {
       setPostVoteCount(post.upvotes || 0);
       setPostVoteTotal(post.voteTotal || 0);
       setIsSaved(Boolean(post.isSaved));
+      setSaveCount(post.saves || 0);
     }
   }, [post]);
 
@@ -1137,9 +1206,40 @@ export default function PostDetailPage() {
               {post.title}
             </h1>
 
+<<<<<<< HEAD
             <div className="text-xs sm:text-sm text-gray-700 leading-relaxed wrap-break-words space-y-3">
               <p>{post.content}</p>
             </div>
+=======
+            {post.content ? (
+              <div className="text-xs sm:text-sm text-gray-700 leading-relaxed break-words space-y-3">
+                <p className={isLongPost && !isBodyExpanded ? 'line-clamp-4' : ''}>{post.content}</p>
+                {isLongPost && (
+                  <button
+                    type="button"
+                    onClick={() => setIsBodyExpanded(!isBodyExpanded)}
+                    className="inline-flex items-center gap-1 text-xs font-bold text-[#FF4F00] hover:text-orange-700 transition-colors cursor-pointer"
+                  >
+                    {isBodyExpanded ? (
+                      <>
+                        See less
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                        </svg>
+                      </>
+                    ) : (
+                      <>
+                        See more
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </>
+                    )}
+                  </button>
+                )}
+              </div>
+            ) : null}
+>>>>>>> e2a0731909e604507861a3ff77a53766367d8eb7
 
             {/* Attached Image */}
             {post.image_url && (
@@ -1196,7 +1296,7 @@ export default function PostDetailPage() {
                 <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                 </svg>
-                <span>{comments.length} comments</span>
+                <span>{countComments(comments)} comments</span>
               </div>
 
               {/* Total Votes */}
@@ -1236,7 +1336,7 @@ export default function PostDetailPage() {
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
                 </svg>
-                <span className="hidden xs:inline">{isSaved ? 'Saved' : 'Save'}</span>
+                 <span className="hidden xs:inline">{saveCount > 0 ? `${saveCount}` : (isSaved ? 'Saved' : 'Save')}</span>
               </button>
             </div>
           </div>
@@ -1267,7 +1367,7 @@ export default function PostDetailPage() {
         <div className="flex items-center justify-between sm:justify-start gap-2 sm:gap-3 text-xs sm:text-sm font-medium pt-1">
           <span className="text-gray-400 text-xs">Sort by:</span>
           <div className="flex items-center gap-1 bg-[#FAFAFA] border border-gray-200 p-1 rounded-xl">
-            {['top', 'new', 'controversial'].map((tab) => (
+             {['top', 'new'].map((tab) => (
               <button
                 key={tab}
                 type="button"

@@ -130,6 +130,7 @@ export function normalizePost(raw, currentUserId = null) {
     commentsCount: rawComments ? rawComments.length : raw.comments ?? 0,
     _comments: rawComments,
     isSaved: Boolean(raw.isSaved),
+    saves: Array.isArray(raw.saved_posts) ? raw.saved_posts.length : raw.saves ?? 0,
     image_url: raw.image_url || null,
   };
 }
@@ -159,41 +160,41 @@ export function normalizeComment(raw) {
     votes: voteScore(votes),
     myVote: 0,
     createdAt: raw.created_at,
+    updatedAt: raw.updated_at || null,
+    isEdited: Boolean(raw.updated_at && raw.updated_at !== raw.created_at),
     timestamp: formatTimestamp(raw.created_at),
     replies: [],
   };
 }
 
-const NOTIFICATION_TITLES = {
-  reply: "New reply on your post",
-  upvote: "Someone upvoted your post",
-};
-
-const NOTIFICATION_MESSAGES = {
-  reply: "A CADT user replied to your discussion.",
-  upvote: "Your post received an upvote.",
-};
-
 export function normalizeNotification(raw) {
   if (!raw) return null;
   const payload = raw.payload || {};
   const type = String(raw.type || "notification");
-  const link = payload.postId
-    ? `/posts/${payload.postId}`
-    : payload.postId
-    ? `/posts/${payload.postId}`
-    : null;
+  const isReply = payload.isReply === true;
+  const actorName = payload.actorName || "Someone";
+  const snippet = payload.snippet || "";
+  const link = payload.postId ? `/posts/${payload.postId}` : null;
+  const initials = (() => {
+    const words = actorName.trim().split(/\s+/).filter(Boolean);
+    if (words.length === 0) return "U";
+    if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+    return `${words[0][0]}${words[words.length - 1][0]}`.toUpperCase();
+  })();
 
   return {
     id: raw.id,
     type,
     read: Boolean(raw.read),
-    title: NOTIFICATION_TITLES[type] || type,
-    message: NOTIFICATION_MESSAGES[type] || (payload.message || "New activity on JorJek."),
-    sibling: typeof payload === "object" ? Object.keys(payload)[0] || null : null,
+    isReply,
+    title: isReply
+      ? `${actorName} replied to your comment`
+      : `${actorName} commented on your post`,
+    message: snippet,
     timestamp: formatTimestamp(raw.created_at),
     createdAt: raw.created_at,
-    actorInitials: "CA",
+    actorName,
+    actorInitials: initials,
     link,
     payload,
   };

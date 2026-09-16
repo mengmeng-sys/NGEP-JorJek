@@ -33,6 +33,7 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
   const [voteTotal, setVoteTotal] = useState(post.voteTotal || 0);
   const [commentCount, setCommentCount] = useState(post.comments || 0);
   const [isSaved, setIsSaved] = useState(post.isSaved || false);
+  const [saveCount, setSaveCount] = useState(post.saves || 0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isReported, setIsReported] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
@@ -70,6 +71,16 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
   }, [post.comments]);
 
   useEffect(() => {
+    if (post.saves !== undefined) {
+      setSaveCount(post.saves);
+    }
+  }, [post.saves]);
+
+  useEffect(() => {
+    setIsSaved(post.isSaved || false);
+  }, [post.isSaved]);
+
+  useEffect(() => {
     joinPost(post.id);
 
     const handleVoteUpdate = ({ target, id: targetId, value, voterId, removed, isNew }) => {
@@ -95,13 +106,21 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
       setCommentCount((prev) => Math.max(0, prev - 1));
     };
 
+    const handleSaveUpdate = ({ postId, saves }) => {
+      if (postId === post.id) {
+        setSaveCount(saves);
+      }
+    };
+
     on("vote_update", handleVoteUpdate);
     on("new_comment", handleNewComment);
     on("comment_deleted", handleCommentDeleted);
+    on("save_update", handleSaveUpdate);
     return () => {
       off("vote_update", handleVoteUpdate);
       off("new_comment", handleNewComment);
       off("comment_deleted", handleCommentDeleted);
+      off("save_update", handleSaveUpdate);
       leavePost(post.id);
     };
   }, [on, off, joinPost, leavePost, post.id, user?.id]);
@@ -485,7 +504,7 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
             </svg>
-            <span className="hidden xs:inline text-[11px] sm:text-xs">Save</span>
+             <span className="hidden xs:inline text-[11px] sm:text-xs">{saveCount > 0 ? `${saveCount}` : 'Save'}</span>
           </button>
         </div>
 

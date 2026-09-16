@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { authApi, usersApi } from "@/lib/api";
 import { normalizeUser, handleFrom, initialsFrom } from "@/lib/adapters";
+import { msalInstance } from "@/config/msalConfig";
 
 const AuthContext = createContext(null);
 
@@ -156,8 +157,8 @@ export function AuthProvider({ children }) {
     return nextUser;
   };
 
-  const signupEmail = async (payload) => {
-    const data = await authApi.signup(payload);
+  const signupMicrosoft = async (payload) => {
+    const data = await authApi.microsoftSignup(payload);
     storeSession(data);
     const nextUser = withUserMeta(normalizeUser(data.user));
     setUser(nextUser);
@@ -165,27 +166,17 @@ export function AuthProvider({ children }) {
     return data;
   };
 
-  const verifyEmail = async (cadtEmail, otp) => {
-    const result = await authApi.verifyEmail(cadtEmail, otp);
-    // The signup flow already holds tokens; re-fetch so the cached user's
-    // emailVerified reflects the server state after a successful verify.
-    try {
-      const me = await authApi.me();
-      const nextUser = withUserMeta(normalizeUser(me));
-      setUser(nextUser);
-      persist(nextUser);
-    } catch {
-      /* best effort — the account is verified server-side regardless */
-    }
-    return result;
+  const loginMicrosoft = async (idToken) => {
+    const data = await authApi.microsoftLogin(idToken);
+    storeSession(data);
+    const nextUser = withUserMeta(normalizeUser(data.user));
+    setUser(nextUser);
+    persist(nextUser);
+    return nextUser;
   };
 
-  const resendOtp = (cadtEmail) => authApi.resendOtp(cadtEmail);
-
-  const forgotPassword = (cadtEmail) => authApi.forgotPassword(cadtEmail);
-
-  const resetPassword = (cadtEmail, otp, newPassword) =>
-    authApi.resetPassword(cadtEmail, otp, newPassword);
+  const resetPasswordMicrosoft = (idToken, newPassword) =>
+    authApi.microsoftResetPassword(idToken, newPassword);
 
   const logout = async () => {
     try {
@@ -195,6 +186,10 @@ export function AuthProvider({ children }) {
     } finally {
       clearSession();
       setUser(null);
+      const accounts = msalInstance.getAllAccounts();
+      if (accounts.length > 0) {
+        await msalInstance.logoutRedirect({ account: accounts[0] }).catch(() => {});
+      }
     }
   };
 
@@ -241,11 +236,9 @@ export function AuthProvider({ children }) {
         logout,
         completeSignup,
         updateUserProfile,
-        signupEmail,
-        verifyEmail,
-        resendOtp,
-        forgotPassword,
-        resetPassword,
+        signupMicrosoft,
+        loginMicrosoft,
+        resetPasswordMicrosoft,
         onboarding,
         markOnboardingComplete,
         isOnboardingComplete,

@@ -3,7 +3,6 @@ const { supabase } = require("../config/db");
 const { requireAuth } = require("../middleware/auth.middleware");
 const { requireVerifiedEmail } = require("../middleware/verifiedEmail.middleware");
 const { recalculateKarma } = require("../services/karma.service");
-const { notify } = require("../services/notification.service");
 const { getIO } = require("../lib/socket");
 
 const votesRouter = Router();
@@ -275,9 +274,6 @@ votesRouter.post("/vote", requireAuth, requireVerifiedEmail, async (req, res, ne
 
     if (authorId) {
       await recalculateKarma(authorId);
-      if (isUpvote && authorId !== req.userId) {
-        await notify(authorId, "upvote", { postId, commentId });
-      }
     }
 
     const io = getIO();

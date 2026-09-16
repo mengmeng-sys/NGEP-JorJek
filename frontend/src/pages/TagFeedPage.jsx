@@ -1,14 +1,29 @@
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { usePosts } from "@/hooks/usePosts";
 import { usePostEditor } from "@/hooks/usePostEditor";
 import { PostCard } from "@/components/post/PostCard";
 import { CreatePostModal } from "@/components/post/CreatePostModal";
+import { DeletePostModal } from "@/components/post/DeletePostModal";
+import { postsApi } from "@/lib/api";
 
 // Route: "/tags/:tag". Owner: CS2
 export default function TagFeedPage() {
   const { tag = "" } = useParams();
-  const { posts, loading, error, updatePost } = usePosts({ tag });
+  const { posts, loading, error, updatePost, setPosts } = usePosts({ tag });
   const { isPostModalOpen, editingPost, openEdit, closeEdit, saveEdit } = usePostEditor(updatePost);
+  const [postToDelete, setPostToDelete] = useState(null);
+
+  const handleConfirmDelete = async () => {
+    if (!postToDelete) return;
+    try {
+      await postsApi.remove(postToDelete);
+      setPosts((prev) => prev.filter((p) => p.id !== postToDelete));
+    } catch (err) {
+      alert('Could not delete post.');
+    }
+    setPostToDelete(null);
+  };
 
   if (loading) {
     return (
@@ -30,7 +45,7 @@ export default function TagFeedPage() {
       {posts.length === 0 ? (
         <p className="text-xs text-gray-500 py-10 text-center">No posts tagged #{tag} yet.</p>
       ) : (
-        posts.map((p) => <PostCard key={p.id} post={p} onEdit={openEdit} />)
+        posts.map((p) => <PostCard key={p.id} post={p} onEdit={openEdit} onDelete={() => setPostToDelete(p.id)} />)
       )}
 
       <CreatePostModal
@@ -38,6 +53,12 @@ export default function TagFeedPage() {
         initialData={editingPost}
         onClose={closeEdit}
         onPublish={saveEdit}
+      />
+
+      <DeletePostModal
+        isOpen={postToDelete !== null}
+        onClose={() => setPostToDelete(null)}
+        onConfirm={handleConfirmDelete}
       />
     </main>
   );

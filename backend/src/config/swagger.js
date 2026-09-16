@@ -131,7 +131,7 @@ const options = {
           properties: {
             id: { type: "string", format: "uuid" },
             user_id: { type: "string", format: "uuid" },
-            type: { type: "string", enum: ["reply", "upvote"], example: "reply" },
+            type: { type: "string", enum: ["reply"], example: "reply" },
             title: { type: "string" },
             message: { type: "string" },
             data: { type: "object", additionalProperties: true },

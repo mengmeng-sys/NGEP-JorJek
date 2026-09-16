@@ -5,8 +5,10 @@ import { usePostEditor } from "@/hooks/usePostEditor";
 import { useSocket } from "@/context/SocketContext";
 import { PostCard } from "@/components/post/PostCard";
 import { CreatePostModal } from "@/components/post/CreatePostModal";
+import { DeletePostModal } from "@/components/post/DeletePostModal";
 import { ThreeColumnLayout } from "@/components/layout/ThreeColumnLayout";
 import { normalizePost } from "@/lib/adapters";
+import { postsApi } from "@/lib/api";
 
 export default function HomePage() {
   const { posts, loading, updatePost, setPosts } = usePosts();
@@ -48,6 +50,18 @@ export default function HomePage() {
   }, [on, off, selectedTag, setPosts]);
 
   const [sortBy, setSortBy] = useState('hot');
+  const [postToDelete, setPostToDelete] = useState(null);
+
+  const handleConfirmDelete = async () => {
+    if (!postToDelete) return;
+    try {
+      await postsApi.remove(postToDelete);
+      setPosts((prev) => prev.filter((p) => p.id !== postToDelete));
+    } catch (err) {
+      alert('Could not delete post.');
+    }
+    setPostToDelete(null);
+  };
   const sortOptions = [
     { id: 'hot', label: 'Hot' },
     { id: 'new', label: 'New' },
@@ -169,7 +183,7 @@ export default function HomePage() {
         ) : (
           <div className="space-y-3 sm:space-y-4">
             {sortedPosts.map((p) => (
-              <PostCard key={p.id} post={p} onEdit={openEdit} />
+              <PostCard key={p.id} post={p} onEdit={openEdit} onDelete={() => setPostToDelete(p.id)} />
             ))}
           </div>
         )}
@@ -181,6 +195,12 @@ export default function HomePage() {
         initialData={editingPost}
         onClose={closeEdit}
         onPublish={saveEdit}
+      />
+
+      <DeletePostModal
+        isOpen={postToDelete !== null}
+        onClose={() => setPostToDelete(null)}
+        onConfirm={handleConfirmDelete}
       />
     </ThreeColumnLayout>
   );

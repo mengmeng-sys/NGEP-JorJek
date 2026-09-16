@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { searchApi } from "@/lib/api";
+import { searchApi, postsApi } from "@/lib/api";
 import { PostCard } from "@/components/post/PostCard";
 import { CreatePostModal } from "@/components/post/CreatePostModal";
+import { DeletePostModal } from "@/components/post/DeletePostModal";
 import { ThreeColumnLayout } from "@/components/layout/ThreeColumnLayout";
 import { usePostEditor } from "@/hooks/usePostEditor";
 import { getApiErrorMessage } from "@/lib/apiClient";
@@ -16,6 +17,18 @@ export default function SearchPage() {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [postToDelete, setPostToDelete] = useState(null);
+
+  const handleConfirmDelete = async () => {
+    if (!postToDelete) return;
+    try {
+      await postsApi.remove(postToDelete);
+      setResults((prev) => prev.filter((p) => p.id !== postToDelete));
+    } catch (err) {
+      alert('Could not delete post.');
+    }
+    setPostToDelete(null);
+  };
   const { isPostModalOpen, editingPost, openEdit, closeEdit, saveEdit } = usePostEditor((updated) =>
     setResults((prev) => prev.map((p) => (p.id === updated.id ? updated : p)))
   );
@@ -98,7 +111,7 @@ export default function SearchPage() {
               </p>
             </div>
           ) : (
-            results.map((p) => <PostCard key={p.id} post={p} onEdit={openEdit} />)
+            results.map((p) => <PostCard key={p.id} post={p} onEdit={openEdit} onDelete={() => setPostToDelete(p.id)} />)
           )}
         </div>
       </div>
@@ -108,6 +121,12 @@ export default function SearchPage() {
         initialData={editingPost}
         onClose={closeEdit}
         onPublish={saveEdit}
+      />
+
+      <DeletePostModal
+        isOpen={postToDelete !== null}
+        onClose={() => setPostToDelete(null)}
+        onConfirm={handleConfirmDelete}
       />
     </ThreeColumnLayout>
   );
