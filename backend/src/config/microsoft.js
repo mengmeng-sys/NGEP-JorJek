@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const { env } = require("./env");
 
-const JWKS_URL = "https://login.microsoftonline.com/common/discovery/v2.0/keys";
+const JWKS_URL = "https://login.microsoftonline.com/1e9461ec-5362-4329-ae46-61fa3e91c6d2/discovery/v2.0/keys";
 
 let keyCache = null;
 let keyCacheTime = 0;
