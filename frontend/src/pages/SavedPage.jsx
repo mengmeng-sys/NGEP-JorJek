@@ -3,7 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ThreeColumnLayout } from '@/components/layout/ThreeColumnLayout';
 import { PostCard } from '@/components/post/PostCard';
 import { CreatePostModal } from '@/components/post/CreatePostModal';
-import { savedApi } from '@/lib/api';
+import { DeletePostModal } from '@/components/post/DeletePostModal';
+import { savedApi, postsApi } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { usePostEditor } from '@/hooks/usePostEditor';
 
@@ -14,6 +15,18 @@ export default function SavedPage() {
   const [savedPosts, setSavedPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [postToDelete, setPostToDelete] = useState(null);
+
+  const handleConfirmDelete = async () => {
+    if (!postToDelete) return;
+    try {
+      await postsApi.remove(postToDelete);
+      setSavedPosts((prev) => prev.filter((p) => p.id !== postToDelete));
+    } catch (err) {
+      alert('Could not delete post.');
+    }
+    setPostToDelete(null);
+  };
   const { isPostModalOpen, editingPost, openEdit, closeEdit, saveEdit } = usePostEditor((updated) =>
     setSavedPosts((prev) => prev.map((p) => (p.id === updated.id ? updated : p)))
   );
@@ -127,6 +140,7 @@ export default function SavedPage() {
                 post={post}
                 onToggleSave={handleToggleSave}
                 onEdit={openEdit}
+                onDelete={() => setPostToDelete(post.id)}
               />
             ))}
           </div>
@@ -139,6 +153,12 @@ export default function SavedPage() {
         initialData={editingPost}
         onClose={closeEdit}
         onPublish={saveEdit}
+      />
+
+      <DeletePostModal
+        isOpen={postToDelete !== null}
+        onClose={() => setPostToDelete(null)}
+        onConfirm={handleConfirmDelete}
       />
     </ThreeColumnLayout>
   );

@@ -56,6 +56,7 @@ export function ThreeColumnLayout({ children, onOpenAuth }) {
               </button>
             </div>
 
+            <LeftSidebar />
             <RightSidebar onOpenAuth={onOpenAuth} />
           </div>
         </div>
