@@ -123,7 +123,7 @@ export default function HomePage() {
         )}
 
         {/* Sort Controls Bar */}
-        <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-2.5 sm:px-4 sm:py-3 flex items-center justify-between gap-3 shadow-xs">
+        <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border border-gray-200 rounded-xl sm:rounded-2xl p-2.5 sm:px-4 sm:py-3 flex items-center justify-between gap-3 shadow-xs -mx-1 sm:mx-0 px-3 sm:px-4">
           
           {/* Scrollable Sort Pills on Mobile */}
           <div className="flex items-center gap-1.5 sm:gap-3 overflow-x-auto no-scrollbar py-0.5 -mx-1 px-1 sm:mx-0 sm:px-0">
