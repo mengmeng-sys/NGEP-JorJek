@@ -110,7 +110,7 @@ usersRouter.get("/top-mentors", async (_req, res, next) => {
   }
 });
 
-// GET /users/search?q=... -- search users by name, gen, department, specialization
+// GET /users/search?q=... -- search users by display name
 usersRouter.get("/search", async (req, res, next) => {
   try {
     const q = String(req.query.q || "").trim();
@@ -118,14 +118,11 @@ usersRouter.get("/search", async (req, res, next) => {
       return res.json({ users: [], total: 0 });
     }
     const limit = Math.min(50, Math.max(1, Number(req.query.limit) || 20));
-    const pattern = `%${q}%`;
 
     const { data: users, error, count } = await supabase
       .from("users")
       .select(USER_SAFE, { count: "exact" })
-      .or(
-        `display_name.ilike.${pattern},department.ilike.${pattern},specialization.ilike.${pattern},gen::text.ilike.${pattern}`
-      )
+      .ilike("display_name", `%${q}%`)
       .order("karma", { ascending: false })
       .limit(limit);
     if (error) throw error;
