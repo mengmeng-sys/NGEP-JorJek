@@ -8,11 +8,12 @@ import { BackHomeArrow } from '@/components/shared/BackHomeArrow';
 export default function SignupPage() {
   const navigate = useNavigate();
   const { signupMicrosoft } = useAuth();
-  const { instance, inProgress, accounts } = useMsal();
+  const { instance, inProgress } = useMsal();
 
-  const account = accounts[0] || null;
   const [msEmail, setMsEmail] = useState('');
   const [msName, setMsName] = useState('');
+  const [microsoftVerified, setMicrosoftVerified] = useState(false);
+  const [account, setAccount] = useState(null);
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -24,15 +25,16 @@ export default function SignupPage() {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    if (account) {
-      setMsEmail(account.username);
-      setMsName(account.name || '');
-      setUsername(account.name || '');
-    }
-  }, [account]);
-
-  useEffect(() => {
-    instance.handleRedirectPromise().catch(() => {});
+    instance.handleRedirectPromise().then((res) => {
+      if (res?.account) {
+        instance.setActiveAccount(res.account);
+        setAccount(res.account);
+        setMsEmail(res.account.username);
+        setMsName(res.account.name || '');
+        setUsername(res.account.name || '');
+        setMicrosoftVerified(true);
+      }
+    }).catch(() => {});
   }, [instance]);
 
   const handleMicrosoftLogin = async () => {
@@ -65,6 +67,7 @@ export default function SignupPage() {
   const handleSignup = async (e) => {
     e.preventDefault();
     if (!isFormValid || !account) return;
+    if (!microsoftVerified) return;
     setSubmitError('');
     setSubmitting(true);
     try {
@@ -110,7 +113,7 @@ export default function SignupPage() {
           </p>
         </div>
 
-        {!account ? (
+        {!microsoftVerified ? (
           <div className="space-y-4">
             <button
               type="button"
