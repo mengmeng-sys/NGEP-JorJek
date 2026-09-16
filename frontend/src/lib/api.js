@@ -13,14 +13,12 @@ export const authApi = {
   login: (cadtEmail, password) =>
     apiFetch("/auth/login", { method: "POST", body: { cadtEmail, password } }),
   logout: () => apiFetch("/auth/logout", { method: "POST" }),
-  verifyEmail: (cadtEmail, otp) =>
-    apiFetch("/auth/verify-email", { method: "POST", body: { cadtEmail, otp } }),
-  resendOtp: (cadtEmail) =>
-    apiFetch("/auth/resend-otp", { method: "POST", body: { cadtEmail } }),
-  forgotPassword: (cadtEmail) =>
-    apiFetch("/auth/forgot-password", { method: "POST", body: { cadtEmail } }),
-  resetPassword: (cadtEmail, otp, newPassword) =>
-    apiFetch("/auth/reset-password", { method: "POST", body: { cadtEmail, otp, newPassword } }),
+  microsoftSignup: (payload) =>
+    apiFetch("/auth/microsoft/signup", { method: "POST", body: payload }),
+  microsoftLogin: (idToken) =>
+    apiFetch("/auth/microsoft/login", { method: "POST", body: { idToken } }),
+  microsoftResetPassword: (idToken, newPassword) =>
+    apiFetch("/auth/microsoft/reset-password", { method: "POST", body: { idToken, newPassword } }),
 };
 
 export const postsApi = {

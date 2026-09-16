@@ -25,7 +25,6 @@ import RequestSessionPage from "@/pages/RequestSessionPage";
 import LoginPage from "@/pages/auth/LoginPage";
 import ForgotPasswordPage from "@/pages/auth/ForgotPasswordPage";
 import SignupPage from "@/pages/auth/SignupPage";
-import OtpVerificationPage from "@/pages/auth/OtpVerificationPage";
 import TechInterestsPage from "@/pages/auth/TechInterestsPage";
 
 export default function App() {
@@ -33,7 +32,6 @@ export default function App() {
   const hideNavbar = pathname.startsWith('/auth/login')
     || pathname.startsWith('/auth/signup')
     || pathname.startsWith('/auth/forgot-password')
-    || pathname.startsWith('/auth/verify-otp')
     || pathname.startsWith('/auth/tech-interests');
 
   return (
@@ -78,7 +76,6 @@ export default function App() {
           <Route path="/auth/login" element={<LoginPage />} />
           <Route path="/auth/signup" element={<SignupPage />} />
           <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="/auth/verify-otp" element={<OtpVerificationPage />} />
           <Route path="/auth/tech-interests" element={<TechInterestsPage />} />
 
           {/* Canonical Redirects */}

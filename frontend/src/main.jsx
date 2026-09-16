@@ -2,12 +2,15 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App.jsx';
-import './index.css'; // Make sure your Tailwind CSS is imported here
+import './index.css';
+import { msalInstance, MsalProvider } from './config/msalConfig';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <MsalProvider instance={msalInstance}>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </MsalProvider>
   </React.StrictMode>
 );

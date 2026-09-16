@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { BackHomeArrow } from '@/components/shared/BackHomeArrow';
+import MicrosoftAuthButton from '@/components/auth/MicrosoftAuthButton';
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, loginMicrosoft } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -153,7 +154,25 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div className="text-center pt-3 border-t border-gray-100">
+           <div className="flex items-center gap-3 my-4">
+            <div className="flex-1 h-px bg-gray-200"></div>
+            <span className="text-[11px] text-gray-400 font-semibold">OR</span>
+            <div className="flex-1 h-px bg-gray-200"></div>
+           </div>
+
+           <MicrosoftAuthButton
+             mode="login"
+             onSuccess={async ({ idToken }) => {
+               try {
+                 await loginMicrosoft(idToken);
+                 navigate('/');
+               } catch (err) {
+                 setError(err?.message || 'Microsoft sign in failed.');
+               }
+             }}
+           />
+
+           <div className="text-center pt-3 border-t border-gray-100">
             <p className="text-xs text-gray-500">
               New to the platform?{' '}
               <Link to="/auth/signup" className="text-[#FF4F00] font-bold hover:underline">

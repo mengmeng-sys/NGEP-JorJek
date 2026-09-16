@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const swaggerUi = require("swagger-ui-express");
 const { authRouter } = require("./routes/auth.routes");
+const { microsoftAuthRouter } = require("./routes/microsoftAuth.routes");
 const { postsRouter } = require("./routes/posts.routes");
 const { commentsRouter } = require("./routes/comments.routes");
 const { votesRouter } = require("./routes/votes.routes");
@@ -92,30 +93,9 @@ app.get("/api-docs.json", (_req, res) => res.json(swaggerSpec));
 app.get("/health", (_req, res) =>
   res.json({
     ok: true,
-    smtp: {
-      configured: Boolean(env.smtpUser),
-      host: env.smtpHost,
-      from: env.smtpFrom || env.smtpUser || null,
-    },
+    microsoftAuth: Boolean(env.microsoftClientId),
   })
 );
-
-app.get("/health/smtp-test", async (_req, res) => {
-  const { sendMail } = require("./config/mailer");
-  const { generateOtp, otpEmailHtml } = require("./utils/otp");
-  const otp = generateOtp();
-  const to = env.smtpUser || "unknown";
-  try {
-    await sendMail({
-      to,
-      subject: "JorJek — SMTP test from Render",
-      html: otpEmailHtml(otp, "verify"),
-    });
-    res.json({ ok: true, to, otp });
-  } catch (err) {
-    res.status(500).json({ ok: false, error: err.message });
-  }
-});
 
 /**
  * @swagger
@@ -144,6 +124,7 @@ app.get("/health/smtp-test", async (_req, res) => {
 app.use("/sessions", sessionsRouter); // Phase 2 stub — see routes/sessions.routes.js
 
 app.use("/auth", authRouter);
+app.use("/auth/microsoft", microsoftAuthRouter);
 app.use("/posts", postsRouter);
 app.use("/", commentsRouter); // mounts /posts/:postId/comments
 app.use("/", votesRouter); // mounts /vote
