@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { NavLink, Outlet, Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import "@/admin.css";
@@ -81,19 +82,35 @@ function initialsOf(name) {
 
 export default function AdminLayout() {
   const { loading, isAdmin, user, logout } = useAuth();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   if (loading) return <div className="jd-empty">Loading…</div>;
   if (!isAdmin) return <Navigate to="/login" replace />;
 
   return (
     <div className="admin-shell">
-      <aside className="admin-sidebar">
+      <button type="button" className="admin-menu-toggle jd-btn" onClick={() => setSidebarOpen(true)} aria-label="Open menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" style={{ width: 20, height: 20 }}>
+          <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+      </button>
+
+      {sidebarOpen && <div className="admin-backdrop" onClick={() => setSidebarOpen(false)} />}
+
+      <aside className={`admin-sidebar${sidebarOpen ? " open" : ""}`}>
         <div className="admin-brand">
           <img src="/jorjek_logo.jpg" alt="JorJek" className="admin-logo" />
         </div>
 
+        <button type="button" className="admin-side-link" onClick={() => setSidebarOpen(false)} style={{ marginBottom: 4 }}>
+          <span className="admin-nav-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+          </span>
+          <span>Close</span>
+        </button>
+
         <nav className="admin-nav">
           {NAV.map(({ to, end, label, icon: Icon }) => (
-            <NavLink key={to} to={to} end={end} className="admin-side-link">
+            <NavLink key={to} to={to} end={end} className="admin-side-link" onClick={() => setSidebarOpen(false)}>
               <span className="admin-nav-icon">
                 <Icon />
               </span>

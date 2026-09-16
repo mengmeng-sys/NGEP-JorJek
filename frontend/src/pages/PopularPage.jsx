@@ -63,7 +63,7 @@ export default function PopularPage() {
       <div className="w-full space-y-3.5 sm:space-y-4">
 
         {/* Popular Header Banner */}
-        <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-4 sm:p-5 shadow-xs">
+        <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border border-gray-200 rounded-xl sm:rounded-2xl p-3 sm:p-5 shadow-xs -mx-3 sm:mx-0">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 sm:gap-4">
 
             {/* Title & Icon Group */}
