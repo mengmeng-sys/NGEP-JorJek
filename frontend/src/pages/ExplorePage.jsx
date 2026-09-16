@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ThreeColumnLayout } from '@/components/layout/ThreeColumnLayout';
 import { postsApi, usersApi } from '@/lib/api';
@@ -8,6 +8,11 @@ export default function ExplorePage() {
   const [trendingTags, setTrendingTags] = useState([]);
   const [suggestedMentors, setSuggestedMentors] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+  const searchTimeout = useRef(null);
 
   useEffect(() => {
     async function loadExploreData() {
@@ -59,6 +64,33 @@ export default function ExplorePage() {
     loadExploreData();
   }, []);
 
+  const handleSearch = (value) => {
+    setSearchQuery(value);
+    setShowResults(value.trim().length > 0);
+    if (searchTimeout.current) clearTimeout(searchTimeout.current);
+    if (!value.trim()) {
+      setSearchResults([]);
+      setSearchLoading(false);
+      return;
+    }
+    setSearchLoading(true);
+    searchTimeout.current = setTimeout(async () => {
+      try {
+        const results = await usersApi.search(value.trim());
+        setSearchResults(results);
+      } catch {
+        setSearchResults([]);
+      } finally {
+        setSearchLoading(false);
+      }
+    }, 300);
+  };
+
+  const getInitials = (name) => {
+    if (!name) return '?';
+    return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
+  };
+
   return (
     <ThreeColumnLayout>
       <div className="space-y-6 sm:space-y-8">
@@ -77,7 +109,74 @@ export default function ExplorePage() {
           </div>
         </div>
 
-        {/* 1. Trending Tags Section */}
+         {/* User Search */}
+         <section className="relative">
+           <div className="relative">
+             <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+               <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+             </svg>
+             <input
+               type="text"
+               value={searchQuery}
+               onChange={(e) => handleSearch(e.target.value)}
+               placeholder="Search by name, gen, department, or specialization..."
+               className="w-full bg-white border border-gray-200 rounded-xl pl-9 pr-4 py-2.5 text-xs sm:text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all"
+             />
+             {searchQuery && (
+               <button
+                 type="button"
+                 onClick={() => { setSearchQuery(''); setSearchResults([]); setShowResults(false); }}
+                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 cursor-pointer"
+               >
+                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                 </svg>
+               </button>
+             )}
+           </div>
+
+           {showResults && (
+             <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-20 max-h-80 overflow-y-auto">
+               {searchLoading ? (
+                 <div className="p-4 text-center">
+                   <div className="w-5 h-5 border-2 border-[#FF4F00] border-t-transparent rounded-full animate-spin mx-auto" />
+                 </div>
+               ) : searchResults.length === 0 ? (
+                 <div className="p-4 text-center text-xs text-gray-400">No users found</div>
+               ) : (
+                 searchResults.map((user) => (
+                   <button
+                     key={user.id}
+                     type="button"
+                     onClick={() => navigate(`/user/${(user.display_name || '').toLowerCase().replace(/\s+/g, '')}`)}
+                     className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 transition-colors text-left cursor-pointer border-b border-gray-50 last:border-b-0"
+                   >
+                     <div className="w-9 h-9 bg-[#111827] text-white font-bold text-xs rounded-full flex items-center justify-center shrink-0">
+                       {getInitials(user.display_name)}
+                     </div>
+                     <div className="min-w-0 flex-1">
+                       <div className="flex items-center gap-2">
+                         <span className="text-xs font-bold text-gray-900 truncate">{user.display_name}</span>
+                         <span className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded shrink-0 ${
+                           user.role === 'PROFESSOR' ? 'bg-orange-50 text-[#FF4F00] border border-orange-100' : 'bg-gray-100 text-gray-600'
+                         }`}>
+                           {user.role}
+                         </span>
+                       </div>
+                       <div className="flex items-center gap-2 mt-0.5 text-[10px] text-gray-400">
+                         {user.department && <span>{user.department}</span>}
+                         {user.gen && <span>Gen {user.gen}</span>}
+                         {user.specialization && <span>{user.specialization}</span>}
+                       </div>
+                     </div>
+                   </button>
+                 ))
+               )}
+             </div>
+           )}
+         </section>
+
+         {/* 1. Trending Tags Section */}
         <section>
           <div className="flex items-center justify-between mb-3 sm:mb-4">
             <h2 className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
