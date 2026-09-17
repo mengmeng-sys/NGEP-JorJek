@@ -7,6 +7,7 @@ import { DeleteCommentModal } from '@/components/comment/DeleteCommentModal';
 import { ReportModal } from '@/components/shared/ReportModal';
 import { useAuth } from '@/context/AuthContext';
 import { useSocket } from '@/context/SocketContext';
+import { UserAvatar } from '@/components/shared/UserAvatar';
 import { postsApi, commentsApi, votesApi, reportsApi } from '@/lib/api';
 import { buildCommentTree, normalizeComment, normalizePost, initialsFrom } from '@/lib/adapters';
 import { getApiErrorMessage } from '@/lib/apiClient';
@@ -188,9 +189,11 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
     <div className="border-b border-gray-100 pb-5 sm:pb-6 last:border-b-0">
       <div className="flex items-center justify-between gap-2 mb-2">
         <div className="flex items-center gap-2 min-w-0 flex-wrap">
-          <div className="h-6 w-6 sm:h-7 sm:w-7 bg-[#111827] text-white font-bold flex items-center justify-center rounded-full text-[10px] sm:text-xs shrink-0">
-            {comment.author?.initials || initialsFrom(comment.author?.displayName || 'U')}
-          </div>
+          <UserAvatar
+            initials={comment.author?.initials || initialsFrom(comment.author?.displayName || 'U')}
+            userId={comment.author?.id || comment.authorId}
+            size="sm"
+          />
           <span className="font-bold text-gray-900 text-xs sm:text-sm truncate">{comment.author?.displayName || 'Student'}</span>
           <span
             className={`text-[8px] sm:text-[9px] uppercase font-bold px-1.5 py-0.5 rounded tracking-wide shrink-0 ${
@@ -531,9 +534,11 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
     <div>
       <div className="flex items-center justify-between gap-2 mb-1">
         <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-wrap">
-          <div className="h-5 w-5 sm:h-6 sm:w-6 bg-[#111827] text-white font-bold flex items-center justify-center rounded-full text-[9px] sm:text-[10px] shrink-0">
-            {reply.author?.initials || initialsFrom(reply.author?.displayName || 'U')}
-          </div>
+          <UserAvatar
+            initials={reply.author?.initials || initialsFrom(reply.author?.displayName || 'U')}
+            userId={reply.author?.id || reply.authorId}
+            size="xs"
+          />
           <span className="font-bold text-gray-900 text-xs truncate">{reply.author?.displayName || 'Student'}</span>
           <span
             className={`text-[8px] uppercase font-bold px-1.5 py-0.5 rounded tracking-wide shrink-0 ${
@@ -1107,9 +1112,9 @@ export default function PostDetailPage() {
               <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
                 <Link
                   to={`/user/${authorProfileSlug}`}
-                  className="h-9 w-9 sm:h-10 sm:w-10 bg-[#111827] text-white font-bold flex items-center justify-center rounded-full text-xs sm:text-sm shrink-0 hover:ring-2 hover:ring-offset-2 hover:ring-gray-800 transition-all"
+                  className="hover:ring-2 hover:ring-offset-2 hover:ring-gray-800 transition-all rounded-full"
                 >
-                  {post.initials}
+                  <UserAvatar initials={post.initials} userId={post.userId} size="md" />
                 </Link>
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">

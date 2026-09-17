@@ -7,11 +7,38 @@ const { setIO } = require("./lib/socket");
 const server = http.createServer(app);
 
 const io = new SocketIOServer(server, { cors: { origin: "*" } });
+
+const onlineUsers = new Map();
+
 io.on("connection", (socket) => {
-  socket.on("join", (userId) => socket.join(userId));
+  socket.on("join", (userId) => {
+    socket.join(userId);
+    socket._userId = userId;
+    const sockets = onlineUsers.get(userId) || new Set();
+    const wasOnline = sockets.size > 0;
+    sockets.add(socket.id);
+    onlineUsers.set(userId, sockets);
+    if (!wasOnline) {
+      io.emit("user_online", { userId });
+    }
+  });
   socket.on("join_post", (postId) => socket.join(`post:${postId}`));
   socket.on("leave_post", (postId) => socket.leave(`post:${postId}`));
+  socket.on("disconnect", () => {
+    const userId = socket._userId;
+    if (userId) {
+      const sockets = onlineUsers.get(userId);
+      if (sockets) {
+        sockets.delete(socket.id);
+        if (sockets.size === 0) {
+          onlineUsers.delete(userId);
+          io.emit("user_offline", { userId });
+        }
+      }
+    }
+  });
 });
+
 setIO(io);
 
 // ─── Startup email-config warning ─────────────────────────────────────

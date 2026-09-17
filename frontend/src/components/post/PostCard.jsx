@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useSocket } from '@/context/SocketContext';
+import { UserAvatar } from '@/components/shared/UserAvatar';
 import { ReportModal } from '@/components/shared/ReportModal';
 import { votesApi, reportsApi, postsApi } from '@/lib/api';
 import { copyToClipboard } from '@/lib/clipboard';
@@ -273,9 +274,9 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
             <Link
               to={`/user/${userProfileSlug}`}
               onClick={(e) => e.stopPropagation()}
-              className="h-9 w-9 sm:h-10 sm:w-10 bg-[#111827] text-white font-black flex items-center justify-center rounded-full text-xs hover:ring-2 hover:ring-offset-2 hover:ring-gray-800 transition-all flex-shrink-0"
+              className="hover:ring-2 hover:ring-offset-2 hover:ring-gray-800 transition-all rounded-full"
             >
-              {initials}
+              <UserAvatar initials={initials} userId={post.userId} size="md" />
             </Link>
 
             <div className="min-w-0">
