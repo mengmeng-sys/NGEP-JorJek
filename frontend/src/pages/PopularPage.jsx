@@ -26,7 +26,10 @@ export default function PopularPage() {
   };
   const { isPostModalOpen, editingPost, openEdit, closeEdit, saveEdit, isUploading } = usePostEditor(
     (updated) => setPosts((prev) => prev.map((p) => (p.id === updated.id ? updated : p))),
-    (created) => setPosts((prev) => [created, ...prev])
+    (created) => setPosts((prev) => {
+      if (prev.some((p) => p.id === created.id)) return prev;
+      return [created, ...prev];
+    })
   );
 
   useEffect(() => {

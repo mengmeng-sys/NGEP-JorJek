@@ -15,10 +15,9 @@ export default function HomePage() {
   const { user } = useAuth();
   const { posts, loading, loadingMore, hasMore, loadMore, updatePost, setPosts } = usePosts();
   const { isPostModalOpen, editingPost, openEdit, closeEdit, saveEdit, isUploading } = usePostEditor(updatePost, (created) => {
-    const normalized = normalizePost(created, user?.id);
     setPosts((prev) => {
-      if (prev.some((p) => p.id === normalized.id)) return prev;
-      return [normalized, ...prev];
+      if (prev.some((p) => p.id === created.id)) return prev;
+      return [created, ...prev];
     });
   });
   const [searchParams] = useSearchParams();

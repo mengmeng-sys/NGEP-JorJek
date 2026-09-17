@@ -29,8 +29,12 @@ export default function SearchPage() {
     }
     setPostToDelete(null);
   };
-  const { isPostModalOpen, editingPost, openEdit, closeEdit, saveEdit, isUploading } = usePostEditor((updated) =>
-    setResults((prev) => prev.map((p) => (p.id === updated.id ? updated : p)))
+  const { isPostModalOpen, editingPost, openEdit, closeEdit, saveEdit, isUploading } = usePostEditor(
+    (updated) => setResults((prev) => prev.map((p) => (p.id === updated.id ? updated : p))),
+    (created) => setResults((prev) => {
+      if (prev.some((p) => p.id === created.id)) return prev;
+      return [created, ...prev];
+    })
   );
 
   const currentUserId = (() => {

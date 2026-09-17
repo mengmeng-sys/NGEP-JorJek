@@ -1295,16 +1295,17 @@ export default function PostDetailPage() {
               </div>
             ) : null}
 
-            {/* Attached Image */}
-            {post.image_url && (
-              <div className="mt-3 rounded-xl overflow-hidden border border-gray-100 bg-gray-50 flex items-center justify-center">
-                <img
-                  src={post.image_url}
-                  alt={post.title}
-                  className="w-full max-h-72 sm:max-h-96 object-contain"
-                />
-              </div>
-            )}
+        {/* Attached Image */}
+        {post.image_url && (
+          <div className="mt-3 rounded-xl overflow-hidden border border-gray-100 bg-gray-50">
+            <img
+              src={post.image_url}
+              alt={post.title}
+              className="w-full h-auto max-h-[600px] object-contain"
+              loading="lazy"
+            />
+          </div>
+        )}
           </div>
 
           {/* Post Bottom Controls */}

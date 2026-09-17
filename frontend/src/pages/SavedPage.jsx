@@ -27,8 +27,12 @@ export default function SavedPage() {
     }
     setPostToDelete(null);
   };
-  const { isPostModalOpen, editingPost, openEdit, closeEdit, saveEdit, isUploading } = usePostEditor((updated) =>
-    setSavedPosts((prev) => prev.map((p) => (p.id === updated.id ? updated : p)))
+  const { isPostModalOpen, editingPost, openEdit, closeEdit, saveEdit, isUploading } = usePostEditor(
+    (updated) => setSavedPosts((prev) => prev.map((p) => (p.id === updated.id ? updated : p))),
+    (created) => setSavedPosts((prev) => {
+      if (prev.some((p) => p.id === created.id)) return prev;
+      return [created, ...prev];
+    })
   );
 
   const loadSaved = useCallback(async () => {
