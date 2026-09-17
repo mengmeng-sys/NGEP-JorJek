@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { usePosts } from "@/hooks/usePosts";
 import { usePostEditor } from "@/hooks/usePostEditor";
@@ -11,7 +11,7 @@ import { normalizePost } from "@/lib/adapters";
 import { postsApi } from "@/lib/api";
 
 export default function HomePage() {
-  const { posts, loading, updatePost, setPosts } = usePosts();
+  const { posts, loading, loadingMore, hasMore, loadMore, updatePost, setPosts } = usePosts();
   const { isPostModalOpen, editingPost, openEdit, closeEdit, saveEdit } = usePostEditor(updatePost);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -24,7 +24,7 @@ export default function HomePage() {
       setPosts((prev) => {
         if (prev.some((p) => p.id === normalized.id)) return prev;
         if (selectedTag && !normalized.tags.some((t) => t.toLowerCase() === selectedTag.toLowerCase())) return prev;
-        return [normalized, ...prev];
+        return [...prev, normalized];
       });
     };
 
@@ -51,6 +51,23 @@ export default function HomePage() {
 
   const [sortBy, setSortBy] = useState('hot');
   const [postToDelete, setPostToDelete] = useState(null);
+
+  const sentinelRef = useRef(null);
+
+  useEffect(() => {
+    const node = sentinelRef.current;
+    if (!node) return undefined;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) loadMore();
+      },
+      { rootMargin: '600px 0px' }
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [loadMore]);
 
   const handleConfirmDelete = async () => {
     if (!postToDelete) return;
@@ -185,6 +202,21 @@ export default function HomePage() {
             {sortedPosts.map((p) => (
               <PostCard key={p.id} post={p} onEdit={openEdit} onDelete={() => setPostToDelete(p.id)} />
             ))}
+
+            {hasMore && <div ref={sentinelRef} className="h-px w-full" aria-hidden="true" />}
+
+            {loadingMore && (
+              <div className="flex items-center justify-center py-5 text-gray-400 gap-2">
+                <div className="w-4 h-4 border-2 border-[#FF4F00] border-t-transparent rounded-full animate-spin" />
+                <span className="text-xs font-semibold">Loading more posts...</span>
+              </div>
+            )}
+
+            {!hasMore && !loadingMore && sortedPosts.length > 0 && (
+              <p className="text-center text-[11px] text-gray-400 font-medium py-5">
+                You're all caught up 🎉
+              </p>
+            )}
           </div>
         )}
 

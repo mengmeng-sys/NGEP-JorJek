@@ -681,7 +681,7 @@ export default function Navbar() {
         onClose={() => setIsPostModalOpen(false)}
         onPublish={async (postPayload) => {
           try {
-            const created = await postsApi.create({
+            await postsApi.create({
               type: postPayload.type || 'question',
               title: postPayload.title,
               content: postPayload.details ?? postPayload.content,
@@ -689,7 +689,7 @@ export default function Navbar() {
               allowMentoring: postPayload.allowMentoring,
             });
             setIsPostModalOpen(false);
-            navigate(`/posts/${created.id}`);
+            navigate('/');
           } catch (err) {
             alert(getApiErrorMessage(err));
           }
