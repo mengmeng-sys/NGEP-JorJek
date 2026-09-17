@@ -273,7 +273,7 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
             <Link
               to={`/user/${userProfileSlug}`}
               onClick={(e) => e.stopPropagation()}
-              className="h-9 w-9 sm:h-10 sm:w-10 bg-[#111827] text-white font-black flex items-center justify-center rounded-full text-xs hover:ring-2 hover:ring-offset-2 hover:ring-gray-800 transition-all flex-shrink-0 overflow-hidden"
+              className="h-9 w-9 sm:h-10 sm:w-10 bg-[#111827] text-white font-black flex items-center justify-center rounded-full text-xs hover:ring-2 hover:ring-offset-2 hover:ring-gray-800 transition-all shrink-0 overflow-hidden"
             >
               {post.authorAvatarUrl ? (
                 <img src={post.authorAvatarUrl} alt={post.author || 'Author'} className="h-full w-full object-cover" />
@@ -287,12 +287,12 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
                 <Link
                   to={`/user/${userProfileSlug}`}
                   onClick={(e) => e.stopPropagation()}
-                  className="font-bold text-gray-900 text-xs sm:text-sm hover:text-[#FF4F00] transition-colors truncate max-w-[130px] sm:max-w-[200px]"
+                  className="font-bold text-gray-900 text-xs sm:text-sm hover:text-[#FF4F00] transition-colors truncate max-w-32.5 sm:max-w-50"
                 >
                   {post.author}
                 </Link>
 
-                <span className="bg-purple-50 text-[#8B5CF6] text-[9px] sm:text-[10px] uppercase font-bold px-1.5 sm:px-2 py-0.5 rounded border border-purple-100 flex-shrink-0">
+                <span className="bg-purple-50 text-[#8B5CF6] text-[9px] sm:text-[10px] uppercase font-bold px-1.5 sm:px-2 py-0.5 rounded border border-purple-100 shrink-0">
                   {post.role || 'STUDENT'}
                 </span>
               </div>
@@ -302,13 +302,13 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
                   #{postTags[0] || 'General'}
                 </span>
                 <span className="mx-1.5">•</span>
-                <span className="flex-shrink-0">{post.timestamp || 'recently'}</span>
+                <span className="shrink-0">{post.timestamp || 'recently'}</span>
               </div>
             </div>
           </div>
 
           {/* Three Dots Menu Button */}
-          <div className="relative flex-shrink-0" ref={menuRef}>
+          <div className="relative shrink-0" ref={menuRef}>
             <button
               type="button"
               onClick={(e) => {
@@ -384,12 +384,12 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
         </div>
 
         {/* Post Title & Content */}
-        <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-1.5 sm:mb-2 leading-snug hover:text-[#FF4F00] transition-colors break-words">
+        <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-1.5 sm:mb-2 leading-snug hover:text-[#FF4F00] transition-colors wrap-break-words">
           {post.title}
         </h2>
         {post.content ? (
           <div className="relative mb-3">
-            <p className={`text-xs sm:text-sm text-gray-500 leading-relaxed break-words ${isLongContent && !isContentExpanded ? 'line-clamp-3' : ''}`}>
+            <p className={`text-xs sm:text-sm text-gray-500 leading-relaxed wrap-break-words ${isLongContent && !isContentExpanded ? 'line-clamp-3' : ''}`}>
               {post.content}
             </p>
             {isLongContent && (
