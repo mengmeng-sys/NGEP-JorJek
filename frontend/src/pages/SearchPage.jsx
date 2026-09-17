@@ -29,7 +29,7 @@ export default function SearchPage() {
     }
     setPostToDelete(null);
   };
-  const { isPostModalOpen, editingPost, openEdit, closeEdit, saveEdit } = usePostEditor((updated) =>
+  const { isPostModalOpen, editingPost, openEdit, closeEdit, saveEdit, isUploading } = usePostEditor((updated) =>
     setResults((prev) => prev.map((p) => (p.id === updated.id ? updated : p)))
   );
 
@@ -121,6 +121,7 @@ export default function SearchPage() {
         initialData={editingPost}
         onClose={closeEdit}
         onPublish={saveEdit}
+        isUploading={isUploading}
       />
 
       <DeletePostModal

@@ -6,12 +6,24 @@ import { PostCard } from "@/components/post/PostCard";
 import { CreatePostModal } from "@/components/post/CreatePostModal";
 import { DeletePostModal } from "@/components/post/DeletePostModal";
 import { postsApi } from "@/lib/api";
+import { normalizePost } from "@/lib/adapters";
+import { useAuth } from "@/context/AuthContext";
 
 // Route: "/tags/:tag". Owner: CS2
 export default function TagFeedPage() {
+  const { user } = useAuth();
   const { tag = "" } = useParams();
   const { posts, loading, error, updatePost, setPosts } = usePosts({ tag });
-  const { isPostModalOpen, editingPost, openEdit, closeEdit, saveEdit } = usePostEditor(updatePost);
+  const { isPostModalOpen, editingPost, openEdit, closeEdit, saveEdit, isUploading } = usePostEditor(
+    updatePost,
+    (created) => {
+      const normalized = normalizePost(created, user?.id);
+      setPosts((prev) => {
+        if (prev.some((p) => p.id === normalized.id)) return prev;
+        return [normalized, ...prev];
+      });
+    }
+  );
   const [postToDelete, setPostToDelete] = useState(null);
 
   const handleConfirmDelete = async () => {
@@ -53,6 +65,7 @@ export default function TagFeedPage() {
         initialData={editingPost}
         onClose={closeEdit}
         onPublish={saveEdit}
+        isUploading={isUploading}
       />
 
       <DeletePostModal

@@ -429,11 +429,11 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
 
         {/* Image Attachment (if present) */}
         {post.image_url && (
-          <div className="mt-2 mb-3 rounded-xl overflow-hidden border border-gray-100 bg-gray-50 flex items-center justify-center">
+          <div className="mt-2 mb-3 rounded-xl overflow-hidden border border-gray-100 bg-gray-50">
             <img
               src={post.image_url}
               alt={post.title}
-              className="w-full max-h-56 sm:max-h-80 object-contain"
+              className="w-full max-h-52 sm:max-h-72 md:max-h-96 object-cover"
               loading="lazy"
             />
           </div>

@@ -139,8 +139,11 @@ export default function UserProfilePage() {
     setIsReportModalOpen(false);
   };
 
+  const [isUploading, setIsUploading] = useState(false);
+
   // Save changes from CreatePostModal (create or edit)
   const handleSavePost = async (updatedPayload) => {
+    setIsUploading(true);
     try {
       if (editingPost) {
         const updated = await postsApi.update(editingPost.id, {
@@ -149,6 +152,8 @@ export default function UserProfilePage() {
           type: updatedPayload.type,
           allowMentoring: updatedPayload.allowMentoring,
           tags: (updatedPayload.tags || []).map((t) => String(t).replace(/^#/, '')),
+          imageFile: updatedPayload.imageFile,
+          image_url: updatedPayload.image_url,
         });
         setUserPosts((prev) =>
           prev.map((p) => (p.id === editingPost.id ? updated : p))
@@ -161,6 +166,8 @@ export default function UserProfilePage() {
           content: updatedPayload.details ?? updatedPayload.content,
           tags: updatedPayload.tags || [],
           allowMentoring: updatedPayload.allowMentoring,
+          imageFile: updatedPayload.imageFile,
+          image_url: updatedPayload.image_url,
         });
         setUserPosts((prev) =>
           [created, ...prev].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
@@ -168,6 +175,8 @@ export default function UserProfilePage() {
       }
     } catch (err) {
       alert(getApiErrorMessage(err));
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -590,6 +599,7 @@ export default function UserProfilePage() {
           setEditingPost(null);
         }}
         onPublish={handleSavePost}
+        isUploading={isUploading}
       />
 
       {/* Custom Confirmation Delete Modal */}

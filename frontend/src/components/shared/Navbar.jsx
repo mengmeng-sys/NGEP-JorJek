@@ -18,6 +18,7 @@ export default function Navbar() {
 
   // Modal & Panel visibility states
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
@@ -693,7 +694,9 @@ export default function Navbar() {
       <CreatePostModal
         isOpen={isPostModalOpen}
         onClose={() => setIsPostModalOpen(false)}
+        isUploading={isUploading}
         onPublish={async (postPayload) => {
+          setIsUploading(true);
           try {
             await postsApi.create({
               type: postPayload.type || 'question',
@@ -701,19 +704,15 @@ export default function Navbar() {
               content: postPayload.details ?? postPayload.content,
               tags: postPayload.tags || [],
               allowMentoring: postPayload.allowMentoring,
-              // CreatePostModal hands back either a picked File (imageFile,
-              // needs uploading) or an existing image_url — postsApi.create
-              // uploads the file first when one's present. This used to be
-              // silently dropped here, which is why attached images never
-              // actually made it onto the post.
               imageFile: postPayload.imageFile,
               image_url: postPayload.image_url,
             });
             setIsPostModalOpen(false);
-
             navigate('/');
           } catch (err) {
             alert(getApiErrorMessage(err));
+          } finally {
+            setIsUploading(false);
           }
         }}
       />

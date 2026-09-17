@@ -27,7 +27,7 @@ export default function SavedPage() {
     }
     setPostToDelete(null);
   };
-  const { isPostModalOpen, editingPost, openEdit, closeEdit, saveEdit } = usePostEditor((updated) =>
+  const { isPostModalOpen, editingPost, openEdit, closeEdit, saveEdit, isUploading } = usePostEditor((updated) =>
     setSavedPosts((prev) => prev.map((p) => (p.id === updated.id ? updated : p)))
   );
 
@@ -153,6 +153,7 @@ export default function SavedPage() {
         initialData={editingPost}
         onClose={closeEdit}
         onPublish={saveEdit}
+        isUploading={isUploading}
       />
 
       <DeletePostModal

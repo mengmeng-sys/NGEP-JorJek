@@ -24,8 +24,9 @@ export default function PopularPage() {
     }
     setPostToDelete(null);
   };
-  const { isPostModalOpen, editingPost, openEdit, closeEdit, saveEdit } = usePostEditor((updated) =>
-    setPosts((prev) => prev.map((p) => (p.id === updated.id ? updated : p)))
+  const { isPostModalOpen, editingPost, openEdit, closeEdit, saveEdit, isUploading } = usePostEditor(
+    (updated) => setPosts((prev) => prev.map((p) => (p.id === updated.id ? updated : p))),
+    (created) => setPosts((prev) => [created, ...prev])
   );
 
   useEffect(() => {
@@ -142,6 +143,7 @@ export default function PopularPage() {
         initialData={editingPost}
         onClose={closeEdit}
         onPublish={saveEdit}
+        isUploading={isUploading}
       />
 
       <DeletePostModal
