@@ -24,6 +24,7 @@ export default function HomePage() {
       setPosts((prev) => {
         if (prev.some((p) => p.id === normalized.id)) return prev;
         if (selectedTag && !normalized.tags.some((t) => t.toLowerCase() === selectedTag.toLowerCase())) return prev;
+
         return [...prev, normalized];
       });
     };
@@ -51,6 +52,7 @@ export default function HomePage() {
 
   const [sortBy, setSortBy] = useState('hot');
   const [postToDelete, setPostToDelete] = useState(null);
+
 
   const sentinelRef = useRef(null);
 
@@ -202,6 +204,7 @@ export default function HomePage() {
             {sortedPosts.map((p) => (
               <PostCard key={p.id} post={p} onEdit={openEdit} onDelete={() => setPostToDelete(p.id)} />
             ))}
+
 
             {hasMore && <div ref={sentinelRef} className="h-px w-full" aria-hidden="true" />}
 

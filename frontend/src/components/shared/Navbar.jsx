@@ -697,8 +697,16 @@ export default function Navbar() {
               content: postPayload.details ?? postPayload.content,
               tags: postPayload.tags || [],
               allowMentoring: postPayload.allowMentoring,
+              // CreatePostModal hands back either a picked File (imageFile,
+              // needs uploading) or an existing image_url — postsApi.create
+              // uploads the file first when one's present. This used to be
+              // silently dropped here, which is why attached images never
+              // actually made it onto the post.
+              imageFile: postPayload.imageFile,
+              image_url: postPayload.image_url,
             });
             setIsPostModalOpen(false);
+
             navigate('/');
           } catch (err) {
             alert(getApiErrorMessage(err));
