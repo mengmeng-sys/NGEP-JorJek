@@ -9,8 +9,10 @@ import { DeletePostModal } from "@/components/post/DeletePostModal";
 import { ThreeColumnLayout } from "@/components/layout/ThreeColumnLayout";
 import { normalizePost } from "@/lib/adapters";
 import { postsApi } from "@/lib/api";
+import { useAuth } from "@/context/AuthContext";
 
 export default function HomePage() {
+  const { user } = useAuth();
   const { posts, loading, loadingMore, hasMore, loadMore, updatePost, setPosts } = usePosts();
   const { isPostModalOpen, editingPost, openEdit, closeEdit, saveEdit } = usePostEditor(updatePost);
   const [searchParams] = useSearchParams();
@@ -20,7 +22,7 @@ export default function HomePage() {
 
   useEffect(() => {
     const handleNewPost = (newPost) => {
-      const normalized = normalizePost(newPost);
+      const normalized = normalizePost(newPost, user?.id);
       setPosts((prev) => {
         if (prev.some((p) => p.id === normalized.id)) return prev;
         if (selectedTag && !normalized.tags.some((t) => t.toLowerCase() === selectedTag.toLowerCase())) return prev;
@@ -34,7 +36,7 @@ export default function HomePage() {
     };
 
     const handlePostUpdated = (updatedPost) => {
-      const normalized = normalizePost(updatedPost);
+      const normalized = normalizePost(updatedPost, user?.id);
       setPosts((prev) =>
         prev.map((p) => (p.id === normalized.id ? { ...p, ...normalized } : p))
       );
@@ -48,7 +50,7 @@ export default function HomePage() {
       off("post_deleted", handlePostDeleted);
       off("post_updated", handlePostUpdated);
     };
-  }, [on, off, selectedTag, setPosts]);
+  }, [on, off, selectedTag, setPosts, user?.id]);
 
   const [sortBy, setSortBy] = useState('hot');
   const [postToDelete, setPostToDelete] = useState(null);

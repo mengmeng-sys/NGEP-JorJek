@@ -3,8 +3,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ThreeColumnLayout } from '@/components/layout/ThreeColumnLayout';
 import { postsApi, usersApi } from '@/lib/api';
 import { UserAvatar } from '@/components/shared/UserAvatar';
+import { useAuth } from '@/context/AuthContext';
 
 export default function ExplorePage() {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [trendingTags, setTrendingTags] = useState([]);
   const [suggestedMentors, setSuggestedMentors] = useState([]);
@@ -20,7 +22,7 @@ export default function ExplorePage() {
       setLoading(true);
       try {
         const [postData, mentors] = await Promise.all([
-          postsApi.list({ limit: 100 }),
+          postsApi.list({ limit: 100, currentUserId: user?.id }),
           usersApi.topMentors().catch(() => []),
         ]);
 
@@ -63,7 +65,7 @@ export default function ExplorePage() {
       }
     }
     loadExploreData();
-  }, []);
+  }, [user?.id]);
 
   const handleSearch = (value) => {
     setSearchQuery(value);
@@ -210,7 +212,7 @@ export default function ExplorePage() {
 
            <div className="flex items-center justify-between mb-3 sm:mb-4">
              <h2 className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-               Suggested Mentors
+               Suggested Users
              </h2>
              <span className="text-[10px] text-gray-400 font-medium">Swipe to browse →</span>
            </div>

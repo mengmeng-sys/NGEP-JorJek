@@ -197,7 +197,7 @@ export default function Navbar() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleSearchSubmit}
-                placeholder="Search topics, skills, or mentors..."
+                placeholder="Search topics, skills ...."
                 className="w-full h-full outline-none text-xs text-gray-800 placeholder-gray-400 bg-transparent pr-4 font-medium"
               />
             </div>
