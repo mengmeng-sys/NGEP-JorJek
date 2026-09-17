@@ -4,6 +4,7 @@ import { CreatePostModal } from '@/components/post/CreatePostModal';
 import { useAuth } from '@/context/AuthContext';
 import { useSocket } from '@/context/SocketContext';
 import { notificationsApi, postsApi, tagsApi } from "@/lib/api";
+import { normalizeNotification } from "@/lib/adapters";
 import { getApiErrorMessage } from "@/lib/apiClient";
 
 export default function Navbar() {
@@ -60,7 +61,8 @@ export default function Navbar() {
   }, [user]);
 
   useEffect(() => {
-    const handleNotification = (notification) => {
+    const handleNotification = (raw) => {
+      const notification = normalizeNotification(raw);
       setNotifications((prev) => {
         if (prev.some((n) => n.id === notification.id)) return prev;
         return [notification, ...prev];

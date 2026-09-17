@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { notificationsApi } from "@/lib/api";
+import { normalizeNotification } from "@/lib/adapters";
 import { useSocket } from "@/context/SocketContext";
 import { ThreeColumnLayout } from "@/components/layout/ThreeColumnLayout";
 import { getApiErrorMessage } from "@/lib/apiClient";
@@ -16,7 +17,8 @@ export default function NotificationsPage() {
   }, []);
 
   useEffect(() => {
-    const handleNotification = (notification) => {
+    const handleNotification = (raw) => {
+      const notification = normalizeNotification(raw);
       setNotifications((prev) => {
         if (prev.some((n) => n.id === notification.id)) return prev;
         return [notification, ...prev];
