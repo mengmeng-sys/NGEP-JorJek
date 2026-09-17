@@ -1,29 +1,73 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { uploadsApi } from '@/lib/api';
+
+const MAX_AVATAR_SIZE = 5 * 1024 * 1024; // 5MB — matches the /uploads endpoint's limit
+const ALLOWED_AVATAR_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 export function GeneralTab() {
   const { user, updateUserProfile } = useAuth();
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const fileInputRef = useRef(null);
 
   const [displayName, setDisplayName] = useState('');
   const [bio, setBio] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState(null);
+  const [avatarUploading, setAvatarUploading] = useState(false);
 
   useEffect(() => {
     if (user) {
       setDisplayName(user.displayName || '');
       setBio(user.bio || '');
+      setAvatarUrl(user.avatarUrl || null);
     }
-  }, [user?.displayName, user?.bio]);
+  }, [user?.displayName, user?.bio, user?.avatarUrl]);
 
-  const hasChanges = displayName.trim() !== (user?.displayName || '') || bio.trim() !== (user?.bio || '');
+  const hasChanges =
+    displayName.trim() !== (user?.displayName || '') ||
+    bio.trim() !== (user?.bio || '') ||
+    (avatarUrl || null) !== (user?.avatarUrl || null);
+
+  const handleAvatarPick = () => fileInputRef.current?.click();
+
+  const handleAvatarChange = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = ''; // allow picking the same file again later
+    if (!file) return;
+
+    if (!ALLOWED_AVATAR_TYPES.includes(file.type)) {
+      alert('Please choose a JPEG, PNG, or WebP image.');
+      return;
+    }
+    if (file.size > MAX_AVATAR_SIZE) {
+      alert('Image must be smaller than 5MB.');
+      return;
+    }
+
+    setAvatarUploading(true);
+    setSaved(false);
+    try {
+      const { url } = await uploadsApi.upload(file);
+      setAvatarUrl(url);
+    } catch (err) {
+      alert(err?.message || 'Could not upload the image. Please try again.');
+    } finally {
+      setAvatarUploading(false);
+    }
+  };
+
+  const handleRemoveAvatar = () => {
+    setAvatarUrl(null);
+    setSaved(false);
+  };
 
   const handleSave = async () => {
     if (!user?.id) return;
     setSaving(true);
     setSaved(false);
     try {
-      await updateUserProfile({ displayName: displayName.trim(), bio: bio.trim() });
+      await updateUserProfile({ displayName: displayName.trim(), bio: bio.trim(), avatarUrl });
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (err) {
@@ -46,12 +90,50 @@ export function GeneralTab() {
       <div className="space-y-5 sm:space-y-6">
         {/* Avatar + Name Preview */}
         <div className="flex items-center gap-4 p-4 bg-gray-50/70 rounded-xl border border-gray-100">
-          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 text-white text-lg font-bold flex items-center justify-center flex-shrink-0 ring-2 ring-white shadow-xs">
-            {displayName ? displayName.trim().split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase() : (user?.initials || 'U')}
+          <div className="relative flex-shrink-0">
+            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 text-white text-lg font-bold flex items-center justify-center ring-2 ring-white shadow-xs overflow-hidden">
+              {avatarUploading ? (
+                <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+              ) : avatarUrl ? (
+                <img src={avatarUrl} alt={displayName || 'Profile picture'} className="w-full h-full object-cover" />
+              ) : (
+                displayName ? displayName.trim().split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase() : (user?.initials || 'U')
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={handleAvatarPick}
+              disabled={avatarUploading}
+              className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-[#FF4F00] hover:bg-[#E64700] text-white flex items-center justify-center ring-2 ring-white shadow-xs cursor-pointer transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              aria-label="Change profile picture"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="hidden"
+              onChange={handleAvatarChange}
+            />
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-bold text-gray-900 truncate">{displayName || 'Your Name'}</p>
             <p className="text-xs text-gray-400 truncate">@{displayName ? displayName.toLowerCase().replace(/\s+/g, '') : 'username'}</p>
+            {avatarUrl && !avatarUploading && (
+              <button
+                type="button"
+                onClick={handleRemoveAvatar}
+                className="text-[10px] font-bold text-gray-400 hover:text-red-500 transition-colors mt-1 cursor-pointer"
+              >
+                Remove photo
+              </button>
+            )}
           </div>
           <span className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full ${
             user?.role === 'PROFESSOR'

@@ -90,8 +90,12 @@ export default function SettingsPage() {
         {/* User Stats Card */}
         <div className="bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
           <div className="flex items-center gap-5">
-            <div className="w-16 h-16 rounded-full bg-[#111827] text-white text-xl font-bold flex items-center justify-center shrink-0 shadow-sm">
-              {user?.initials || 'YO'}
+            <div className="w-16 h-16 rounded-full bg-[#111827] text-white text-xl font-bold flex items-center justify-center shrink-0 shadow-sm overflow-hidden">
+              {user?.avatarUrl ? (
+                <img src={user.avatarUrl} alt={user.displayName || 'Profile'} className="w-full h-full object-cover" />
+              ) : (
+                user?.initials || 'YO'
+              )}
             </div>
             <div>
               <h1 className="text-xl font-bold text-gray-900 leading-tight">{user?.displayName || 'Student'}</h1>

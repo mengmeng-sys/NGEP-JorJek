@@ -273,9 +273,13 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
             <Link
               to={`/user/${userProfileSlug}`}
               onClick={(e) => e.stopPropagation()}
-              className="h-9 w-9 sm:h-10 sm:w-10 bg-[#111827] text-white font-black flex items-center justify-center rounded-full text-xs hover:ring-2 hover:ring-offset-2 hover:ring-gray-800 transition-all flex-shrink-0"
+              className="h-9 w-9 sm:h-10 sm:w-10 bg-[#111827] text-white font-black flex items-center justify-center rounded-full text-xs hover:ring-2 hover:ring-offset-2 hover:ring-gray-800 transition-all flex-shrink-0 overflow-hidden"
             >
-              {initials}
+              {post.authorAvatarUrl ? (
+                <img src={post.authorAvatarUrl} alt={post.author || 'Author'} className="h-full w-full object-cover" />
+              ) : (
+                initials
+              )}
             </Link>
 
             <div className="min-w-0">
@@ -419,11 +423,11 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
 
         {/* Image Attachment (if present) */}
         {post.image_url && (
-          <div className="mt-2 mb-3 rounded-xl overflow-hidden border border-gray-100 max-h-56 sm:max-h-80 bg-gray-50">
+          <div className="mt-2 mb-3 rounded-xl overflow-hidden border border-gray-100 bg-gray-50 flex items-center justify-center">
             <img
               src={post.image_url}
               alt={post.title}
-              className="w-full h-full object-cover"
+              className="w-full max-h-56 sm:max-h-80 object-contain"
               loading="lazy"
             />
           </div>

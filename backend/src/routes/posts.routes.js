@@ -6,7 +6,7 @@ const { getIO } = require("../lib/socket");
 
 const postsRouter = Router();
 
-const USER_SAFE = "id,email,display_name,role,bio,karma,created_at";
+const USER_SAFE = "id,email,display_name,role,bio,avatar_url,karma,created_at";
 
 // The posts.allow_mentoring column is introduced by a migration. The app
 // gracefully supports running before that migration exists: we detect the
