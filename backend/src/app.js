@@ -14,6 +14,7 @@ const { usersRouter } = require("./routes/users.routes");
 const { savedRouter } = require("./routes/saved.routes");
 const { sessionsRouter } = require("./routes/sessions.routes");
 const { adminRouter } = require("./routes/admin.routes");
+const { uploadsRouter } = require("./routes/uploads.routes");
 const { errorHandler } = require("./middleware/errorHandler");
 const { logger } = require("./middleware/logger.middleware");
 const { swaggerSpec } = require("./config/swagger");
@@ -135,6 +136,7 @@ app.use("/search", searchRouter);
 app.use("/reports", reportsRouter);
 app.use("/users", usersRouter);
 app.use("/saved", savedRouter);
+app.use("/uploads", uploadsRouter);
 app.use("/api/admin", adminRouter);
 
 app.use(errorHandler);

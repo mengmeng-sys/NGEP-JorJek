@@ -17,6 +17,13 @@ async function canStoreAllowMentoring() {
   return !error;
 }
 
+// Same pattern for posts.image_url — added by a migration that may not have
+// run yet on every environment, so we detect it rather than assume it exists.
+async function canStoreImageUrl() {
+  const { error } = await supabase.from("posts").select("image_url").limit(1);
+  return !error;
+}
+
 // Fetch the set of post ids the current user has saved (empty when anonymous).
 async function savedIdsFor(userId) {
   if (!userId) return [];
@@ -210,16 +217,19 @@ postsRouter.get("/:id", optionalAuth, async (req, res, next) => {
  */
 postsRouter.post("/", requireAuth, requireVerifiedEmail, async (req, res, next) => {
   try {
-    const { type, title, body, tagNames, allowMentoring } = req.body;
+    const { type, title, body, tagNames, allowMentoring, image_url: imageUrl } = req.body;
 
     const insertPayload = {
       author_id: req.userId,
       type: (type ?? "question").toLowerCase(),
       title,
-      body: body ?? "",
+      body,
     };
     if (req.body.allowMentoring !== undefined && (await canStoreAllowMentoring())) {
       insertPayload.allow_mentoring = Boolean(allowMentoring);
+    }
+    if (imageUrl !== undefined && (await canStoreImageUrl())) {
+      insertPayload.image_url = imageUrl || null;
     }
 
     const { data: post, error: postError } = await supabase
@@ -343,13 +353,16 @@ postsRouter.patch("/:id", requireAuth, requireVerifiedEmail, async (req, res, ne
       return res.status(403).json({ error: "You can only edit your own posts" });
     }
 
-    const { title, body, type, tagNames, allowMentoring } = req.body;
+    const { title, body, type, tagNames, allowMentoring, image_url: imageUrl } = req.body;
     const updates = {};
     if (title !== undefined) updates.title = title;
     if (body !== undefined) updates.body = body;
     if (type !== undefined) updates.type = type.toLowerCase();
     if (req.body.allowMentoring !== undefined && (await canStoreAllowMentoring())) {
       updates.allow_mentoring = Boolean(allowMentoring);
+    }
+    if (imageUrl !== undefined && (await canStoreImageUrl())) {
+      updates.image_url = imageUrl || null;
     }
 
     if (Object.keys(updates).length === 0 && tagNames === undefined) {
