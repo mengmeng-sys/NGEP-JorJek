@@ -188,9 +188,11 @@ export function normalizeNotification(raw) {
     type,
     read: Boolean(raw.read),
     isReply,
-    title: isReply
-      ? `${actorName} replied to your comment`
-      : `${actorName} commented on your post`,
+    title: type === "vote"
+      ? `${actorName} upvoted your post`
+      : isReply
+        ? `${actorName} replied to your comment`
+        : `${actorName} commented on your post`,
     message: snippet,
     timestamp: formatTimestamp(raw.created_at),
     createdAt: raw.created_at,
