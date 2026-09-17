@@ -22,11 +22,16 @@ export function OnlineProvider({ children }) {
         return next;
       });
     };
+    const handleUsersOnline = (data) => {
+      setOnlineUsers(new Set(data.userIds || []));
+    };
     on("user_online", handleOnline);
     on("user_offline", handleOffline);
+    on("users_online", handleUsersOnline);
     return () => {
       off("user_online", handleOnline);
       off("user_offline", handleOffline);
+      off("users_online", handleUsersOnline);
     };
   }, [on, off]);
 
