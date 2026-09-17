@@ -66,6 +66,11 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
   }, [post.voteTotal]);
 
   useEffect(() => {
+    const myVote = post.myVote ?? (post.hasUpvoted ? 1 : post.hasDownvoted ? -1 : 0);
+    setVoteState(myVote);
+  }, [post.myVote, post.hasUpvoted, post.hasDownvoted]);
+
+  useEffect(() => {
     if (post.comments !== undefined) {
       setCommentCount(post.comments);
     }

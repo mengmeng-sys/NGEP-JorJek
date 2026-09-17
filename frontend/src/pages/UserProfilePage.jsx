@@ -109,7 +109,7 @@ export default function UserProfilePage() {
     return () => {
       cancelled = true;
     };
-  }, [profileUser?.id]);
+  }, [profileUser?.id, user?.id]);
 
   // Handle Edit Trigger from PostCard
   const handleEditPost = (post) => {
