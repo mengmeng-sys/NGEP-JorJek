@@ -51,7 +51,7 @@ export function TopUsersList() {
           <div
             key={user.id}
             onClick={() => handleUserClick(user)}
-            className="group flex items-center gap-3 p-2 -mx-2 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer"
+            className="group flex items-center gap-3 p-2 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer"
           >
             {/* Rank Badge */}
             <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-[11px] font-black flex-shrink-0 ${rankStyle}`}>

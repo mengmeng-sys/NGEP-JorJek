@@ -217,7 +217,7 @@ export default function ExplorePage() {
            </div>
 
           {/* Horizontal scroll container with native touch momentum & snap alignment */}
-          <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-4 pt-1 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth snap-x snap-mandatory">
+           <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-4 pt-1 -mx-3 px-3 sm:-mx-4 sm:px-4 lg:mx-0 lg:px-0 scroll-smooth snap-x snap-mandatory">
             {suggestedMentors.length === 0 && !loading ? (
               <div className="bg-white border border-gray-200 rounded-xl p-8 text-center text-xs text-gray-400 w-full">
                 No peer mentors found yet.
