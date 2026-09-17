@@ -7,11 +7,66 @@ const { setIO } = require("./lib/socket");
 const server = http.createServer(app);
 
 const io = new SocketIOServer(server, { cors: { origin: "*" } });
+
+const { supabase } = require("./config/db");
+
+const onlineUsers = new Map();
+
+async function getOnlineStatusVisibility(userId) {
+  const { data } = await supabase
+    .from("users")
+    .select("show_online_status")
+    .eq("id", userId)
+    .maybeSingle();
+  return data?.show_online_status ?? false;
+}
+
 io.on("connection", (socket) => {
-  socket.on("join", (userId) => socket.join(userId));
+  socket.on("join", async (userId) => {
+    socket.join(userId);
+    socket._userId = userId;
+    const sockets = onlineUsers.get(userId) || new Set();
+    const wasOnline = sockets.size > 0;
+    sockets.add(socket.id);
+    onlineUsers.set(userId, sockets);
+    if (!wasOnline) {
+      const visible = await getOnlineStatusVisibility(userId);
+      if (visible) {
+        io.emit("user_online", { userId });
+      } else {
+        io.emit("user_hidden_online", { userId });
+      }
+    }
+    const allOnlineIds = [...onlineUsers.keys()];
+    const visibleOnlineIds = [];
+    for (const uid of allOnlineIds) {
+      const isVisible = await getOnlineStatusVisibility(uid);
+      if (isVisible) visibleOnlineIds.push(uid);
+    }
+    socket.emit("users_online", { userIds: visibleOnlineIds });
+  });
   socket.on("join_post", (postId) => socket.join(`post:${postId}`));
   socket.on("leave_post", (postId) => socket.leave(`post:${postId}`));
+  socket.on("disconnect", async () => {
+    const userId = socket._userId;
+    if (userId) {
+      const sockets = onlineUsers.get(userId);
+      if (sockets) {
+        sockets.delete(socket.id);
+        if (sockets.size === 0) {
+          onlineUsers.delete(userId);
+          const visible = await getOnlineStatusVisibility(userId);
+          if (visible) {
+            io.emit("user_offline", { userId });
+          } else {
+            io.emit("user_hidden_offline", { userId });
+          }
+        }
+      }
+    }
+  });
 });
+
 setIO(io);
 
 // ─── Startup email-config warning ─────────────────────────────────────

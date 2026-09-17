@@ -4,6 +4,7 @@ import { CreatePostModal } from '@/components/post/CreatePostModal';
 import { useAuth } from '@/context/AuthContext';
 import { useSocket } from '@/context/SocketContext';
 import { notificationsApi, postsApi, tagsApi } from "@/lib/api";
+import { normalizeNotification } from "@/lib/adapters";
 import { getApiErrorMessage } from "@/lib/apiClient";
 
 export default function Navbar() {
@@ -60,7 +61,8 @@ export default function Navbar() {
   }, [user]);
 
   useEffect(() => {
-    const handleNotification = (notification) => {
+    const handleNotification = (raw) => {
+      const notification = normalizeNotification(raw);
       setNotifications((prev) => {
         if (prev.some((n) => n.id === notification.id)) return prev;
         return [notification, ...prev];
@@ -339,14 +341,20 @@ export default function Navbar() {
                               {/* Avatar with type icon */}
                               <div className="relative shrink-0">
                                 <div className={`h-10 w-10 rounded-full flex items-center justify-center text-white text-xs font-bold ${
-                                  notif.isReply ? 'bg-linear-to-br from-violet-500 to-purple-600' : 'bg-linear-to-br from-orange-400 to-[#FF4F00]'
+                                  notif.type === 'vote'
+                                    ? 'bg-linear-to-br from-green-400 to-emerald-500'
+                                    : notif.isReply ? 'bg-linear-to-br from-violet-500 to-purple-600' : 'bg-linear-to-br from-orange-400 to-[#FF4F00]'
                                 }`}>
                                   {notif.actorInitials || 'U'}
                                 </div>
                                 <div className={`absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full border-2 border-white flex items-center justify-center ${
-                                  notif.isReply ? 'bg-violet-100' : 'bg-orange-100'
+                                  notif.type === 'vote' ? 'bg-green-100' : notif.isReply ? 'bg-violet-100' : 'bg-orange-100'
                                 }`}>
-                                  {notif.isReply ? (
+                                  {notif.type === 'vote' ? (
+                                    <svg className="w-2.5 h-2.5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                                    </svg>
+                                  ) : notif.isReply ? (
                                     <svg className="w-2.5 h-2.5 text-violet-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                                       <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
                                     </svg>
@@ -363,7 +371,9 @@ export default function Navbar() {
                                 <p className="text-[13px] text-gray-900 leading-snug">
                                   <span className="font-semibold">{notif.actorName}</span>
                                   {' '}
-                                  <span className="text-gray-600">{notif.isReply ? 'replied to your comment' : 'commented on your post'}</span>
+                                  <span className="text-gray-600">
+                                    {notif.type === 'vote' ? 'upvoted your post' : notif.type === 'reply' && notif.isReply ? 'replied to your comment' : notif.type === 'reply' ? 'commented on your post' : notif.title}
+                                  </span>
                                 </p>
                                 {notif.message && (
                                   <p className="text-xs text-gray-500 mt-1 line-clamp-2 leading-relaxed">
@@ -687,13 +697,16 @@ export default function Navbar() {
               content: postPayload.details ?? postPayload.content,
               tags: postPayload.tags || [],
               allowMentoring: postPayload.allowMentoring,
+              // CreatePostModal hands back either a picked File (imageFile,
+              // needs uploading) or an existing image_url — postsApi.create
+              // uploads the file first when one's present. This used to be
+              // silently dropped here, which is why attached images never
+              // actually made it onto the post.
+              imageFile: postPayload.imageFile,
+              image_url: postPayload.image_url,
             });
             setIsPostModalOpen(false);
-            // Go back to the feed instead of the new post's own page: HomePage's
-            // usePosts() re-fetches on mount (GET /posts, ordered created_at DESC),
-            // so the post you just made is guaranteed to show up at the top —
-            // not dependent on the socket.io "new_post" broadcast having already
-            // reached this tab, which it can't have while this modal was open.
+
             navigate('/');
           } catch (err) {
             alert(getApiErrorMessage(err));

@@ -24,10 +24,7 @@ export default function HomePage() {
       setPosts((prev) => {
         if (prev.some((p) => p.id === normalized.id)) return prev;
         if (selectedTag && !normalized.tags.some((t) => t.toLowerCase() === selectedTag.toLowerCase())) return prev;
-        // Append, don't prepend: someone else's post landing while you're mid-scroll
-        // should show up past what you've already loaded, not shove everything you're
-        // reading down the page. A real refresh re-fetches from the server (created_at
-        // DESC), which is where "newest at the top" actually happens.
+
         return [...prev, normalized];
       });
     };
@@ -56,10 +53,7 @@ export default function HomePage() {
   const [sortBy, setSortBy] = useState('hot');
   const [postToDelete, setPostToDelete] = useState(null);
 
-  // Facebook-style infinite scroll: a sentinel just below the last card that,
-  // once it drifts into view, silently fetches the next page and appends it.
-  // rootMargin fires the fetch ~600px before the sentinel is actually on
-  // screen, so the next batch is already there by the time you reach it.
+
   const sentinelRef = useRef(null);
 
   useEffect(() => {
@@ -211,8 +205,7 @@ export default function HomePage() {
               <PostCard key={p.id} post={p} onEdit={openEdit} onDelete={() => setPostToDelete(p.id)} />
             ))}
 
-            {/* Invisible trigger for infinite scroll — fires loadMore() before
-                it's actually scrolled into view (see rootMargin above). */}
+
             {hasMore && <div ref={sentinelRef} className="h-px w-full" aria-hidden="true" />}
 
             {loadingMore && (

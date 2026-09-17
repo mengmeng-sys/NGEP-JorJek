@@ -25,6 +25,11 @@ export function usePostEditor(applyUpdated) {
         type: payload.type,
         allowMentoring: payload.allowMentoring,
         tags: (payload.tags || []).map((t) => String(t).replace(/^#/, "")),
+        // Same as CreatePostModal's create flow: a newly picked file goes
+        // through imageFile (uploaded by postsApi.update), an unchanged or
+        // explicitly-cleared existing image goes through image_url.
+        imageFile: payload.imageFile,
+        image_url: payload.image_url,
       });
       if (typeof applyUpdated === "function") applyUpdated(updated);
       closeEdit();

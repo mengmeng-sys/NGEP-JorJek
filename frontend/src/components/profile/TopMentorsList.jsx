@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from "@/lib/apiClient";
+import { UserAvatar } from "@/components/shared/UserAvatar";
 
 const ROLE_COLORS = {
   PROFESSOR: { bg: "bg-orange-50", text: "text-[#FF4F00]", border: "border-orange-100" },
@@ -59,9 +60,7 @@ export function TopUsersList() {
             </div>
 
             {/* Avatar */}
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 text-white text-xs font-bold flex items-center justify-center flex-shrink-0 ring-2 ring-white shadow-xs">
-              {initials}
-            </div>
+            <UserAvatar initials={initials} userId={user.id} size="md" gradient className="ring-2 ring-white shadow-xs" />
 
             {/* Info */}
             <div className="flex-1 min-w-0">

@@ -23,6 +23,44 @@ export const authApi = {
     apiFetch("/auth/microsoft/reset-password", { method: "POST", body: { idToken, newPassword } }),
 };
 
+export const uploadsApi = {
+  // Sends a raw File to POST /uploads (multipart) and returns its public URL.
+  upload: async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    // The shared axios instance (apiClient.js) hardcodes a default
+    // Content-Type of application/json, which — unlike a merely-defaulted
+    // header — axios will NOT override for FormData on its own. Explicitly
+    // clearing it here lets the browser set its own
+    // "multipart/form-data; boundary=..." header, which the server actually
+    // needs to split the request into fields/files. Without this, the
+    // request goes out mislabeled as JSON and multer sees no file at all.
+    return apiFetch("/uploads", {
+      method: "POST",
+      body: formData,
+      headers: { "Content-Type": undefined },
+    });
+  },
+};
+
+// CreatePostModal hands us either a raw File (a brand-new picture the user
+// just picked/dropped — needs uploading) or a plain URL (an existing post's
+// image, unchanged, or explicitly cleared to null). This turns either into
+// the URL string /posts should actually store, uploading only when needed.
+// Returns undefined when there's nothing to change, so callers can tell "no
+// image info was sent" apart from "the image was intentionally cleared."
+async function resolveImageUrl(payload) {
+  if (payload.imageFile) {
+    const { url } = await uploadsApi.upload(payload.imageFile);
+    return url;
+  }
+  if (payload.image_url === null) return null; // explicit removal
+  if (payload.image_url && !String(payload.image_url).startsWith("blob:")) {
+    return payload.image_url; // unchanged existing image
+  }
+  return undefined; // no image info supplied — leave whatever's there alone
+}
+
 export const postsApi = {
   list: async ({ tag, page = 1, limit = 50, currentUserId } = {}) => {
     const q = new URLSearchParams({ page: String(page), limit: String(limit) });
@@ -46,6 +84,10 @@ export const postsApi = {
       tagNames: safeArray(payload.tags).map((t) => String(t).replace(/^#/, "")),
     };
     if (payload.allowMentoring !== undefined) postBody.allowMentoring = payload.allowMentoring;
+    // Uploads the picked file (if any) before creating the post, so the post
+    // is written with a real, permanent URL rather than a local blob: one.
+    const imageUrl = await resolveImageUrl(payload);
+    if (imageUrl !== undefined) postBody.image_url = imageUrl;
     const post = await apiFetch("/posts", { method: "POST", body: postBody });
     return normalizePost(post);
   },
@@ -61,6 +103,8 @@ export const postsApi = {
         .map((t) => String(t).replace(/^#/, ""))
         .filter(Boolean);
     }
+    const imageUrl = await resolveImageUrl(payload);
+    if (imageUrl !== undefined) updates.image_url = imageUrl;
     return normalizePost(await apiFetch(`/posts/${id}`, { method: "PATCH", body: updates }));
   },
 

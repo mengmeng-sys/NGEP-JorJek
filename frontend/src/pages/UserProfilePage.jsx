@@ -7,6 +7,7 @@ import { DeletePostModal } from '@/components/post/DeletePostModal';
 import { ReportModal } from '@/components/shared/ReportModal';
 import { useAuth } from '@/context/AuthContext';
 import { useSocket } from '@/context/SocketContext';
+import { UserAvatar } from '@/components/shared/UserAvatar';
 import { postsApi, usersApi, reportsApi } from '@/lib/api';
 import { normalizeUser } from '@/lib/adapters';
 import { getApiErrorMessage } from '@/lib/apiClient';
@@ -379,9 +380,14 @@ export default function UserProfilePage() {
             <>
               <div className="flex flex-col md:flex-row md:items-start justify-between gap-5 sm:gap-6">
                 <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 sm:gap-5">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-[#8B5CF6] text-white text-xl sm:text-2xl font-black flex items-center justify-center shrink-0 shadow-xs">
-                    {fullProfile.avatarInitials}
-                  </div>
+                  <UserAvatar
+                    initials={fullProfile.avatarInitials}
+                    userId={fullProfile.id}
+                    size="xl"
+                    rounded="rounded-2xl"
+                    bg="bg-[#8B5CF6]"
+                    className="shadow-xs"
+                  />
 
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
