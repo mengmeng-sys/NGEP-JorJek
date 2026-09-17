@@ -40,6 +40,7 @@ io.on("connection", (socket) => {
     const allOnlineIds = [...onlineUsers.keys()];
     const visibleOnlineIds = [];
     for (const uid of allOnlineIds) {
+      if (uid === userId) continue;
       const isVisible = await getOnlineStatusVisibility(uid);
       if (isVisible) visibleOnlineIds.push(uid);
     }
