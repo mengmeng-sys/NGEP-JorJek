@@ -1297,11 +1297,11 @@ export default function PostDetailPage() {
 
             {/* Attached Image */}
             {post.image_url && (
-              <div className="mt-3 rounded-xl overflow-hidden border border-gray-100 max-h-72 sm:max-h-96 bg-gray-50 flex items-center justify-center">
+              <div className="mt-3 rounded-xl overflow-hidden border border-gray-100 bg-gray-50 flex items-center justify-center">
                 <img
                   src={post.image_url}
                   alt={post.title}
-                  className="w-full h-full object-cover"
+                  className="w-full max-h-72 sm:max-h-96 object-contain"
                 />
               </div>
             )}

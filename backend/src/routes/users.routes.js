@@ -5,7 +5,7 @@ const { getIO } = require("../lib/socket");
 
 const usersRouter = Router();
 
-const USER_SAFE = "id,email,display_name,role,bio,gen,department,specialization,karma,email_verified,show_profile_to_guests,allow_direct_requests,show_online_status,receive_email_notifications,created_at";
+const USER_SAFE = "id,email,display_name,role,bio,gen,department,specialization,avatar_url,karma,email_verified,show_profile_to_guests,allow_direct_requests,show_online_status,receive_email_notifications,created_at";
 
 // Roles a user may set on themselves via PATCH /users/:id (the "Platform Role"
 // toggle in Settings). MODERATOR/SUPER_ADMIN are deliberately excluded — those
@@ -173,7 +173,7 @@ usersRouter.get("/:id", async (req, res, next) => {
   try {
     const { data: user, error } = await supabase
       .from("users")
-      .select("id, display_name, role, karma, bio, gen, department, specialization, show_profile_to_guests, allow_direct_requests, show_online_status, receive_email_notifications, created_at")
+      .select("id, display_name, role, karma, bio, gen, department, specialization, avatar_url, show_profile_to_guests, allow_direct_requests, show_online_status, receive_email_notifications, created_at")
       .eq("id", req.params.id)
       .maybeSingle();
     if (error) throw error;
@@ -188,6 +188,7 @@ usersRouter.get("/:id", async (req, res, next) => {
       gen: user.gen,
       department: user.department,
       specialization: user.specialization,
+      avatarUrl: user.avatar_url,
       showProfileToGuests: user.show_profile_to_guests,
       allowDirectRequests: user.allow_direct_requests,
       showOnlineStatus: user.show_online_status,
@@ -287,13 +288,15 @@ usersRouter.patch("/:id", requireAuth, async (req, res, next) => {
     // client-supplied `role` here would let anyone self-promote to
     // SUPER_ADMIN/MODERATOR. Role assignment happens outside the public API
     // (see backend/seed.js) — never from a value the caller supplies.
-    const { displayName, bio, gen, department, specialization, showProfileToGuests, allowDirectRequests, showOnlineStatus, receiveEmailNotifications } = req.body;
+    const { displayName, bio, gen, department, specialization, avatarUrl, showProfileToGuests, allowDirectRequests, showOnlineStatus, receiveEmailNotifications } = req.body;
     const updates = {};
     if (displayName !== undefined) updates.display_name = displayName;
     if (bio !== undefined) updates.bio = bio;
     if (gen !== undefined) updates.gen = gen;
     if (department !== undefined) updates.department = department;
     if (specialization !== undefined) updates.specialization = specialization;
+    // avatarUrl may be a real URL (newly uploaded/kept picture) or null (explicit removal).
+    if (avatarUrl !== undefined) updates.avatar_url = avatarUrl || null;
     if (typeof showProfileToGuests === "boolean") updates.show_profile_to_guests = showProfileToGuests;
     if (typeof allowDirectRequests === "boolean") updates.allow_direct_requests = allowDirectRequests;
     if (typeof showOnlineStatus === "boolean") updates.show_online_status = showOnlineStatus;

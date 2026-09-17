@@ -21,6 +21,7 @@ function userSafe(row) {
     gen: row.gen ?? null,
     department: row.department || null,
     specialization: row.specialization || null,
+    avatarUrl: row.avatar_url || null,
     emailVerified: row.email_verified,
     showProfileToGuests: row.show_profile_to_guests ?? true,
     allowDirectRequests: row.allow_direct_requests ?? true,

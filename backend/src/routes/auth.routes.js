@@ -245,7 +245,7 @@ authRouter.get("/me", requireAuth, async (req, res, next) => {
   try {
     const { data: user, error } = await supabase
       .from("users")
-      .select("id,email,display_name,role,bio,gen,department,specialization,karma,email_verified,show_profile_to_guests,allow_direct_requests,show_online_status,receive_email_notifications,created_at")
+      .select("id,email,display_name,role,bio,gen,department,specialization,avatar_url,karma,email_verified,show_profile_to_guests,allow_direct_requests,show_online_status,receive_email_notifications,created_at")
       .eq("id", req.userId)
       .maybeSingle();
     if (error) throw error;
@@ -260,6 +260,7 @@ authRouter.get("/me", requireAuth, async (req, res, next) => {
       gen: user.gen,
       department: user.department,
       specialization: user.specialization,
+      avatarUrl: user.avatar_url,
       karma: user.karma,
       emailVerified: user.email_verified,
       showProfileToGuests: user.show_profile_to_guests,

@@ -16,6 +16,7 @@ create table public.users (
   gen integer,
   department text,
   specialization text,
+  avatar_url text,
   karma integer not null default 0,
   show_profile_to_guests boolean not null default true,
   allow_direct_requests boolean not null default true,

@@ -447,10 +447,14 @@ export default function Navbar() {
                       setIsMenuOpen(!isMenuOpen);
                       setIsNotificationsOpen(false);
                     }}
-                    className="flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 bg-[#111827] text-white text-xs font-bold rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-gray-800 transition-all cursor-pointer shadow-xs"
+                    className="flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 bg-[#111827] text-white text-xs font-bold rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-gray-800 transition-all cursor-pointer shadow-xs overflow-hidden"
                     aria-label="Open profile settings menu"
                   >
-                    {user.initials || (user.displayName ? user.displayName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() : 'ME')}
+                    {user.avatarUrl ? (
+                      <img src={user.avatarUrl} alt={user.displayName || 'Profile'} className="h-full w-full object-cover" />
+                    ) : (
+                      user.initials || (user.displayName ? user.displayName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() : 'ME')
+                    )}
                   </button>
 
                   {isMenuOpen && (
