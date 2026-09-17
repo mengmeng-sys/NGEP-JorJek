@@ -98,14 +98,24 @@ export default function ForgotPasswordPage() {
               </svg>
               {inProgress !== 'none' ? 'Redirecting…' : 'Verify with Microsoft'}
             </button>
-            <div className="text-center pt-2 border-t border-gray-100">
-              <Link to="/auth/login" className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-gray-800 transition-colors">
-                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                <span>Back to Sign In</span>
-              </Link>
-            </div>
+              <div className="text-center pt-2 border-t border-gray-100">
+                <button type="button" onClick={() => {
+                  const msalAccounts = instance.getAllAccounts();
+                  if (msalAccounts.length > 0) {
+                    instance.logoutRedirect({
+                      account: msalAccounts[0],
+                      postLogoutRedirectUri: window.location.origin + '/auth/login',
+                    });
+                  } else {
+                    navigate('/auth/login');
+                  }
+                }} className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-gray-800 transition-colors cursor-pointer">
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                  </svg>
+                  <span>Back to Sign In</span>
+                </button>
+              </div>
           </div>
         ) : (
            <form onSubmit={handleReset} className="space-y-4">
@@ -158,14 +168,24 @@ export default function ForgotPasswordPage() {
              <button type="submit" disabled={sending || !isFormValid} className="w-full bg-[#FF4F00] hover:bg-[#E64700] text-white text-xs font-bold py-2.5 sm:py-3 rounded-xl transition-all shadow-xs cursor-pointer active:scale-98 disabled:opacity-60 disabled:cursor-not-allowed">
                {sending ? 'Resetting…' : 'Reset Password'}
              </button>
-             <div className="text-center pt-2 border-t border-gray-100">
-               <Link to="/auth/login" className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-gray-800 transition-colors">
-                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                   <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                 </svg>
-                 <span>Back to Sign In</span>
-               </Link>
-             </div>
+            <div className="text-center pt-2 border-t border-gray-100">
+              <button type="button" onClick={() => {
+                const msalAccounts = instance.getAllAccounts();
+                if (msalAccounts.length > 0) {
+                  instance.logoutRedirect({
+                    account: msalAccounts[0],
+                    postLogoutRedirectUri: window.location.origin + '/auth/login',
+                  });
+                } else {
+                  navigate('/auth/login');
+                }
+              }} className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-gray-800 transition-colors cursor-pointer">
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                <span>Back to Sign In</span>
+              </button>
+            </div>
            </form>
         )}
       </div>
