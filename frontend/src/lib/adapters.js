@@ -175,7 +175,9 @@ export function normalizeNotification(raw) {
   const isReply = payload.isReply === true;
   const actorName = payload.actorName || "Someone";
   const snippet = payload.snippet || "";
-  const link = payload.postId ? `/posts/${payload.postId}` : null;
+  const link = payload.postId
+    ? `/posts/${payload.postId}${payload.commentId ? `#comment-${payload.commentId}` : ""}`
+    : null;
   const initials = (() => {
     const words = actorName.trim().split(/\s+/).filter(Boolean);
     if (words.length === 0) return "U";
@@ -183,17 +185,32 @@ export function normalizeNotification(raw) {
     return `${words[0][0]}${words[words.length - 1][0]}`.toUpperCase();
   })();
 
+  let title;
+  if (type === "vote") {
+    title = `${actorName} upvoted your post`;
+  } else if (type === "reply" && isReply) {
+    title = `${actorName} replied to your comment`;
+  } else if (type === "reply") {
+    title = `${actorName} commented on your post`;
+  } else if (type === "account_suspended") {
+    title = "Your account has been suspended";
+  } else if (type === "account_banned") {
+    title = "Your account has been banned";
+  } else if (type === "account_restored") {
+    title = "Your account has been restored";
+  } else if (type === "mentor_application") {
+    title = `Mentor application ${payload.status || "updated"}`;
+  } else {
+    title = payload.message || "New notification";
+  }
+
   return {
     id: raw.id,
     type,
     read: Boolean(raw.read),
     isReply,
-    title: type === "vote"
-      ? `${actorName} upvoted your post`
-      : isReply
-        ? `${actorName} replied to your comment`
-        : `${actorName} commented on your post`,
-    message: snippet,
+    title,
+    message: snippet || payload.reason || payload.note || "",
     timestamp: formatTimestamp(raw.created_at),
     createdAt: raw.created_at,
     actorName,

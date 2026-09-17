@@ -372,7 +372,7 @@ export default function Navbar() {
                                   <span className="font-semibold">{notif.actorName}</span>
                                   {' '}
                                   <span className="text-gray-600">
-                                    {notif.type === 'vote' ? 'upvoted your post' : notif.isReply ? 'replied to your comment' : 'commented on your post'}
+                                    {notif.type === 'vote' ? 'upvoted your post' : notif.type === 'reply' && notif.isReply ? 'replied to your comment' : notif.type === 'reply' ? 'commented on your post' : notif.title}
                                   </span>
                                 </p>
                                 {notif.message && (

@@ -183,7 +183,7 @@ export default function NotificationsPage() {
                     <span className="font-semibold">{n.actorName || 'Someone'}</span>
                     {' '}
                     <span className="text-gray-600">
-                      {n.type === 'vote' ? 'upvoted your post' : n.isReply ? 'replied to your comment' : 'commented on your post'}
+                      {n.type === 'vote' ? 'upvoted your post' : n.type === 'reply' && n.isReply ? 'replied to your comment' : n.type === 'reply' ? 'commented on your post' : n.title}
                     </span>
                   </p>
                   {n.message && (

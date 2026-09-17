@@ -186,7 +186,7 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
   };
 
   return (
-    <div className="border-b border-gray-100 pb-5 sm:pb-6 last:border-b-0">
+    <div id={`comment-${comment.id}`} className="border-b border-gray-100 pb-5 sm:pb-6 last:border-b-0">
       <div className="flex items-center justify-between gap-2 mb-2">
         <div className="flex items-center gap-2 min-w-0 flex-wrap">
           <UserAvatar
@@ -531,7 +531,7 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
   };
 
   return (
-    <div>
+    <div id={`comment-${reply.id}`}>
       <div className="flex items-center justify-between gap-2 mb-1">
         <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-wrap">
           <UserAvatar
@@ -798,6 +798,22 @@ export default function PostDetailPage() {
   useEffect(() => {
     if (id) refreshComments();
   }, [id, refreshComments]);
+
+  useEffect(() => {
+    if (!id || comments.length === 0) return;
+    const hash = window.location.hash;
+    if (hash.startsWith("#comment-")) {
+      const commentId = hash.replace("#comment-", "");
+      setTimeout(() => {
+        const el = document.getElementById(`comment-${commentId}`);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
+          el.classList.add("bg-amber-50");
+          setTimeout(() => el.classList.remove("bg-amber-50"), 2000);
+        }
+      }, 300);
+    }
+  }, [id, comments]);
 
   useEffect(() => {
     if (!id) return;
