@@ -158,6 +158,7 @@ export function normalizeComment(raw) {
     },
     authorId: raw.author_id || author.id,
     votes: voteScore(votes),
+    voteTotal: votes.length,
     myVote: 0,
     createdAt: raw.created_at,
     updatedAt: raw.updated_at || null,

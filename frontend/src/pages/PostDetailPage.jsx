@@ -59,11 +59,16 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
   // Voting state for parent comment
   const [voteState, setVoteState] = useState(comment.myVote || 0);
   const [voteCount, setVoteCount] = useState(comment.votes || 0);
+  const [voteTotal, setVoteTotal] = useState(comment.voteTotal || 0);
 
   // Sync local vote state when comment prop changes (real-time updates)
   useEffect(() => {
     setVoteCount(comment.votes || 0);
   }, [comment.votes]);
+
+  useEffect(() => {
+    setVoteTotal(comment.voteTotal || 0);
+  }, [comment.voteTotal]);
 
   // Active reply target
   const [replyingToUser, setReplyingToUser] = useState(null);
@@ -93,15 +98,19 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
     }
     const prevState = voteState;
     const prevCount = voteCount;
+    const prevTotal = voteTotal;
     if (voteState === value) {
       setVoteState(0);
       setVoteCount((prev) => prev - value);
+      setVoteTotal((prev) => Math.max(0, prev - 1));
     } else if (voteState === -value) {
       setVoteState(0);
       setVoteCount((prev) => prev + value);
+      setVoteTotal((prev) => Math.max(0, prev - 1));
     } else {
       setVoteState(value);
       setVoteCount((prev) => prev + value);
+      setVoteTotal((prev) => prev + 1);
     }
     try {
       if (prevState !== 0) {
@@ -112,6 +121,7 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
     } catch {
       setVoteState(prevState);
       setVoteCount(prevCount);
+      setVoteTotal(prevTotal);
       alert('Could not update your vote. Please try again.');
     }
   };
@@ -299,28 +309,32 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
               type="button"
               onClick={() => handleVote(1)}
               className={`p-0.5 rounded transition-colors cursor-pointer ${
-                voteState === 1 ? 'text-[#FF4F00]' : 'text-gray-400 hover:text-gray-600'
+                voteState === 1 ? 'text-blue-500' : 'text-gray-400 hover:text-gray-600'
               }`}
             >
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+              <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M2 20h2V8H2v12zm20-12c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L13.17 0 7.59 5.59C7.22 5.95 7 6.45 7 7v11c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73V8z"/>
               </svg>
             </button>
-            <span className={`text-[11px] sm:text-xs font-bold px-0.5 ${voteState === 1 ? 'text-[#FF4F00]' : voteState === -1 ? 'text-blue-500' : 'text-gray-700'}`}>
+            <span className={`text-[11px] sm:text-xs font-bold px-0.5 ${voteState === 1 ? 'text-blue-500' : voteState === -1 ? 'text-[#FF4F00]' : 'text-gray-700'}`}>
               {voteCount}
             </span>
             <button
               type="button"
               onClick={() => handleVote(-1)}
               className={`p-0.5 rounded transition-colors cursor-pointer ${
-                voteState === -1 ? 'text-blue-500' : 'text-gray-400 hover:text-gray-600'
+                voteState === -1 ? 'text-[#FF4F00]' : 'text-gray-400 hover:text-gray-600'
               }`}
             >
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M2 4h2v12H2V4zm20 12c0 1.1-.9 2-2 2h-6.31l.95 4.57.03.32c0 .41-.17.79-.44 1.06L13.17 24l-5.59-5.59c-.36-.36-.58-.86-.58-1.41V7c0-1.1.9-2 2-2h9c.83 0 1.54.5 1.84 1.22l3.02 7.05c.09.23.14.47.14.73v1z"/>
               </svg>
             </button>
           </div>
+
+          <span className="text-[10px] sm:text-[11px] text-gray-400 font-medium">
+            {voteTotal} {voteTotal === 1 ? 'vote' : 'votes'}
+          </span>
 
           <button
             type="button"
@@ -419,11 +433,16 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [voteState, setVoteState] = useState(reply.myVote || 0);
   const [voteCount, setVoteCount] = useState(reply.votes || 0);
+  const [voteTotal, setVoteTotal] = useState(reply.voteTotal || 0);
 
   // Sync local vote state when reply prop changes (real-time updates)
   useEffect(() => {
     setVoteCount(reply.votes || 0);
   }, [reply.votes]);
+
+  useEffect(() => {
+    setVoteTotal(reply.voteTotal || 0);
+  }, [reply.voteTotal]);
 
   // Edit state
   const [isEditing, setIsEditing] = useState(false);
@@ -443,15 +462,19 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
     }
     const prevState = voteState;
     const prevCount = voteCount;
+    const prevTotal = voteTotal;
     if (voteState === value) {
       setVoteState(0);
       setVoteCount((prev) => prev - value);
+      setVoteTotal((prev) => Math.max(0, prev - 1));
     } else if (voteState === -value) {
       setVoteState(0);
       setVoteCount((prev) => prev + value);
+      setVoteTotal((prev) => Math.max(0, prev - 1));
     } else {
       setVoteState(value);
       setVoteCount((prev) => prev + value);
+      setVoteTotal((prev) => prev + 1);
     }
     try {
       if (prevState !== 0) {
@@ -462,6 +485,7 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
     } catch {
       setVoteState(prevState);
       setVoteCount(prevCount);
+      setVoteTotal(prevTotal);
     }
   };
 
@@ -621,28 +645,32 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
               type="button"
               onClick={() => handleVote(1)}
               className={`p-0.5 transition-colors cursor-pointer ${
-                voteState === 1 ? 'text-[#FF4F00]' : 'text-gray-400 hover:text-gray-600'
+                voteState === 1 ? 'text-blue-500' : 'text-gray-400 hover:text-gray-600'
               }`}
             >
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+              <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M2 20h2V8H2v12zm20-12c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L13.17 0 7.59 5.59C7.22 5.95 7 6.45 7 7v11c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73V8z"/>
               </svg>
             </button>
-            <span className={`text-[10px] sm:text-[11px] font-bold px-0.5 ${voteState === 1 ? 'text-[#FF4F00]' : voteState === -1 ? 'text-blue-500' : 'text-gray-700'}`}>
+            <span className={`text-[10px] sm:text-[11px] font-bold px-0.5 ${voteState === 1 ? 'text-blue-500' : voteState === -1 ? 'text-[#FF4F00]' : 'text-gray-700'}`}>
               {voteCount}
             </span>
             <button
               type="button"
               onClick={() => handleVote(-1)}
               className={`p-0.5 transition-colors cursor-pointer ${
-                voteState === -1 ? 'text-blue-500' : 'text-gray-400 hover:text-gray-600'
+                voteState === -1 ? 'text-[#FF4F00]' : 'text-gray-400 hover:text-gray-600'
               }`}
             >
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M2 4h2v12H2V4zm20 12c0 1.1-.9 2-2 2h-6.31l.95 4.57.03.32c0 .41-.17.79-.44 1.06L13.17 24l-5.59-5.59c-.36-.36-.58-.86-.58-1.41V7c0-1.1.9-2 2-2h9c.83 0 1.54.5 1.84 1.22l3.02 7.05c.09.23.14.47.14.73v1z"/>
               </svg>
             </button>
           </div>
+
+          <span className="text-[10px] sm:text-[11px] text-gray-400 font-medium">
+            {voteTotal} {voteTotal === 1 ? 'vote' : 'votes'}
+          </span>
 
           <button
             type="button"
@@ -816,6 +844,7 @@ export default function PostDetailPage() {
             return {
               ...c,
               votes: removed ? c.votes - value : c.votes + value,
+              voteTotal: removed ? Math.max(0, c.voteTotal - 1) : isNew ? c.voteTotal + 1 : c.voteTotal,
             };
           })
         );
