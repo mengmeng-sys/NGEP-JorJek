@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useMsal } from '@azure/msal-react';
@@ -11,6 +11,7 @@ export default function ForgotPasswordPage() {
 
   const account = accounts[0] || null;
   const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
@@ -20,7 +21,16 @@ export default function ForgotPasswordPage() {
     instance.handleRedirectPromise().catch(() => {});
   }, [instance]);
 
-  const isPasswordValid = newPassword.length >= 6;
+  const passwordCriteria = useMemo(() => ({
+    minLength: newPassword.length >= 8,
+    hasUpper: /[A-Z]/.test(newPassword),
+    hasNumber: /[0-9]/.test(newPassword),
+    hasSpecial: /[^A-Za-z0-9]/.test(newPassword),
+  }), [newPassword]);
+
+  const isPasswordStrong = Object.values(passwordCriteria).every(Boolean);
+  const doPasswordsMatch = newPassword === confirmPassword && confirmPassword.length > 0;
+  const isFormValid = isPasswordStrong && doPasswordsMatch;
 
   const handleMicrosoft = async () => {
     await instance.loginRedirect(loginRequest);
@@ -28,7 +38,7 @@ export default function ForgotPasswordPage() {
 
   const handleReset = async (e) => {
     e.preventDefault();
-    if (!isPasswordValid || !account) return;
+    if (!isFormValid || !account) return;
     setError('');
     setSending(true);
     try {
@@ -88,34 +98,65 @@ export default function ForgotPasswordPage() {
             </div>
           </div>
         ) : (
-          <form onSubmit={handleReset} className="space-y-4">
-            <div>
-              <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">New Password</label>
-              <div className="relative">
-                <input type={showPassword ? 'text' : 'password'} required value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Enter new password" className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs text-gray-900 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs pr-14" />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 text-xs font-bold p-1 cursor-pointer">
-                  {showPassword ? 'Hide' : 'Show'}
-                </button>
-              </div>
-              {newPassword && !isPasswordValid && (
-                <p className="text-[11px] text-red-600 font-semibold mt-1">Password must be at least 6 characters</p>
-              )}
-            </div>
-            {error && (
-              <p className="text-[11px] text-red-600 font-semibold bg-red-50 border border-red-100 rounded-lg px-3 py-2">{error}</p>
-            )}
-            <button type="submit" disabled={sending || !isPasswordValid} className="w-full bg-[#FF4F00] hover:bg-[#E64700] text-white text-xs font-bold py-2.5 sm:py-3 rounded-xl transition-all shadow-xs cursor-pointer active:scale-98 disabled:opacity-60 disabled:cursor-not-allowed">
-              {sending ? 'Resetting…' : 'Reset Password'}
-            </button>
-            <div className="text-center pt-2 border-t border-gray-100">
-              <Link to="/auth/login" className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-gray-800 transition-colors">
-                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                <span>Back to Sign In</span>
-              </Link>
-            </div>
-          </form>
+           <form onSubmit={handleReset} className="space-y-4">
+             <div>
+               <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">New Password</label>
+               <div className="relative">
+                 <input type={showPassword ? 'text' : 'password'} required value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Enter new password" className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs text-gray-900 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs pr-14" />
+                 <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 text-xs font-bold p-1 cursor-pointer">
+                   {showPassword ? 'Hide' : 'Show'}
+                 </button>
+               </div>
+             </div>
+
+             <div className="bg-gray-50 border border-gray-100 rounded-lg p-3 space-y-1">
+               <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Password Requirements</p>
+               <div className="flex items-center gap-1.5">
+                 <span className={`text-[10px] font-bold ${passwordCriteria.minLength ? 'text-green-600' : 'text-gray-400'}`}>{passwordCriteria.minLength ? '✓' : '○'}</span>
+                 <span className={`text-[10px] ${passwordCriteria.minLength ? 'text-green-600' : 'text-gray-500'}`}>At least 8 characters</span>
+               </div>
+               <div className="flex items-center gap-1.5">
+                 <span className={`text-[10px] font-bold ${passwordCriteria.hasUpper ? 'text-green-600' : 'text-gray-400'}`}>{passwordCriteria.hasUpper ? '✓' : '○'}</span>
+                 <span className={`text-[10px] ${passwordCriteria.hasUpper ? 'text-green-600' : 'text-gray-500'}`}>One uppercase letter</span>
+               </div>
+               <div className="flex items-center gap-1.5">
+                 <span className={`text-[10px] font-bold ${passwordCriteria.hasNumber ? 'text-green-600' : 'text-gray-400'}`}>{passwordCriteria.hasNumber ? '✓' : '○'}</span>
+                 <span className={`text-[10px] ${passwordCriteria.hasNumber ? 'text-green-600' : 'text-gray-500'}`}>One number</span>
+               </div>
+               <div className="flex items-center gap-1.5">
+                 <span className={`text-[10px] font-bold ${passwordCriteria.hasSpecial ? 'text-green-600' : 'text-gray-400'}`}>{passwordCriteria.hasSpecial ? '✓' : '○'}</span>
+                 <span className={`text-[10px] ${passwordCriteria.hasSpecial ? 'text-green-600' : 'text-gray-500'}`}>One special character</span>
+               </div>
+             </div>
+
+             <div>
+               <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">Confirm Password</label>
+               <div className="relative">
+                 <input type={showPassword ? 'text' : 'password'} required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Re-enter new password" className={`w-full bg-[#FAFAFA] border rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs text-gray-900 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs pr-14 ${confirmPassword && !doPasswordsMatch ? 'border-red-300' : 'border-gray-200'}`} />
+                 <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 text-xs font-bold p-1 cursor-pointer">
+                   {showPassword ? 'Hide' : 'Show'}
+                 </button>
+               </div>
+               {confirmPassword && !doPasswordsMatch && (
+                 <p className="text-[11px] text-red-600 font-semibold mt-1">Passwords do not match</p>
+               )}
+             </div>
+
+             {error && (
+               <p className="text-[11px] text-red-600 font-semibold bg-red-50 border border-red-100 rounded-lg px-3 py-2">{error}</p>
+             )}
+             <button type="submit" disabled={sending || !isFormValid} className="w-full bg-[#FF4F00] hover:bg-[#E64700] text-white text-xs font-bold py-2.5 sm:py-3 rounded-xl transition-all shadow-xs cursor-pointer active:scale-98 disabled:opacity-60 disabled:cursor-not-allowed">
+               {sending ? 'Resetting…' : 'Reset Password'}
+             </button>
+             <div className="text-center pt-2 border-t border-gray-100">
+               <Link to="/auth/login" className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-gray-800 transition-colors">
+                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                   <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                 </svg>
+                 <span>Back to Sign In</span>
+               </Link>
+             </div>
+           </form>
         )}
       </div>
 
