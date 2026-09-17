@@ -73,7 +73,17 @@ export default function ForgotPasswordPage() {
             <p className="text-[11px] sm:text-xs text-gray-600 mt-1.5 leading-relaxed">
               Your password has been updated. You can now sign in with your new password.
             </p>
-            <button type="button" onClick={() => navigate('/auth/login')} className="w-full bg-[#FF4F00] hover:bg-[#E64700] text-white text-xs font-bold py-2.5 rounded-xl transition-all shadow-xs cursor-pointer active:scale-98 mt-5">
+            <button type="button" onClick={() => {
+              const accounts = instance.getAllAccounts();
+              if (accounts.length > 0) {
+                instance.logoutRedirect({
+                  account: accounts[0],
+                  postLogoutRedirectUri: window.location.origin + '/auth/login',
+                });
+              } else {
+                navigate('/auth/login');
+              }
+            }} className="w-full bg-[#FF4F00] hover:bg-[#E64700] text-white text-xs font-bold py-2.5 rounded-xl transition-all shadow-xs cursor-pointer active:scale-98 mt-5">
               Go to Sign In
             </button>
           </div>
