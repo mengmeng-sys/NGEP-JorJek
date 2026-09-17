@@ -292,7 +292,14 @@ usersRouter.patch("/:id", requireAuth, async (req, res, next) => {
     const updates = {};
     if (displayName !== undefined) updates.display_name = displayName;
     if (bio !== undefined) updates.bio = bio;
-    if (gen !== undefined) updates.gen = gen;
+    if (gen !== undefined) {
+      const maxGen = new Date().getFullYear() - 2014 + 1;
+      const genVal = Number(gen);
+      if (isNaN(genVal) || genVal < 1 || genVal > maxGen) {
+        return res.status(400).json({ error: `Generation must be between 1 and ${maxGen} (CADT started in 2014).` });
+      }
+      updates.gen = genVal;
+    }
     if (department !== undefined) updates.department = department;
     if (specialization !== undefined) updates.specialization = specialization;
     // avatarUrl may be a real URL (newly uploaded/kept picture) or null (explicit removal).

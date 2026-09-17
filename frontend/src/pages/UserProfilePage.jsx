@@ -210,8 +210,17 @@ export default function UserProfilePage() {
     setEditForm({});
   }, []);
 
+  const maxGen = new Date().getFullYear() - 2014 + 1;
+
   const saveProfile = useCallback(async () => {
     if (!profileUser?.id) return;
+    if (editForm.gen !== undefined && editForm.gen !== '') {
+      const genVal = Number(editForm.gen);
+      if (genVal < 1 || genVal > maxGen) {
+        alert(`Generation must be between 1 and ${maxGen} (CADT started in 2014).`);
+        return;
+      }
+    }
     setSaving(true);
     try {
       const payload = {};
@@ -308,11 +317,18 @@ export default function UserProfilePage() {
                 <input
                   type="number"
                   min="1"
+                  max={maxGen}
                   value={editForm.gen}
-                  onChange={(e) => setEditForm((p) => ({ ...p, gen: e.target.value }))}
-                  placeholder="e.g. 8"
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === '' || (Number(val) >= 1 && Number(val) <= maxGen)) {
+                      setEditForm((p) => ({ ...p, gen: val }));
+                    }
+                  }}
+                  placeholder={`1 - ${maxGen}`}
                   className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs"
                 />
+                <p className="text-[10px] text-gray-400 mt-1">CADT started in 2014. Max: Gen {maxGen}</p>
               </div>
 
               <div>

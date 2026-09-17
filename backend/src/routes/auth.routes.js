@@ -85,6 +85,13 @@ authRouter.post("/signup", requireCadtEmail, async (req, res, next) => {
     if (!password || password.length < 6) {
       return res.status(400).json({ error: "Password must be at least 6 characters" });
     }
+    if (gen !== undefined && gen !== null && gen !== '') {
+      const maxGen = new Date().getFullYear() - 2014 + 1;
+      const genVal = Number(gen);
+      if (isNaN(genVal) || genVal < 1 || genVal > maxGen) {
+        return res.status(400).json({ error: `Generation must be between 1 and ${maxGen} (CADT started in 2014).` });
+      }
+    }
 
     const passwordHash = await bcrypt.hash(password, 10);
     const otp = generateOtp();
