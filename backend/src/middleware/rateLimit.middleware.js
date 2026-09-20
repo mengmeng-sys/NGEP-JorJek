@@ -88,12 +88,13 @@ const reportLimiter = rateLimit({
   message: { error: "Too many reports, please try again later." },
 });
 
-const globalLimiter = rateLimit({
+const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 200,
+  max: 500,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: "Too many requests, please try again later." },
+  skip: (req) => req.url.startsWith("/api-docs") || req.url.startsWith("/health"),
 });
 
 module.exports = {
@@ -104,9 +105,8 @@ module.exports = {
   commentLimiter,
   voteLimiter,
   searchLimiter,
-  readLimiter,
   uploadLimiter,
   adminLimiter,
   reportLimiter,
-  globalLimiter,
+  generalLimiter,
 };

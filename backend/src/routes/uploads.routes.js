@@ -27,14 +27,14 @@ uploadsRouter.post("/", requireAuth, upload.single("file"), async (req, res, nex
             return res.status(400).json({ error: "No file provided" });
         }
 
-        const path = `${req.userId}/${Date.now()}-${req.file.originalname}`;
+        const filePath = `${req.userId}/${Date.now()}-${req.file.originalname}`;
 
         const { error: uploadError } = await supabase.storage
             .from("attachments")
-            .upload(path, req.file.buffer, { contentType: req.file.mimetype });
+            .upload(filePath, req.file.buffer, { contentType: req.file.mimetype });
         if (uploadError) throw uploadError;
 
-        const { data } = supabase.storage.from("attachments").getPublicUrl(path);
+        const { data } = supabase.storage.from("attachments").getPublicUrl(filePath);
 
         res.status(201).json({ url: data.publicUrl });
     } catch (err) {

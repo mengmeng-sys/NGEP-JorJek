@@ -20,12 +20,11 @@ const { logger } = require("./middleware/logger.middleware");
 const { swaggerSpec } = require("./config/swagger");
 const { env } = require("./config/env");
 const {
-  globalLimiter,
   authLimiter,
   signupLimiter,
   searchLimiter,
-  readLimiter,
   uploadLimiter,
+  generalLimiter,
 } = require("./middleware/rateLimit.middleware");
 
 const app = express();
@@ -76,7 +75,7 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(logger);
 
-app.use(globalLimiter);
+app.use(generalLimiter);
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
@@ -92,15 +91,15 @@ app.get("/health", (_req, res) =>
 app.use("/sessions", sessionsRouter);
 app.use("/auth", authLimiter, authRouter);
 app.use("/auth/microsoft", authLimiter, microsoftAuthRouter);
-app.use("/posts", readLimiter, postsRouter);
-app.use("/", readLimiter, commentsRouter);
-app.use("/", readLimiter, votesRouter);
-app.use("/tags", readLimiter, tagsRouter);
-app.use("/notifications", readLimiter, notificationsRouter);
+app.use("/posts", postsRouter);
+app.use("/", commentsRouter);
+app.use("/", votesRouter);
+app.use("/tags", tagsRouter);
+app.use("/notifications", notificationsRouter);
 app.use("/search", searchLimiter, searchRouter);
-app.use("/reports", readLimiter, reportsRouter);
-app.use("/users", readLimiter, usersRouter);
-app.use("/saved", readLimiter, savedRouter);
+app.use("/reports", reportsRouter);
+app.use("/users", usersRouter);
+app.use("/saved", savedRouter);
 app.use("/uploads", uploadLimiter, uploadsRouter);
 app.use("/api/admin", adminRouter);
 
