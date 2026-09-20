@@ -5,8 +5,10 @@ import { CreatePostModal } from '@/components/post/CreatePostModal';
 import { DeletePostModal } from '@/components/post/DeletePostModal';
 import { postsApi } from '@/lib/api';
 import { usePostEditor } from '@/hooks/usePostEditor';
+import { useAuth } from '@/context/AuthContext';
 
 export default function PopularPage() {
+  const { user } = useAuth();
   const [timeframe, setTimeframe] = useState('week'); // 'today' | 'week' | 'all'
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,15 +24,19 @@ export default function PopularPage() {
     }
     setPostToDelete(null);
   };
-  const { isPostModalOpen, editingPost, openEdit, closeEdit, saveEdit } = usePostEditor((updated) =>
-    setPosts((prev) => prev.map((p) => (p.id === updated.id ? updated : p)))
+  const { isPostModalOpen, editingPost, openEdit, closeEdit, saveEdit, isUploading } = usePostEditor(
+    (updated) => setPosts((prev) => prev.map((p) => (p.id === updated.id ? updated : p))),
+    (created) => setPosts((prev) => {
+      if (prev.some((p) => p.id === created.id)) return prev;
+      return [created, ...prev];
+    })
   );
 
   useEffect(() => {
     async function fetchPopularPosts() {
       setLoading(true);
       try {
-        const all = await postsApi.list({ limit: 100 });
+        const all = await postsApi.list({ limit: 100, currentUserId: user?.id });
         const now = Date.now();
         const cutoff =
           timeframe === 'today' ? now - 24 * 60 * 60 * 1000 : now - 7 * 24 * 60 * 60 * 1000;
@@ -140,6 +146,7 @@ export default function PopularPage() {
         initialData={editingPost}
         onClose={closeEdit}
         onPublish={saveEdit}
+        isUploading={isUploading}
       />
 
       <DeletePostModal

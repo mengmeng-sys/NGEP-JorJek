@@ -118,8 +118,17 @@ router.post("/reset-password", async (req, res, next) => {
   try {
     const { idToken, newPassword } = req.body;
     if (!idToken) return res.status(400).json({ error: "Microsoft authentication required" });
-    if (!newPassword || newPassword.length < 6) {
-      return res.status(400).json({ error: "Password must be at least 6 characters" });
+    if (!newPassword || newPassword.length < 8) {
+      return res.status(400).json({ error: "Password must be at least 8 characters" });
+    }
+    if (!/[A-Z]/.test(newPassword)) {
+      return res.status(400).json({ error: "Password must contain at least one uppercase letter" });
+    }
+    if (!/[0-9]/.test(newPassword)) {
+      return res.status(400).json({ error: "Password must contain at least one number" });
+    }
+    if (!/[^A-Za-z0-9]/.test(newPassword)) {
+      return res.status(400).json({ error: "Password must contain at least one special character" });
     }
 
     let ms;

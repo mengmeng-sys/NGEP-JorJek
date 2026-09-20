@@ -2,7 +2,9 @@ const { Router } = require("express");
 const { supabase } = require("../config/db");
 const { requireAuth } = require("../middleware/auth.middleware");
 const { requireVerifiedEmail } = require("../middleware/verifiedEmail.middleware");
+const { voteLimiter } = require("../middleware/rateLimit.middleware");
 const { recalculateKarma } = require("../services/karma.service");
+const { notify } = require("../services/notification.service");
 const { getIO } = require("../lib/socket");
 
 const votesRouter = Router();
@@ -222,7 +224,7 @@ votesRouter.get("/vote/me", requireAuth, async (req, res, next) => {
  *             schema:
  *               $ref: "#/components/schemas/Error"
  */
-votesRouter.post("/vote", requireAuth, requireVerifiedEmail, async (req, res, next) => {
+votesRouter.post("/vote", requireAuth, requireVerifiedEmail, voteLimiter, async (req, res, next) => {
   try {
     const { postId, commentId, value } = req.body;
     const voteValue = value === "DOWN" ? -1 : 1;
@@ -274,6 +276,41 @@ votesRouter.post("/vote", requireAuth, requireVerifiedEmail, async (req, res, ne
 
     if (authorId) {
       await recalculateKarma(authorId);
+    }
+
+    if (authorId && authorId !== req.userId && isUpvote && !existing) {
+      const { data: actor } = await supabase
+        .from("users")
+        .select("display_name")
+        .eq("id", req.userId)
+        .maybeSingle();
+      const actorName = actor?.display_name || "Someone";
+
+      if (postId) {
+        await notify(authorId, "vote", {
+          postId,
+          actorId: req.userId,
+          actorName,
+          snippet: "",
+          isReply: false,
+        });
+      } else if (commentId) {
+        const { data: comment } = await supabase
+          .from("comments")
+          .select("post_id")
+          .eq("id", commentId)
+          .maybeSingle();
+        if (comment) {
+          await notify(authorId, "vote", {
+            postId: comment.post_id,
+            commentId,
+            actorId: req.userId,
+            actorName,
+            snippet: "",
+            isReply: false,
+          });
+        }
+      }
     }
 
     const io = getIO();

@@ -76,8 +76,12 @@ export default function SignupPage() {
     hasSpecial: /[^A-Za-z0-9]/.test(password),
   }), [password]);
 
+  const maxGen = new Date().getFullYear() - 2014 + 1;
+
   const isPasswordStrong = Object.values(passwordCriteria).every(Boolean);
-  const isFormValid = isPasswordStrong && Boolean(username.trim()) && Boolean(gen) && Boolean(department) && Boolean(specialization);
+  const genNum = Number(gen);
+  const isGenValid = gen && genNum >= 1 && genNum <= maxGen;
+  const isFormValid = isPasswordStrong && Boolean(username.trim()) && isGenValid && Boolean(department) && Boolean(specialization);
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -93,7 +97,7 @@ export default function SignupPage() {
         displayName: username.trim(),
         password,
         role: 'STUDENT',
-        gen: Number(gen),
+        gen: genNum,
         department: department.trim(),
         specialization: specialization.trim(),
       });
@@ -178,7 +182,8 @@ export default function SignupPage() {
             </div>
             <div>
               <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">Generation (Gen)</label>
-              <input type="number" min="1" value={gen} onChange={(e) => setGen(e.target.value)} placeholder="e.g. 8" className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs text-gray-900 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs" />
+              <input type="number" min="1" max={maxGen} value={gen} onChange={(e) => { const val = e.target.value; if (val === '' || (Number(val) >= 1 && Number(val) <= maxGen)) setGen(val); }} placeholder={maxGen <= 1 ? "1" : `1 - ${maxGen}`} className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs text-gray-900 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs" />
+              <p className="text-[10px] text-gray-400 mt-1">CADT started in 2014. Max: Gen {maxGen}</p>
             </div>
             <div>
               <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">Department</label>

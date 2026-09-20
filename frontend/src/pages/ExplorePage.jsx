@@ -2,8 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ThreeColumnLayout } from '@/components/layout/ThreeColumnLayout';
 import { postsApi, usersApi } from '@/lib/api';
+import { UserAvatar } from '@/components/shared/UserAvatar';
+import { useAuth } from '@/context/AuthContext';
 
 export default function ExplorePage() {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [trendingTags, setTrendingTags] = useState([]);
   const [suggestedMentors, setSuggestedMentors] = useState([]);
@@ -19,7 +22,7 @@ export default function ExplorePage() {
       setLoading(true);
       try {
         const [postData, mentors] = await Promise.all([
-          postsApi.list({ limit: 100 }),
+          postsApi.list({ limit: 100, currentUserId: user?.id }),
           usersApi.topMentors().catch(() => []),
         ]);
 
@@ -62,7 +65,7 @@ export default function ExplorePage() {
       }
     }
     loadExploreData();
-  }, []);
+  }, [user?.id]);
 
   const handleSearch = (value) => {
     setSearchQuery(value);
@@ -190,9 +193,7 @@ export default function ExplorePage() {
                      onClick={() => navigate(`/user/${(user.display_name || '').toLowerCase().replace(/\s+/g, '')}`)}
                      className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 transition-colors text-left cursor-pointer border-b border-gray-50 last:border-b-0"
                    >
-                     <div className="w-9 h-9 bg-[#111827] text-white font-bold text-xs rounded-full flex items-center justify-center shrink-0">
-                       {getInitials(user.display_name)}
-                     </div>
+                      <UserAvatar initials={getInitials(user.display_name)} userId={user.id} size="md" />
                      <div className="min-w-0 flex-1">
                        <div className="flex items-center gap-2">
                          <span className="text-xs font-bold text-gray-900 truncate">{user.display_name}</span>
@@ -211,7 +212,7 @@ export default function ExplorePage() {
 
            <div className="flex items-center justify-between mb-3 sm:mb-4">
              <h2 className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-               Suggested Mentors
+               Suggested Users
              </h2>
              <span className="text-[10px] text-gray-400 font-medium">Swipe to browse →</span>
            </div>
@@ -230,9 +231,7 @@ export default function ExplorePage() {
                 >
                   <div className="flex flex-col items-center w-full">
                     {/* Avatar */}
-                    <div className="w-11 h-11 sm:w-12 sm:h-12 bg-[#111827] text-white font-bold text-xs sm:text-sm rounded-full flex items-center justify-center mb-2.5 shadow-2xs">
-                      {mentor.initials}
-                    </div>
+                     <UserAvatar initials={mentor.initials} userId={mentor.id} size="lg" className="mb-2.5 shadow-2xs" />
 
                     {/* Name */}
                     <h3 className="font-bold text-xs sm:text-sm text-gray-900 leading-snug truncate w-full" title={mentor.displayName || mentor.name}>

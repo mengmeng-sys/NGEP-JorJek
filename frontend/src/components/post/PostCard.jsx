@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useSocket } from '@/context/SocketContext';
+import { UserAvatar } from '@/components/shared/UserAvatar';
 import { ReportModal } from '@/components/shared/ReportModal';
 import { votesApi, reportsApi, postsApi } from '@/lib/api';
 import { copyToClipboard } from '@/lib/clipboard';
@@ -63,6 +64,11 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
       setVoteTotal(post.voteTotal);
     }
   }, [post.voteTotal]);
+
+  useEffect(() => {
+    const myVote = post.myVote ?? (post.hasUpvoted ? 1 : post.hasDownvoted ? -1 : 0);
+    setVoteState(myVote);
+  }, [post.myVote, post.hasUpvoted, post.hasDownvoted]);
 
   useEffect(() => {
     if (post.comments !== undefined) {
@@ -423,11 +429,11 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
 
         {/* Image Attachment (if present) */}
         {post.image_url && (
-          <div className="mt-2 mb-3 rounded-xl overflow-hidden border border-gray-100 bg-gray-50 flex items-center justify-center">
+          <div className="mt-2 mb-3 rounded-xl overflow-hidden border border-gray-100 bg-gray-50">
             <img
               src={post.image_url}
               alt={post.title}
-              className="w-full max-h-56 sm:max-h-80 object-contain"
+              className="w-full h-auto max-h-[500px] object-contain"
               loading="lazy"
             />
           </div>
@@ -460,37 +466,37 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
             className="flex items-center gap-1 bg-gray-50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-lg border border-gray-100"
             onClick={(e) => e.stopPropagation()}
           >
-             <button
-               type="button"
-               onClick={handleUpvote}
-               className={`vote-pop p-0.5 sm:p-1 rounded hover:bg-blue-50 transition-colors cursor-pointer ${
-                 voteState === 1 ? 'text-blue-500' : 'text-gray-400'
-               }`}
-               title="Upvote"
-             >
-               <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="currentColor" viewBox="0 0 24 24">
-                 <path d="M2 20h2V8H2v12zm20-12c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L13.17 0 7.59 5.59C7.22 5.95 7 6.45 7 7v11c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73V8z"/>
-               </svg>
-             </button>
+              <button
+                type="button"
+                onClick={handleUpvote}
+                className={`vote-pop p-0.5 sm:p-1 rounded hover:bg-blue-50 transition-colors cursor-pointer ${
+                  voteState === 1 ? 'text-blue-500' : 'text-gray-400'
+                }`}
+                title="Upvote"
+              >
+                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                </svg>
+              </button>
 
-             <span className={`text-[11px] sm:text-xs font-bold px-0.5 ${
-               voteState === 1 ? 'text-blue-500' : voteState === -1 ? 'text-[#FF4F00]' : 'text-gray-700'
-             }`}>
-               {voteCount}
-             </span>
+              <span className={`text-[11px] sm:text-xs font-bold px-0.5 ${
+                voteState === 1 ? 'text-blue-500' : voteState === -1 ? 'text-[#FF4F00]' : 'text-gray-700'
+              }`}>
+                {voteCount}
+              </span>
 
-             <button
-               type="button"
-               onClick={handleDownvote}
-               className={`vote-pop p-0.5 sm:p-1 rounded hover:bg-orange-50 transition-colors cursor-pointer ${
-                 voteState === -1 ? 'text-[#FF4F00]' : 'text-gray-400'
-               }`}
-               title="Downvote"
-             >
-               <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="currentColor" viewBox="0 0 24 24">
-                 <path d="M2 4h2v12H2V4zm20 12c0 1.1-.9 2-2 2h-6.31l.95 4.57.03.32c0 .41-.17.79-.44 1.06L13.17 24l-5.59-5.59c-.36-.36-.58-.86-.58-1.41V7c0-1.1.9-2 2-2h9c.83 0 1.54.5 1.84 1.22l3.02 7.05c.09.23.14.47.14.73v1z"/>
-               </svg>
-             </button>
+              <button
+                type="button"
+                onClick={handleDownvote}
+                className={`vote-pop p-0.5 sm:p-1 rounded hover:bg-orange-50 transition-colors cursor-pointer ${
+                  voteState === -1 ? 'text-[#FF4F00]' : 'text-gray-400'
+                }`}
+                title="Downvote"
+              >
+                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
           </div>
 
           {/* Comments Link */}

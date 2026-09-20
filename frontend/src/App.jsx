@@ -2,6 +2,7 @@ import React from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { SocketProvider } from "@/context/SocketContext";
+import { OnlineProvider } from "@/context/OnlineContext";
 import Navbar from "@/components/shared/Navbar";
 
 // Core Pages
@@ -40,7 +41,9 @@ export default function App() {
   return (
     <AuthProvider>
       <SocketProvider>
-        <AppRoutes />
+        <OnlineProvider>
+          <AppRoutes />
+        </OnlineProvider>
       </SocketProvider>
     </AuthProvider>
   );

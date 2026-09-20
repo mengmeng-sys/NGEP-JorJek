@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { notificationsApi } from "@/lib/api";
+import { normalizeNotification } from "@/lib/adapters";
 import { useSocket } from "@/context/SocketContext";
 import { ThreeColumnLayout } from "@/components/layout/ThreeColumnLayout";
 import { getApiErrorMessage } from "@/lib/apiClient";
@@ -8,13 +10,15 @@ export default function NotificationsPage() {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const { on, off } = useSocket();
+  const navigate = useNavigate();
 
   useEffect(() => {
     load();
   }, []);
 
   useEffect(() => {
-    const handleNotification = (notification) => {
+    const handleNotification = (raw) => {
+      const notification = normalizeNotification(raw);
       setNotifications((prev) => {
         if (prev.some((n) => n.id === notification.id)) return prev;
         return [notification, ...prev];
@@ -135,24 +139,33 @@ export default function NotificationsPage() {
             {notifications.map((n) => (
               <div
                 key={n.id}
-                onClick={() => { if (!n.read) markAsRead(n.id); }}
+                onClick={() => {
+                  if (!n.read) markAsRead(n.id);
+                  if (n.link) navigate(n.link);
+                }}
                 className={`group flex items-start gap-4 px-6 sm:px-8 py-4 transition-colors ${
-                  !n.read ? 'bg-orange-50/30 hover:bg-orange-50/50 cursor-pointer' : 'hover:bg-gray-50/50'
+                  !n.read ? 'bg-orange-50/30 hover:bg-orange-50/50 cursor-pointer' : 'hover:bg-gray-50/50 cursor-pointer'
                 }`}
               >
                 {/* Avatar with type badge */}
                 <div className="relative shrink-0">
                   <div className={`h-11 w-11 rounded-full flex items-center justify-center text-white text-sm font-bold ${
-                    n.isReply
-                      ? 'bg-linear-to-br from-violet-500 to-purple-600'
-                      : 'bg-linear-to-br from-orange-400 to-[#FF4F00]'
+                    n.type === 'vote'
+                      ? 'bg-linear-to-br from-green-400 to-emerald-500'
+                      : n.isReply
+                        ? 'bg-linear-to-br from-violet-500 to-purple-600'
+                        : 'bg-linear-to-br from-orange-400 to-[#FF4F00]'
                   }`}>
                     {n.actorInitials || 'U'}
                   </div>
                   <div className={`absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full border-2 border-white flex items-center justify-center ${
-                    n.isReply ? 'bg-violet-100' : 'bg-orange-100'
+                    n.type === 'vote' ? 'bg-green-100' : n.isReply ? 'bg-violet-100' : 'bg-orange-100'
                   }`}>
-                    {n.isReply ? (
+                    {n.type === 'vote' ? (
+                      <svg className="w-3 h-3 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                      </svg>
+                    ) : n.isReply ? (
                       <svg className="w-3 h-3 text-violet-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
                       </svg>
@@ -170,7 +183,7 @@ export default function NotificationsPage() {
                     <span className="font-semibold">{n.actorName || 'Someone'}</span>
                     {' '}
                     <span className="text-gray-600">
-                      {n.isReply ? 'replied to your comment' : 'commented on your post'}
+                      {n.type === 'vote' ? 'upvoted your post' : n.type === 'reply' && n.isReply ? 'replied to your comment' : n.type === 'reply' ? 'commented on your post' : n.title}
                     </span>
                   </p>
                   {n.message && (
@@ -181,7 +194,11 @@ export default function NotificationsPage() {
                     </div>
                   )}
                   <div className="flex items-center gap-2 mt-2">
-                    {n.isReply ? (
+                    {n.type === 'vote' ? (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full uppercase tracking-wide">
+                        Upvote
+                      </span>
+                    ) : n.isReply ? (
                       <span className="inline-flex items-center gap-1 text-[10px] font-bold text-violet-600 bg-violet-50 px-2 py-0.5 rounded-full uppercase tracking-wide">
                         Reply
                       </span>

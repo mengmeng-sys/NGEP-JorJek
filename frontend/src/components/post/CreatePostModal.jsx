@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null }) {
+export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null, isUploading = false }) {
   const isEditing = Boolean(initialData);
   const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
   const [showPublishConfirm, setShowPublishConfirm] = useState(false);
@@ -544,6 +544,28 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
               >
                 Discard
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Uploading Overlay */}
+      {isUploading && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-gray-950/60 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden p-6 text-center animate-in zoom-in-95 duration-150">
+            <div className="w-14 h-14 rounded-2xl bg-orange-50 border border-orange-100 text-[#FF4F00] flex items-center justify-center mx-auto mb-4">
+              <svg className="w-7 h-7 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <h3 className="text-base font-bold text-gray-900">Publishing your post...</h3>
+            <p className="text-xs text-gray-500 mt-1.5 leading-relaxed">
+              Please wait while we upload your image and publish your post.
+            </p>
+            <div className="mt-4 flex items-center justify-center gap-1.5">
+              <div className="w-2 h-2 rounded-full bg-[#FF4F00] animate-bounce" style={{ animationDelay: "0ms" }} />
+              <div className="w-2 h-2 rounded-full bg-[#FF4F00] animate-bounce" style={{ animationDelay: "150ms" }} />
+              <div className="w-2 h-2 rounded-full bg-[#FF4F00] animate-bounce" style={{ animationDelay: "300ms" }} />
             </div>
           </div>
         </div>

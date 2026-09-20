@@ -7,6 +7,7 @@ import { DeletePostModal } from '@/components/post/DeletePostModal';
 import { ReportModal } from '@/components/shared/ReportModal';
 import { useAuth } from '@/context/AuthContext';
 import { useSocket } from '@/context/SocketContext';
+import { UserAvatar } from '@/components/shared/UserAvatar';
 import { postsApi, usersApi, reportsApi } from '@/lib/api';
 import { normalizeUser } from '@/lib/adapters';
 import { getApiErrorMessage } from '@/lib/apiClient';
@@ -95,7 +96,7 @@ export default function UserProfilePage() {
     async function loadPosts() {
       if (!profileUser?.id) return;
       try {
-        const data = await postsApi.list({ limit: 100 });
+        const data = await postsApi.list({ limit: 100, currentUserId: user?.id });
         if (cancelled) return;
         const mine = data.posts.filter((p) => p.userId === profileUser.id);
         setUserPosts(mine.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)));
@@ -108,7 +109,7 @@ export default function UserProfilePage() {
     return () => {
       cancelled = true;
     };
-  }, [profileUser?.id]);
+  }, [profileUser?.id, user?.id]);
 
   // Handle Edit Trigger from PostCard
   const handleEditPost = (post) => {
@@ -138,8 +139,11 @@ export default function UserProfilePage() {
     setIsReportModalOpen(false);
   };
 
+  const [isUploading, setIsUploading] = useState(false);
+
   // Save changes from CreatePostModal (create or edit)
   const handleSavePost = async (updatedPayload) => {
+    setIsUploading(true);
     try {
       if (editingPost) {
         const updated = await postsApi.update(editingPost.id, {
@@ -148,6 +152,8 @@ export default function UserProfilePage() {
           type: updatedPayload.type,
           allowMentoring: updatedPayload.allowMentoring,
           tags: (updatedPayload.tags || []).map((t) => String(t).replace(/^#/, '')),
+          imageFile: updatedPayload.imageFile,
+          image_url: updatedPayload.image_url,
         });
         setUserPosts((prev) =>
           prev.map((p) => (p.id === editingPost.id ? updated : p))
@@ -160,6 +166,8 @@ export default function UserProfilePage() {
           content: updatedPayload.details ?? updatedPayload.content,
           tags: updatedPayload.tags || [],
           allowMentoring: updatedPayload.allowMentoring,
+          imageFile: updatedPayload.imageFile,
+          image_url: updatedPayload.image_url,
         });
         setUserPosts((prev) =>
           [created, ...prev].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
@@ -167,6 +175,8 @@ export default function UserProfilePage() {
       }
     } catch (err) {
       alert(getApiErrorMessage(err));
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -209,8 +219,17 @@ export default function UserProfilePage() {
     setEditForm({});
   }, []);
 
+  const maxGen = new Date().getFullYear() - 2014 + 1;
+
   const saveProfile = useCallback(async () => {
     if (!profileUser?.id) return;
+    if (editForm.gen !== undefined && editForm.gen !== '') {
+      const genVal = Number(editForm.gen);
+      if (genVal < 1 || genVal > maxGen) {
+        alert(`Generation must be between 1 and ${maxGen} (CADT started in 2014).`);
+        return;
+      }
+    }
     setSaving(true);
     try {
       const payload = {};
@@ -307,11 +326,18 @@ export default function UserProfilePage() {
                 <input
                   type="number"
                   min="1"
+                  max={maxGen}
                   value={editForm.gen}
-                  onChange={(e) => setEditForm((p) => ({ ...p, gen: e.target.value }))}
-                  placeholder="e.g. 8"
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === '' || (Number(val) >= 1 && Number(val) <= maxGen)) {
+                      setEditForm((p) => ({ ...p, gen: val }));
+                    }
+                  }}
+                  placeholder={`1 - ${maxGen}`}
                   className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs"
                 />
+                <p className="text-[10px] text-gray-400 mt-1">CADT started in 2014. Max: Gen {maxGen}</p>
               </div>
 
               <div>
@@ -379,9 +405,14 @@ export default function UserProfilePage() {
             <>
               <div className="flex flex-col md:flex-row md:items-start justify-between gap-5 sm:gap-6">
                 <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 sm:gap-5">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-[#8B5CF6] text-white text-xl sm:text-2xl font-black flex items-center justify-center shrink-0 shadow-xs">
-                    {fullProfile.avatarInitials}
-                  </div>
+                  <UserAvatar
+                    initials={fullProfile.avatarInitials}
+                    userId={fullProfile.id}
+                    size="xl"
+                    rounded="rounded-2xl"
+                    bg="bg-[#8B5CF6]"
+                    className="shadow-xs"
+                  />
 
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
@@ -568,6 +599,7 @@ export default function UserProfilePage() {
           setEditingPost(null);
         }}
         onPublish={handleSavePost}
+        isUploading={isUploading}
       />
 
       {/* Custom Confirmation Delete Modal */}

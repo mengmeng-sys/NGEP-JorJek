@@ -7,6 +7,7 @@ import { DeleteCommentModal } from '@/components/comment/DeleteCommentModal';
 import { ReportModal } from '@/components/shared/ReportModal';
 import { useAuth } from '@/context/AuthContext';
 import { useSocket } from '@/context/SocketContext';
+import { UserAvatar } from '@/components/shared/UserAvatar';
 import { postsApi, commentsApi, votesApi, reportsApi } from '@/lib/api';
 import { buildCommentTree, normalizeComment, normalizePost, initialsFrom } from '@/lib/adapters';
 import { getApiErrorMessage } from '@/lib/apiClient';
@@ -59,11 +60,16 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
   // Voting state for parent comment
   const [voteState, setVoteState] = useState(comment.myVote || 0);
   const [voteCount, setVoteCount] = useState(comment.votes || 0);
+  const [voteTotal, setVoteTotal] = useState(comment.voteTotal || 0);
 
   // Sync local vote state when comment prop changes (real-time updates)
   useEffect(() => {
     setVoteCount(comment.votes || 0);
   }, [comment.votes]);
+
+  useEffect(() => {
+    setVoteTotal(comment.voteTotal || 0);
+  }, [comment.voteTotal]);
 
   // Active reply target
   const [replyingToUser, setReplyingToUser] = useState(null);
@@ -93,15 +99,19 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
     }
     const prevState = voteState;
     const prevCount = voteCount;
+    const prevTotal = voteTotal;
     if (voteState === value) {
       setVoteState(0);
       setVoteCount((prev) => prev - value);
+      setVoteTotal((prev) => Math.max(0, prev - 1));
     } else if (voteState === -value) {
       setVoteState(0);
       setVoteCount((prev) => prev + value);
+      setVoteTotal((prev) => Math.max(0, prev - 1));
     } else {
       setVoteState(value);
       setVoteCount((prev) => prev + value);
+      setVoteTotal((prev) => prev + 1);
     }
     try {
       if (prevState !== 0) {
@@ -112,6 +122,7 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
     } catch {
       setVoteState(prevState);
       setVoteCount(prevCount);
+      setVoteTotal(prevTotal);
       alert('Could not update your vote. Please try again.');
     }
   };
@@ -175,12 +186,14 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
   };
 
   return (
-    <div className="border-b border-gray-100 pb-5 sm:pb-6 last:border-b-0">
+    <div id={`comment-${comment.id}`} className="border-b border-gray-100 pb-5 sm:pb-6 last:border-b-0">
       <div className="flex items-center justify-between gap-2 mb-2">
         <div className="flex items-center gap-2 min-w-0 flex-wrap">
-          <div className="h-6 w-6 sm:h-7 sm:w-7 bg-[#111827] text-white font-bold flex items-center justify-center rounded-full text-[10px] sm:text-xs shrink-0">
-            {comment.author?.initials || initialsFrom(comment.author?.displayName || 'U')}
-          </div>
+          <UserAvatar
+            initials={comment.author?.initials || initialsFrom(comment.author?.displayName || 'U')}
+            userId={comment.author?.id || comment.authorId}
+            size="sm"
+          />
           <span className="font-bold text-gray-900 text-xs sm:text-sm truncate">{comment.author?.displayName || 'Student'}</span>
           <span
             className={`text-[8px] sm:text-[9px] uppercase font-bold px-1.5 py-0.5 rounded tracking-wide shrink-0 ${
@@ -299,21 +312,21 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
               type="button"
               onClick={() => handleVote(1)}
               className={`p-0.5 rounded transition-colors cursor-pointer ${
-                voteState === 1 ? 'text-[#FF4F00]' : 'text-gray-400 hover:text-gray-600'
+                voteState === 1 ? 'text-blue-500' : 'text-gray-400 hover:text-gray-600'
               }`}
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
               </svg>
             </button>
-            <span className={`text-[11px] sm:text-xs font-bold px-0.5 ${voteState === 1 ? 'text-[#FF4F00]' : voteState === -1 ? 'text-blue-500' : 'text-gray-700'}`}>
+            <span className={`text-[11px] sm:text-xs font-bold px-0.5 ${voteState === 1 ? 'text-blue-500' : voteState === -1 ? 'text-[#FF4F00]' : 'text-gray-700'}`}>
               {voteCount}
             </span>
             <button
               type="button"
               onClick={() => handleVote(-1)}
               className={`p-0.5 rounded transition-colors cursor-pointer ${
-                voteState === -1 ? 'text-blue-500' : 'text-gray-400 hover:text-gray-600'
+                voteState === -1 ? 'text-[#FF4F00]' : 'text-gray-400 hover:text-gray-600'
               }`}
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
@@ -321,6 +334,10 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
               </svg>
             </button>
           </div>
+
+          <span className="text-[10px] sm:text-[11px] text-gray-400 font-medium">
+            {voteTotal} {voteTotal === 1 ? 'vote' : 'votes'}
+          </span>
 
           <button
             type="button"
@@ -419,11 +436,16 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [voteState, setVoteState] = useState(reply.myVote || 0);
   const [voteCount, setVoteCount] = useState(reply.votes || 0);
+  const [voteTotal, setVoteTotal] = useState(reply.voteTotal || 0);
 
   // Sync local vote state when reply prop changes (real-time updates)
   useEffect(() => {
     setVoteCount(reply.votes || 0);
   }, [reply.votes]);
+
+  useEffect(() => {
+    setVoteTotal(reply.voteTotal || 0);
+  }, [reply.voteTotal]);
 
   // Edit state
   const [isEditing, setIsEditing] = useState(false);
@@ -443,15 +465,19 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
     }
     const prevState = voteState;
     const prevCount = voteCount;
+    const prevTotal = voteTotal;
     if (voteState === value) {
       setVoteState(0);
       setVoteCount((prev) => prev - value);
+      setVoteTotal((prev) => Math.max(0, prev - 1));
     } else if (voteState === -value) {
       setVoteState(0);
       setVoteCount((prev) => prev + value);
+      setVoteTotal((prev) => Math.max(0, prev - 1));
     } else {
       setVoteState(value);
       setVoteCount((prev) => prev + value);
+      setVoteTotal((prev) => prev + 1);
     }
     try {
       if (prevState !== 0) {
@@ -462,6 +488,7 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
     } catch {
       setVoteState(prevState);
       setVoteCount(prevCount);
+      setVoteTotal(prevTotal);
     }
   };
 
@@ -504,12 +531,14 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
   };
 
   return (
-    <div>
+    <div id={`comment-${reply.id}`}>
       <div className="flex items-center justify-between gap-2 mb-1">
         <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-wrap">
-          <div className="h-5 w-5 sm:h-6 sm:w-6 bg-[#111827] text-white font-bold flex items-center justify-center rounded-full text-[9px] sm:text-[10px] shrink-0">
-            {reply.author?.initials || initialsFrom(reply.author?.displayName || 'U')}
-          </div>
+          <UserAvatar
+            initials={reply.author?.initials || initialsFrom(reply.author?.displayName || 'U')}
+            userId={reply.author?.id || reply.authorId}
+            size="xs"
+          />
           <span className="font-bold text-gray-900 text-xs truncate">{reply.author?.displayName || 'Student'}</span>
           <span
             className={`text-[8px] uppercase font-bold px-1.5 py-0.5 rounded tracking-wide shrink-0 ${
@@ -621,21 +650,21 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
               type="button"
               onClick={() => handleVote(1)}
               className={`p-0.5 transition-colors cursor-pointer ${
-                voteState === 1 ? 'text-[#FF4F00]' : 'text-gray-400 hover:text-gray-600'
+                voteState === 1 ? 'text-blue-500' : 'text-gray-400 hover:text-gray-600'
               }`}
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
               </svg>
             </button>
-            <span className={`text-[10px] sm:text-[11px] font-bold px-0.5 ${voteState === 1 ? 'text-[#FF4F00]' : voteState === -1 ? 'text-blue-500' : 'text-gray-700'}`}>
+            <span className={`text-[10px] sm:text-[11px] font-bold px-0.5 ${voteState === 1 ? 'text-blue-500' : voteState === -1 ? 'text-[#FF4F00]' : 'text-gray-700'}`}>
               {voteCount}
             </span>
             <button
               type="button"
               onClick={() => handleVote(-1)}
               className={`p-0.5 transition-colors cursor-pointer ${
-                voteState === -1 ? 'text-blue-500' : 'text-gray-400 hover:text-gray-600'
+                voteState === -1 ? 'text-[#FF4F00]' : 'text-gray-400 hover:text-gray-600'
               }`}
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
@@ -643,6 +672,10 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
               </svg>
             </button>
           </div>
+
+          <span className="text-[10px] sm:text-[11px] text-gray-400 font-medium">
+            {voteTotal} {voteTotal === 1 ? 'vote' : 'votes'}
+          </span>
 
           <button
             type="button"
@@ -767,6 +800,22 @@ export default function PostDetailPage() {
   }, [id, refreshComments]);
 
   useEffect(() => {
+    if (!id || comments.length === 0) return;
+    const hash = window.location.hash;
+    if (hash.startsWith("#comment-")) {
+      const commentId = hash.replace("#comment-", "");
+      setTimeout(() => {
+        const el = document.getElementById(`comment-${commentId}`);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
+          el.classList.add("bg-amber-50");
+          setTimeout(() => el.classList.remove("bg-amber-50"), 2000);
+        }
+      }, 300);
+    }
+  }, [id, comments]);
+
+  useEffect(() => {
     if (!id) return;
 
     joinPost(id);
@@ -816,6 +865,7 @@ export default function PostDetailPage() {
             return {
               ...c,
               votes: removed ? c.votes - value : c.votes + value,
+              voteTotal: removed ? Math.max(0, c.voteTotal - 1) : isNew ? c.voteTotal + 1 : c.voteTotal,
             };
           })
         );
@@ -1078,9 +1128,9 @@ export default function PostDetailPage() {
               <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
                 <Link
                   to={`/user/${authorProfileSlug}`}
-                  className="h-9 w-9 sm:h-10 sm:w-10 bg-[#111827] text-white font-bold flex items-center justify-center rounded-full text-xs sm:text-sm shrink-0 hover:ring-2 hover:ring-offset-2 hover:ring-gray-800 transition-all"
+                  className="hover:ring-2 hover:ring-offset-2 hover:ring-gray-800 transition-all rounded-full"
                 >
-                  {post.initials}
+                  <UserAvatar initials={post.initials} userId={post.userId} size="md" />
                 </Link>
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
@@ -1245,16 +1295,17 @@ export default function PostDetailPage() {
               </div>
             ) : null}
 
-            {/* Attached Image */}
-            {post.image_url && (
-              <div className="mt-3 rounded-xl overflow-hidden border border-gray-100 bg-gray-50 flex items-center justify-center">
-                <img
-                  src={post.image_url}
-                  alt={post.title}
-                  className="w-full max-h-72 sm:max-h-96 object-contain"
-                />
-              </div>
-            )}
+        {/* Attached Image */}
+        {post.image_url && (
+          <div className="mt-3 rounded-xl overflow-hidden border border-gray-100 bg-gray-50">
+            <img
+              src={post.image_url}
+              alt={post.title}
+              className="w-full h-auto max-h-[600px] object-contain"
+              loading="lazy"
+            />
+          </div>
+        )}
           </div>
 
           {/* Post Bottom Controls */}
@@ -1270,29 +1321,29 @@ export default function PostDetailPage() {
                    }`}
                    title="Upvote"
                  >
-                   <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="currentColor" viewBox="0 0 24 24">
-                     <path d="M2 20h2V8H2v12zm20-12c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L13.17 0 7.59 5.59C7.22 5.95 7 6.45 7 7v11c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73V8z"/>
-                   </svg>
-                 </button>
+                    <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                    </svg>
+                  </button>
 
-                 <span className={`text-[11px] sm:text-xs font-bold px-0.5 ${
-                   postVoteState === 1 ? 'text-blue-500' : postVoteState === -1 ? 'text-[#FF4F00]' : 'text-gray-700'
-                 }`}>
-                   {postVoteCount}
-                 </span>
+                  <span className={`text-[11px] sm:text-xs font-bold px-0.5 ${
+                    postVoteState === 1 ? 'text-blue-500' : postVoteState === -1 ? 'text-[#FF4F00]' : 'text-gray-700'
+                  }`}>
+                    {postVoteCount}
+                  </span>
 
-                 <button
-                   type="button"
-                   onClick={() => handlePostVote(-1)}
-                   className={`p-0.5 sm:p-1 rounded hover:bg-orange-50 transition-colors cursor-pointer ${
-                     postVoteState === -1 ? 'text-[#FF4F00]' : 'text-gray-400'
-                   }`}
-                   title="Downvote"
-                 >
-                   <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="currentColor" viewBox="0 0 24 24">
-                     <path d="M2 4h2v12H2V4zm20 12c0 1.1-.9 2-2 2h-6.31l.95 4.57.03.32c0 .41-.17.79-.44 1.06L13.17 24l-5.59-5.59c-.36-.36-.58-.86-.58-1.41V7c0-1.1.9-2 2-2h9c.83 0 1.54.5 1.84 1.22l3.02 7.05c.09.23.14.47.14.73v1z"/>
-                   </svg>
-                 </button>
+                  <button
+                    type="button"
+                    onClick={() => handlePostVote(-1)}
+                    className={`p-0.5 sm:p-1 rounded hover:bg-orange-50 transition-colors cursor-pointer ${
+                      postVoteState === -1 ? 'text-[#FF4F00]' : 'text-gray-400'
+                    }`}
+                    title="Downvote"
+                  >
+                    <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
               </div>
 
               {/* Comments Count */}

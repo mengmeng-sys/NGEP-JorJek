@@ -7,7 +7,7 @@ const env = {
   jwtSecret: process.env.JWT_SECRET ?? "",
   jwtRefreshSecret: process.env.JWT_REFRESH_SECRET ?? "",
   cadtEmailDomain: process.env.CADT_EMAIL_DOMAIN ?? "@student.cadt.edu.kh",
-  notificationTransport: process.env.NOTIFICATION_TRANSPORT ?? "polling", // "polling" | "websocket"
+  notificationTransport: process.env.NOTIFICATION_TRANSPORT ?? "polling",
   smtpHost: process.env.SMTP_HOST ?? "smtp.gmail.com",
   smtpPort: Number(process.env.SMTP_PORT ?? 587),
   smtpUser: process.env.SMTP_USER ?? "",
