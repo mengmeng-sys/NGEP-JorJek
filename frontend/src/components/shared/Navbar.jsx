@@ -655,7 +655,7 @@ export default function Navbar() {
                   </p>
                   <div className="flex flex-col space-y-1">
                     {skillTags.map((tag) => {
-                      const isSelected = activeTag === tag;
+                      const isSelected = activeTag != null && activeTag.toLowerCase() === tag.toLowerCase();
                       return (
                         <button
                           key={tag}

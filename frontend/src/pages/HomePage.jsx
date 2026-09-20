@@ -13,16 +13,16 @@ import { useAuth } from "@/context/AuthContext";
 
 export default function HomePage() {
   const { user } = useAuth();
-  const { posts, loading, loadingMore, hasMore, loadMore, updatePost, setPosts } = usePosts();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const selectedTag = searchParams.get('tag');
+  const { posts, loading, loadingMore, hasMore, loadMore, updatePost, setPosts } = usePosts({ tag: selectedTag });
   const { isPostModalOpen, editingPost, openEdit, closeEdit, saveEdit, isUploading } = usePostEditor(updatePost, (created) => {
     setPosts((prev) => {
       if (prev.some((p) => p.id === created.id)) return prev;
       return [created, ...prev];
     });
   });
-  const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
-  const selectedTag = searchParams.get('tag');
   const { on, off } = useSocket();
 
   useEffect(() => {
