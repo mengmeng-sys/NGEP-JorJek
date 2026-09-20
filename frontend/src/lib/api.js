@@ -168,7 +168,7 @@ export const usersApi = {
   topMentors: async () => safeArray(await apiFetch("/users/top-mentors")).map(normalizeMentor),
   search: async (q) => {
     const data = await apiFetch(`/users/search?q=${encodeURIComponent(q)}`);
-    return safeArray(data.users);
+    return safeArray(data.users).map(normalizeMentor);
   },
   get: async (idOrSlug) => {
     // Backend has no "get by handle" endpoint, so resolve a slug/id from the
