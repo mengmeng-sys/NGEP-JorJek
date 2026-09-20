@@ -433,7 +433,7 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
             <img
               src={post.image_url}
               alt={post.title}
-              className="w-full max-h-52 sm:max-h-72 md:max-h-96 object-cover"
+              className="w-full h-auto max-h-[500px] object-contain"
               loading="lazy"
             />
           </div>
