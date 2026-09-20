@@ -2,6 +2,7 @@ const { Router } = require("express");
 const { supabase } = require("../config/db");
 const { requireAuth } = require("../middleware/auth.middleware");
 const { requireVerifiedEmail } = require("../middleware/verifiedEmail.middleware");
+const { voteLimiter } = require("../middleware/rateLimit.middleware");
 const { recalculateKarma } = require("../services/karma.service");
 const { notify } = require("../services/notification.service");
 const { getIO } = require("../lib/socket");
@@ -223,7 +224,7 @@ votesRouter.get("/vote/me", requireAuth, async (req, res, next) => {
  *             schema:
  *               $ref: "#/components/schemas/Error"
  */
-votesRouter.post("/vote", requireAuth, requireVerifiedEmail, async (req, res, next) => {
+votesRouter.post("/vote", requireAuth, requireVerifiedEmail, voteLimiter, async (req, res, next) => {
   try {
     const { postId, commentId, value } = req.body;
     const voteValue = value === "DOWN" ? -1 : 1;

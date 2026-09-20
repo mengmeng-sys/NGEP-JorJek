@@ -1,12 +1,27 @@
 const http = require("http");
 const { Server: SocketIOServer } = require("socket.io");
-const { app } = require("./app");
+const { app, ALLOWED_ORIGINS } = require("./app");
 const { env } = require("./config/env");
 const { setIO } = require("./lib/socket");
 
 const server = http.createServer(app);
 
-const io = new SocketIOServer(server, { cors: { origin: "*" } });
+const io = new SocketIOServer(server, {
+  cors: {
+    origin: (origin, callback) => {
+      const allowed =
+        !origin ||
+        ALLOWED_ORIGINS.includes(origin) ||
+        /^https:\/\/.*\.vercel\.app$/.test(origin);
+      if (allowed) {
+        callback(null, true);
+      } else {
+        callback(new Error(`Origin ${origin} not allowed by CORS`));
+      }
+    },
+    methods: ["GET", "POST"],
+  },
+});
 
 const { supabase } = require("./config/db");
 
@@ -70,12 +85,11 @@ io.on("connection", (socket) => {
 
 setIO(io);
 
-// ─── Startup email-config warning ─────────────────────────────────────
 const hasResend = Boolean(env.resendApiKey);
 const hasSmtp = Boolean(env.smtpUser && env.smtpPass);
 if (!hasResend && !hasSmtp) {
   console.warn(
-    "[MAIL] ⚠️ No mailing configured — OTP/reset emails will NOT be sent. " +
+    "[MAIL] No mailing configured — OTP/reset emails will NOT be sent. " +
       "Add RESEND_API_KEY (HTTPS port 443 — works on Render free) or SMTP_* vars."
   );
 } else if (hasResend) {

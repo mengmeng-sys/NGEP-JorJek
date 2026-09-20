@@ -1,86 +1,43 @@
 const { Router } = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
 const { supabase } = require("../config/db");
 const { env } = require("../config/env");
 const { requireAuth } = require("../middleware/auth.middleware");
 const { requireCadtEmail } = require("../middleware/cadtEmailGate.middleware");
 const { signAccessToken, signRefreshToken, userSafe } = require("../lib/token");
+const { sendMail } = require("../config/mailer");
+const { generateOtp, otpEmailHtml } = require("../utils/otp");
+const { getIO } = require("../lib/socket");
+const { signupLimiter } = require("../middleware/rateLimit.middleware");
 
 const authRouter = Router();
 
 const OTP_EXPIRY_MINUTES = 10;
 
-// ─── helpers ──────────────────────────────────────────────────────────
-// signAccessToken / signRefreshToken / userSafe now live in ../lib/token
-// (imported above) so they're shared with other route files — keeping a
-// second copy here is what caused the "already declared" crash.
 function otpExpiry() {
   const d = new Date();
   d.setMinutes(d.getMinutes() + OTP_EXPIRY_MINUTES);
   return d.toISOString();
 }
 
-// ─── POST /auth/signup ────────────────────────────────────────────────
+function hashToken(token) {
+  return crypto.createHash("sha256").update(token).digest("hex");
+}
 
-/**
- * @swagger
- * /auth/signup:
- *   post:
- *     summary: Create a new account
- *     description: >
- *       Registers a new user with a CADT student email. Sends a 6-digit OTP to the email.
- *       `role` is always `STUDENT` — it is never accepted from the client (see security note below).
- *       Returns JWT tokens — email verification is recommended but tokens are issued immediately.
- *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required: [cadtEmail, password]
- *             properties:
- *               cadtEmail:
- *                 type: string
- *                 format: email
- *                 description: Must end with `@student.cadt.edu.kh`
- *                 example: dara@student.cadt.edu.kh
- *               password:
- *                 type: string
- *                 format: password
- *                 minLength: 6
- *                 description: At least 6 characters
- *                 example: secret123
- *               displayName:
- *                 type: string
- *                 example: Dara Chan
- *     responses:
- *       201:
- *         description: Account created — tokens + safe user object returned
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/AuthResponse"
- *       400:
- *         description: Invalid request (bad email / weak password)
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/Error"
- *       500:
- *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/Error"
- */
-authRouter.post("/signup", requireCadtEmail, async (req, res, next) => {
+async function storeRefreshToken(userId, token) {
+  const tokenHash = hashToken(token);
+  const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+  await supabase.from("refresh_tokens").insert({
+    token_hash: tokenHash,
+    user_id: userId,
+    expires_at: expiresAt.toISOString(),
+  });
+}
+
+authRouter.post("/signup", signupLimiter, requireCadtEmail, async (req, res, next) => {
   try {
-    // SECURITY: `role` is intentionally NOT read from req.body. Every account
-    // self-registers as STUDENT; SUPER_ADMIN/MODERATOR can only be granted by
-    // an existing admin through a dedicated, requireRole-gated endpoint —
-    // never by a value the caller supplies at signup.
     const { cadtEmail, password, displayName, gen, department, specialization } = req.body;
     if (!password || password.length < 6) {
       return res.status(400).json({ error: "Password must be at least 6 characters" });
@@ -93,7 +50,7 @@ authRouter.post("/signup", requireCadtEmail, async (req, res, next) => {
       }
     }
 
-    const passwordHash = await bcrypt.hash(password, 10);
+    const passwordHash = await bcrypt.hash(password, 12);
     const otp = generateOtp();
 
     const { data: user, error } = await supabase
@@ -116,6 +73,7 @@ authRouter.post("/signup", requireCadtEmail, async (req, res, next) => {
 
     const token = signAccessToken(user.id, user.token_version);
     const refreshToken = signRefreshToken(user.id, user.token_version);
+    await storeRefreshToken(user.id, refreshToken);
 
     await sendMail({
       to: cadtEmail,
@@ -135,51 +93,6 @@ authRouter.post("/signup", requireCadtEmail, async (req, res, next) => {
   }
 });
 
-// ─── POST /auth/login ─────────────────────────────────────────────────
-
-/**
- * @swagger
- * /auth/login:
- *   post:
- *     summary: Sign in with CADT email + password
- *     description: Authenticates a user and returns JWT access + refresh tokens along with a safe user object.
- *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required: [cadtEmail, password]
- *             properties:
- *               cadtEmail:
- *                 type: string
- *                 format: email
- *                 example: dara@student.cadt.edu.kh
- *               password:
- *                 type: string
- *                 format: password
- *                 example: secret123
- *     responses:
- *       200:
- *         description: Logged in — tokens + safe user object
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/AuthResponse"
- *       401:
- *         description: Invalid credentials
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/Error"
- *       500:
- *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/Error"
- */
 authRouter.post("/login", async (req, res, next) => {
   try {
     const { cadtEmail, password } = req.body;
@@ -195,6 +108,8 @@ authRouter.post("/login", async (req, res, next) => {
 
     const token = signAccessToken(user.id, user.token_version);
     const refreshToken = signRefreshToken(user.id, user.token_version);
+    await storeRefreshToken(user.id, refreshToken);
+
     res.json({ token, refreshToken, user: userSafe(user) });
   } catch (err) {
     next(err);
@@ -223,8 +138,32 @@ authRouter.post("/refresh", async (req, res, next) => {
       return res.status(401).json({ error: "Token revoked — please log in again" });
     }
 
+    const tokenHash = hashToken(refreshToken);
+    const { data: storedToken, error: tokenErr } = await supabase
+      .from("refresh_tokens")
+      .select("id, used_at")
+      .eq("token_hash", tokenHash)
+      .maybeSingle();
+
+    if (tokenErr || !storedToken) {
+      return res.status(401).json({ error: "Refresh token not found" });
+    }
+
+    if (storedToken.used_at) {
+      await supabase.from("refresh_tokens").delete().eq("user_id", user.id);
+      await supabase.rpc("increment_token_version", { uid: user.id }).catch(() => {});
+      return res.status(401).json({ error: "Refresh token reuse detected — all sessions revoked" });
+    }
+
+    await supabase
+      .from("refresh_tokens")
+      .update({ used_at: new Date().toISOString() })
+      .eq("id", storedToken.id);
+
     const newAccessToken = signAccessToken(user.id, user.token_version);
     const newRefreshToken = signRefreshToken(user.id, user.token_version);
+    await storeRefreshToken(user.id, newRefreshToken);
+
     res.json({ token: newAccessToken, refreshToken: newRefreshToken });
   } catch (err) {
     next(err);
@@ -233,6 +172,7 @@ authRouter.post("/refresh", async (req, res, next) => {
 
 authRouter.post("/logout", requireAuth, async (req, res, next) => {
   try {
+    await supabase.from("refresh_tokens").delete().eq("user_id", req.userId);
     const { error: rpcErr } = await supabase.rpc("increment_token_version", { uid: req.userId });
     if (rpcErr) {
       const { data: current } = await supabase
