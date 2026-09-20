@@ -25,6 +25,14 @@ export default function Navbar() {
   const [isSidebarDrawerOpen, setIsSidebarDrawerOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Keep the navbar's search box in sync with ?q= on the search results page,
+  // so it shows what you searched for instead of sitting empty next to the
+  // results (previously the results page had its own second search box —
+  // that's been removed in favor of this one being the single source of truth).
+  useEffect(() => {
+    setSearchQuery(searchParams.get('q') || '');
+  }, [searchParams]);
+
   // Notifications Data
   const [notifications, setNotifications] = useState([]);
 

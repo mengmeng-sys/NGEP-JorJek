@@ -1,20 +1,23 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import { searchApi, postsApi } from "@/lib/api";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { searchApi, usersApi, postsApi } from "@/lib/api";
 import { PostCard } from "@/components/post/PostCard";
 import { CreatePostModal } from "@/components/post/CreatePostModal";
 import { DeletePostModal } from "@/components/post/DeletePostModal";
 import { ThreeColumnLayout } from "@/components/layout/ThreeColumnLayout";
+import { UserAvatar } from "@/components/shared/UserAvatar";
 import { usePostEditor } from "@/hooks/usePostEditor";
 import { getApiErrorMessage } from "@/lib/apiClient";
 
 // Route: "/search". Owner: CS2
 export default function SearchPage() {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const initialQuery = searchParams.get("q") || "";
 
   const [q, setQ] = useState(initialQuery);
   const [results, setResults] = useState([]);
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [postToDelete, setPostToDelete] = useState(null);
@@ -55,15 +58,25 @@ export default function SearchPage() {
     async function search() {
       if (!q.trim()) {
         setResults([]);
+        setUsers([]);
         return;
       }
       setLoading(true);
       setError("");
       try {
-        setResults(await searchApi.posts(q.trim(), currentUserId));
+        // Posts and people are two separate endpoints (/search and
+        // /users/search) — run them together so searching a name like a
+        // teammate's actually surfaces that person, not just post text.
+        const [postResults, userResults] = await Promise.all([
+          searchApi.posts(q.trim(), currentUserId),
+          usersApi.search(q.trim()).catch(() => []),
+        ]);
+        setResults(postResults);
+        setUsers(userResults);
       } catch (err) {
         setError(getApiErrorMessage(err));
         setResults([]);
+        setUsers([]);
       } finally {
         setLoading(false);
       }
@@ -74,29 +87,14 @@ export default function SearchPage() {
   return (
     <ThreeColumnLayout>
       <div className="w-full space-y-3.5 sm:space-y-4">
-        <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-3.5 sm:p-4 shadow-xs">
-          <div className="relative flex items-center w-full h-11 rounded-xl border border-gray-200 bg-[#FAFAFA] focus-within:bg-white focus-within:border-[#FF4F00] focus-within:ring-1 focus-within:ring-[#FF4F00] transition-all">
-            <div className="grid place-items-center h-full w-11 text-gray-400 shrink-0">
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-            <input
-              type="text"
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Search posts, discussions and study notes..."
-              className="w-full h-full outline-none text-xs text-gray-800 placeholder-gray-400 bg-transparent pr-4 font-medium"
-              autoFocus
-            />
-          </div>
-        </div>
-
+        {/* Search input lives in the navbar now (kept in sync with ?q= via
+            Navbar.jsx) — this page used to render its own second, unsynced
+            search box directly below it, which is the "2 search bars" bug. */}
         <h1 className="text-sm font-bold text-gray-800">
           {loading
             ? "Searching..."
             : q.trim()
-            ? `${results.length} result${results.length === 1 ? "" : "s"} for "${q.trim()}"`
+            ? `${results.length + users.length} result${results.length + users.length === 1 ? "" : "s"} for "${q.trim()}"`
             : "Search campus posts"}
         </h1>
 
@@ -106,8 +104,33 @@ export default function SearchPage() {
           </p>
         )}
 
+        {users.length > 0 && (
+          <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-3.5 sm:p-4 shadow-xs">
+            <h2 className="text-[11px] font-bold text-gray-400 uppercase tracking-wide mb-2.5">
+              People
+            </h2>
+            <div className="space-y-2">
+              {users.map((u) => (
+                <div
+                  key={u.id}
+                  onClick={() => navigate(`/user/${u.handle}`)}
+                  className="flex items-center gap-3 p-2 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer"
+                >
+                  <UserAvatar initials={u.initials} userId={u.id} size="md" gradient className="ring-2 ring-white shadow-xs" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[13px] font-semibold text-gray-900 truncate leading-tight">
+                      {u.displayName}
+                    </p>
+                    <p className="text-[11px] text-gray-400 font-medium">{u.role}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="space-y-3 sm:space-y-4">
-          {results.length === 0 && !loading && q.trim() ? (
+          {results.length === 0 && users.length === 0 && !loading && q.trim() ? (
             <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-8 sm:p-12 text-center shadow-xs">
               <h3 className="text-sm font-bold text-gray-900">No results found</h3>
               <p className="text-xs text-gray-500 mt-1 max-w-sm mx-auto">
