@@ -13,13 +13,15 @@ function generateTotpSecret() {
 
 function verifyToken(secret, token) {
   try {
-    return verifySync({
+    const result = verifySync({
       token,
       secret,
       digits: 6,
       step: 30,
       window: 1,
     });
+    if (result && typeof result === "object") return result.valid === true;
+    return result === true;
   } catch {
     return false;
   }
