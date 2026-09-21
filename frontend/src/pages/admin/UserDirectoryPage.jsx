@@ -64,8 +64,18 @@ export default function UserDirectoryPage() {
 
   async function submitEnforcement(overrideAction) {
     const act = overrideAction ?? action;
-    if (act !== "restore" && !note.trim()) {
-      setToast({ kind: "error", text: "A mandatory moderator note is required (SRS 2.1)." });
+    // The backend requires a non-empty `reason` for every enforcement action,
+    // restore included (see admin.routes.js) — this must match, otherwise
+    // clicking "Restore account" with a blank note silently round-trips to
+    // the server just to get rejected with a 400 instead of an inline hint.
+    if (!note.trim()) {
+      setToast({
+        kind: "error",
+        text:
+          act === "restore"
+            ? "A moderator note explaining the restoration is required."
+            : "A mandatory moderator note is required (SRS 2.1).",
+      });
       return;
     }
     setSaving(true);
