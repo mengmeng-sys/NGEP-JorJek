@@ -38,7 +38,7 @@ export default function TagFeedPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-gray-400 gap-2">
+      <div className="flex flex-col items-center justify-center py-16 text-gray-400 dark:text-gray-500 gap-2">
         <div className="w-6 h-6 border-2 border-[#FF4F00] border-t-transparent rounded-full animate-spin" />
         <span className="text-xs font-semibold">Loading #{tag} posts...</span>
       </div>
@@ -47,14 +47,14 @@ export default function TagFeedPage() {
 
   return (
     <main className="max-w-3xl mx-auto w-full px-4 sm:px-6 py-6 space-y-4">
-      <h1 className="text-lg sm:text-xl font-black text-gray-900">#{tag}</h1>
+      <h1 className="text-lg sm:text-xl font-black text-gray-900 dark:text-gray-100">#{tag}</h1>
       {error && (
-        <p className="text-[11px] text-red-600 font-semibold bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+        <p className="text-[11px] text-red-600 dark:text-red-400 font-semibold bg-red-50 dark:bg-red-900/20 border border-red-100 rounded-lg px-3 py-2">
           {error}
         </p>
       )}
       {posts.length === 0 ? (
-        <p className="text-xs text-gray-500 py-10 text-center">No posts tagged #{tag} yet.</p>
+        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 py-10 text-center">No posts tagged #{tag} yet.</p>
       ) : (
         posts.map((p) => <PostCard key={p.id} post={p} onEdit={openEdit} onDelete={() => setPostToDelete(p.id)} />)
       )}

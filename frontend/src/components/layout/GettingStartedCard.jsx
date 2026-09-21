@@ -40,12 +40,12 @@ export function GettingStartedCard({ onOpenAuth }) {
         <h3 className="text-xs font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider">
           Getting Started
         </h3>
-        <span className={`text-xs font-bold ${completedCount > 0 ? 'text-[#FF4F00]' : 'text-gray-400 dark:text-gray-500'}`}>
+        <span className={`text-xs font-bold ${completedCount > 0 ? 'text-[#FF4F00]' : 'text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500'}`}>
           {completedCount}/{tasks.length} Completed
         </span>
       </div>
 
-      <p className="text-xs text-gray-500 dark:text-gray-400 mb-4 leading-relaxed">
+      <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-4 leading-relaxed">
         Complete your setup to unlock the Top Mentors leaderboard.
       </p>
 
@@ -70,14 +70,14 @@ export function GettingStartedCard({ onOpenAuth }) {
               </div>
             ) : (
               // Incomplete Icon (Empty Circle)
-              <div className="w-5 h-5 rounded-full border-2 border-gray-200 flex-shrink-0" />
+              <div className="w-5 h-5 rounded-full border-2 border-gray-200 dark:border-gray-800 flex-shrink-0" />
             )}
 
              <span
               className={`text-xs font-medium ${
                 task.completed
-                  ? 'text-gray-400 dark:text-gray-500 line-through'
-                  : 'text-gray-700 dark:text-gray-300'
+                  ? 'text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500 line-through'
+                  : 'text-gray-700 dark:text-gray-300 dark:text-gray-600 dark:text-gray-300 dark:text-gray-600'
               }`}
             >
               {task.label}

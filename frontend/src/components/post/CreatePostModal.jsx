@@ -227,17 +227,17 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-gray-950/70 backdrop-blur-xs animate-in fade-in duration-150"
     >
       <div
-        className="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col h-[92vh] sm:h-auto sm:max-h-[88vh] animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200"
+        className="bg-white dark:bg-gray-900 rounded-t-2xl sm:rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col h-[92vh] sm:h-auto sm:max-h-[88vh] animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200"
       >
         {/* Header */}
-        <div className="border-b border-gray-100 flex-shrink-0">
+        <div className="border-b border-gray-100 dark:border-gray-800 flex-shrink-0">
           <div className="sm:hidden w-12 h-1 bg-gray-300 rounded-full mx-auto mt-2.5 mb-1" />
           <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4">
             <div>
-              <h2 className="text-base sm:text-lg font-bold text-gray-900 leading-tight">
+              <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 leading-tight">
                 {isEditing ? 'Edit Discussion' : 'Create a Post'}
               </h2>
-              <p className="text-[11px] text-gray-400">
+              <p className="text-[11px] text-gray-400 dark:text-gray-500">
                 {isEditing
                   ? 'Update details and tags for your published post'
                   : 'Ask a question or share coursework with CADT students'}
@@ -246,7 +246,7 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
             <button
               type="button"
               onClick={handleAttemptClose}
-              className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-colors cursor-pointer"
+              className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300 dark:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-800 rounded-xl transition-colors cursor-pointer"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -260,10 +260,10 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
           {/* Title */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider">
+              <label className="block text-[11px] font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider">
                 Title <span className="text-[#FF4F00]">*</span>
               </label>
-              <span className={`text-[10px] font-medium ${isTitleOverLimit ? 'text-red-500' : 'text-gray-400'}`}>
+              <span className={`text-[10px] font-medium ${isTitleOverLimit ? 'text-red-500 dark:text-red-400' : 'text-gray-400 dark:text-gray-500'}`}>
                 {titleWordCount}/30 words
               </span>
             </div>
@@ -273,38 +273,38 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
               value={title}
               onChange={handleTitleChange}
               placeholder="Ask a question or share coursework..."
-              className={`w-full border rounded-xl p-2.5 sm:p-3 text-xs sm:text-sm text-gray-900 placeholder-gray-400 outline-none transition-all bg-[#FAFAFA] focus:bg-white shadow-2xs ${
+              className={`w-full border rounded-xl p-2.5 sm:p-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 outline-none transition-all bg-[#FAFAFA] dark:bg-gray-800 focus:bg-white dark:bg-gray-900 shadow-2xs ${
                 isTitleOverLimit
                   ? 'border-red-300 focus:border-red-500 focus:ring-1 focus:ring-red-500'
-                  : 'border-gray-200 focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00]'
+                  : 'border-gray-200 dark:border-gray-800 focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00]'
               }`}
             />
             {isTitleOverLimit && (
-              <p className="text-[10px] text-red-500 font-medium mt-1">Title must be 30 words or fewer.</p>
+              <p className="text-[10px] text-red-500 dark:text-red-400 font-medium mt-1">Title must be 30 words or fewer.</p>
             )}
           </div>
 
           {/* Details */}
           <div>
-            <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">
-              Details <span className="text-gray-400 font-normal normal-case">(optional)</span>
+            <label className="block text-[11px] font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider mb-1.5">
+              Details <span className="text-gray-400 dark:text-gray-500 font-normal normal-case">(optional)</span>
             </label>
             <textarea
               rows={4}
               value={details}
               onChange={(e) => setDetails(e.target.value)}
               placeholder="Describe your question, query bottleneck, or resource..."
-              className="w-full border border-gray-200 rounded-xl p-2.5 sm:p-3 text-xs sm:text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all bg-[#FAFAFA] focus:bg-white resize-none shadow-2xs leading-relaxed"
+              className="w-full border border-gray-200 dark:border-gray-800 rounded-xl p-2.5 sm:p-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all bg-[#FAFAFA] dark:bg-gray-800 focus:bg-white dark:bg-gray-900 resize-none shadow-2xs leading-relaxed"
             />
           </div>
 
           {/* Tags */}
           <div>
-            <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">
-              Tags <span className="text-gray-400 font-normal normal-case">(tap to toggle or type)</span>
+            <label className="block text-[11px] font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider mb-1.5">
+              Tags <span className="text-gray-400 dark:text-gray-500 font-normal normal-case">(tap to toggle or type)</span>
             </label>
 
-            <div className="flex items-center flex-wrap gap-1.5 sm:gap-2 w-full border border-gray-200 rounded-xl p-2 sm:p-2.5 focus-within:border-[#FF4F00] focus-within:ring-1 focus-within:ring-[#FF4F00] bg-white min-h-[44px] transition-all shadow-2xs">
+            <div className="flex items-center flex-wrap gap-1.5 sm:gap-2 w-full border border-gray-200 dark:border-gray-800 rounded-xl p-2 sm:p-2.5 focus-within:border-[#FF4F00] focus-within:ring-1 focus-within:ring-[#FF4F00] bg-white dark:bg-gray-900 min-h-[44px] transition-all shadow-2xs">
               {suggestedTags.map((tag) => {
                 const isSelected = selectedTags.includes(tag);
                 return (
@@ -314,8 +314,8 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
                     onClick={() => toggleSuggestedTag(tag)}
                     className={`text-[11px] sm:text-xs px-2.5 py-1 rounded-lg font-medium transition-all cursor-pointer select-none active:scale-95 ${
                       isSelected
-                        ? 'bg-[#FFF4F0] text-[#FF4F00] border border-orange-200 font-bold shadow-2xs'
-                        : 'bg-gray-50 border border-gray-200 text-gray-600 hover:bg-gray-100'
+                        ? 'bg-[#FFF4F0] dark:bg-orange-900/20 text-[#FF4F00] border border-orange-200 dark:border-orange-900/30 font-bold shadow-2xs'
+                        : 'bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-800'
                     }`}
                   >
                     {tag}
@@ -328,7 +328,7 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
                 .map((tag) => (
                   <span
                     key={tag}
-                    className="inline-flex items-center gap-1 bg-[#FFF4F0] text-[#FF4F00] border border-orange-200 text-[11px] sm:text-xs px-2.5 py-1 rounded-lg font-bold shadow-2xs select-none"
+                    className="inline-flex items-center gap-1 bg-[#FFF4F0] dark:bg-orange-900/20 text-[#FF4F00] border border-orange-200 dark:border-orange-900/30 text-[11px] sm:text-xs px-2.5 py-1 rounded-lg font-bold shadow-2xs select-none"
                   >
                     {tag}
                     <button
@@ -348,7 +348,7 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
                 onKeyDown={handleKeyDown}
                 onBlur={commitTagInput}
                 placeholder={selectedTags.length > 0 ? 'add more...' : 'type tag & enter...'}
-                className="flex-1 min-w-[110px] text-xs text-gray-700 outline-none placeholder-gray-400 ml-1 py-1 bg-transparent"
+                className="flex-1 min-w-[110px] text-xs text-gray-700 dark:text-gray-300 dark:text-gray-600 outline-none placeholder-gray-400 dark:placeholder-gray-500 ml-1 py-1 bg-transparent"
               />
             </div>
           </div>
@@ -356,11 +356,11 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
           {/* Photo Attachment (Click & Drag-and-Drop) */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider">
+              <label className="block text-[11px] font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider">
                 Attach Diagram / Screenshot
               </label>
               {selectedImage && (
-                <span className="text-[10px] text-gray-400 font-medium truncate max-w-[180px]">
+                <span className="text-[10px] text-gray-400 dark:text-gray-500 font-medium truncate max-w-[180px]">
                   {selectedImage.name} ({(selectedImage.size / 1024).toFixed(0)} KB)
                 </span>
               )}
@@ -383,24 +383,24 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
                 onDrop={handleDrop}
                 className={`border-2 border-dashed rounded-xl p-4 sm:p-5 text-center cursor-pointer transition-all flex flex-col items-center justify-center gap-1.5 ${
                   isDragging
-                    ? 'border-[#FF4F00] bg-orange-50/50 scale-[0.99]'
-                    : 'border-gray-200 hover:border-[#FF4F00]/50 bg-[#FAFAFA] hover:bg-orange-50/20'
+                    ? 'border-[#FF4F00] bg-orange-50 dark:bg-orange-900/20/50 scale-[0.99]'
+                    : 'border-gray-200 dark:border-gray-800 hover:border-[#FF4F00]/50 bg-[#FAFAFA] dark:bg-gray-800 hover:bg-orange-50 dark:hover:bg-orange-900/20 dark:bg-orange-900/20/20'
                 }`}
               >
-                <div className="w-10 h-10 rounded-xl bg-orange-50 border border-orange-100 text-[#FF4F00] flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-900/30 text-[#FF4F00] flex items-center justify-center">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                 </div>
-                <p className="text-xs font-bold text-gray-800">
-                  Click to browse <span className="text-gray-400 font-normal">or drop image here</span>
+                <p className="text-xs font-bold text-gray-800 dark:text-gray-200 dark:text-gray-300">
+                  Click to browse <span className="text-gray-400 dark:text-gray-500 font-normal">or drop image here</span>
                 </p>
-                <p className="text-[10px] text-gray-400 font-medium">
+                <p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium">
                   PNG, JPG, WebP, GIF up to 5MB
                 </p>
               </div>
             ) : (
-              <div className="relative rounded-xl overflow-hidden border border-gray-200 bg-gray-900/5 max-h-56 sm:max-h-64 flex items-center justify-center p-2 group">
+              <div className="relative rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800 bg-gray-900/5 max-h-56 sm:max-h-64 flex items-center justify-center p-2 group">
                 <img
                   src={imagePreview}
                   alt="Post preview"
@@ -429,24 +429,24 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
             )}
 
             {uploadError && (
-              <p className="text-[11px] text-red-500 font-semibold mt-1.5 flex items-center gap-1">
+              <p className="text-[11px] text-red-500 dark:text-red-400 font-semibold mt-1.5 flex items-center gap-1">
                 <span>⚠</span> {uploadError}
               </p>
             )}
           </div>
 
           {/* Mentoring Toggle */}
-          <div className="border border-gray-200 rounded-xl p-3 sm:p-4 flex items-start gap-3 bg-white shadow-2xs">
+          <div className="border border-gray-200 dark:border-gray-800 rounded-xl p-3 sm:p-4 flex items-start gap-3 bg-white dark:bg-gray-900 shadow-2xs">
             <button
               type="button"
               onClick={() => setIsMentoringEnabled(!isMentoringEnabled)}
-              className={`${isMentoringEnabled ? 'bg-[#FF4F00]' : 'bg-gray-200'} relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out mt-0.5`}
+              className={`${isMentoringEnabled ? 'bg-[#FF4F00]' : 'bg-gray-200 dark:bg-gray-700'} relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out mt-0.5`}
             >
-              <span className={`${isMentoringEnabled ? 'translate-x-4' : 'translate-x-0'} inline-block h-4 w-4 transform rounded-full bg-white shadow-xs ring-0 transition duration-200 ease-in-out`} />
+              <span className={`${isMentoringEnabled ? 'translate-x-4' : 'translate-x-0'} inline-block h-4 w-4 transform rounded-full bg-white dark:bg-gray-900 shadow-xs ring-0 transition duration-200 ease-in-out`} />
             </button>
             <div className="flex-1">
-              <h3 className="text-xs font-bold text-gray-900 leading-tight">Allow mentoring requests for this post</h3>
-              <p className="text-[11px] text-gray-500 mt-0.5">
+              <h3 className="text-xs font-bold text-gray-900 dark:text-gray-100 leading-tight">Allow mentoring requests for this post</h3>
+              <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-0.5">
                 {isMentoringEnabled
                   ? 'A "Request Mentoring" button will appear on this post.'
                   : 'Post will appear as a standard discussion question.'}
@@ -455,15 +455,15 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
           </div>
 
           {/* Footer Controls */}
-          <div className="pt-3 border-t border-gray-100 flex items-center justify-between pb-2 sm:pb-0">
-            <span className="text-[11px] text-gray-400 font-medium hidden sm:inline">
+          <div className="pt-3 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between pb-2 sm:pb-0">
+            <span className="text-[11px] text-gray-400 dark:text-gray-500 font-medium hidden sm:inline">
               {!title.trim() ? 'Add a title to save' : ''}
             </span>
             <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
               <button
                 type="button"
                 onClick={handleAttemptClose}
-                className="flex-1 sm:flex-none px-4 py-2.5 text-xs font-semibold text-gray-500 hover:text-gray-900 transition-colors text-center cursor-pointer"
+                className="flex-1 sm:flex-none px-4 py-2.5 text-xs font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100 transition-colors text-center cursor-pointer"
               >
                 Cancel
               </button>
@@ -486,21 +486,21 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
       {/* Publish Confirmation */}
       {showPublishConfirm && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-gray-950/60 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden p-6 text-center animate-in zoom-in-95 duration-150">
-            <div className="w-12 h-12 rounded-2xl bg-orange-50 border border-orange-100 text-[#FF4F00] flex items-center justify-center mx-auto mb-3.5">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden p-6 text-center animate-in zoom-in-95 duration-150">
+            <div className="w-12 h-12 rounded-2xl bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-900/30 text-[#FF4F00] flex items-center justify-center mx-auto mb-3.5">
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
               </svg>
             </div>
-            <h3 className="text-base font-bold text-gray-900">Ready to publish?</h3>
-            <p className="text-xs text-gray-500 mt-1.5 leading-relaxed">
+            <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">Ready to publish?</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1.5 leading-relaxed">
               Your post will be visible to all CADT students. Make sure everything looks good before publishing.
             </p>
             <div className="flex items-center gap-2.5 mt-5">
               <button
                 type="button"
                 onClick={() => setShowPublishConfirm(false)}
-                className="flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors cursor-pointer"
+                className="flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 dark:text-gray-600 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:bg-gray-700 transition-colors cursor-pointer"
               >
                 Go Back
               </button>
@@ -519,21 +519,21 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
       {/* Discard Confirmation */}
       {showDiscardConfirm && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-gray-950/60 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden p-6 text-center animate-in zoom-in-95 duration-150">
-            <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-100 text-amber-500 flex items-center justify-center mx-auto mb-3.5">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden p-6 text-center animate-in zoom-in-95 duration-150">
+            <div className="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-900/30 text-amber-500 flex items-center justify-center mx-auto mb-3.5">
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
               </svg>
             </div>
-            <h3 className="text-base font-bold text-gray-900">Discard post?</h3>
-            <p className="text-xs text-gray-500 mt-1.5 leading-relaxed">
+            <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">Discard post?</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1.5 leading-relaxed">
               You have unsaved changes. Are you sure you want to close this? Your work will be lost.
             </p>
             <div className="flex items-center gap-2.5 mt-5">
               <button
                 type="button"
                 onClick={() => setShowDiscardConfirm(false)}
-                className="flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors cursor-pointer"
+                className="flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 dark:text-gray-600 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:bg-gray-700 transition-colors cursor-pointer"
               >
                 Keep Editing
               </button>
@@ -552,14 +552,14 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
       {/* Uploading Overlay */}
       {isUploading && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-gray-950/60 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden p-6 text-center animate-in zoom-in-95 duration-150">
-            <div className="w-14 h-14 rounded-2xl bg-orange-50 border border-orange-100 text-[#FF4F00] flex items-center justify-center mx-auto mb-4">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden p-6 text-center animate-in zoom-in-95 duration-150">
+            <div className="w-14 h-14 rounded-2xl bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-900/30 text-[#FF4F00] flex items-center justify-center mx-auto mb-4">
               <svg className="w-7 h-7 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
             </div>
-            <h3 className="text-base font-bold text-gray-900">Publishing your post...</h3>
-            <p className="text-xs text-gray-500 mt-1.5 leading-relaxed">
+            <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">Publishing your post...</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1.5 leading-relaxed">
               Please wait while we upload your image and publish your post.
             </p>
             <div className="mt-4 flex items-center justify-center gap-1.5">

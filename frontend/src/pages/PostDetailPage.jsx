@@ -186,7 +186,7 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
   };
 
   return (
-    <div id={`comment-${comment.id}`} className="border-b border-gray-100 pb-5 sm:pb-6 last:border-b-0">
+    <div id={`comment-${comment.id}`} className="border-b border-gray-100 dark:border-gray-800 pb-5 sm:pb-6 last:border-b-0">
       <div className="flex items-center justify-between gap-2 mb-2">
         <div className="flex items-center gap-2 min-w-0 flex-wrap">
           <UserAvatar
@@ -194,17 +194,17 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
             userId={comment.author?.id || comment.authorId}
             size="sm"
           />
-          <span className="font-bold text-gray-900 text-xs sm:text-sm truncate">{comment.author?.displayName || 'Student'}</span>
+          <span className="font-bold text-gray-900 dark:text-gray-100 text-xs sm:text-sm truncate">{comment.author?.displayName || 'Student'}</span>
           <span
             className={`text-[8px] sm:text-[9px] uppercase font-bold px-1.5 py-0.5 rounded tracking-wide shrink-0 ${
               comment.author?.role === 'PROFESSOR'
-                ? 'bg-orange-50 text-[#FF4F00] border border-orange-100'
-                : 'bg-gray-100 text-gray-500'
+                ? 'bg-orange-50 dark:bg-orange-900/20 text-[#FF4F00] border border-orange-100 dark:border-orange-900/30'
+                : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 dark:text-gray-500'
             }`}
           >
             {comment.author?.role || 'STUDENT'}
           </span>
-          <span className="text-gray-400 text-[11px] sm:text-xs flex items-center gap-1">
+          <span className="text-gray-400 dark:text-gray-500 text-[11px] sm:text-xs flex items-center gap-1">
             <span>•</span>
             {comment.timestamp}
           </span>
@@ -217,7 +217,7 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
                 type="button"
                 onClick={() => { setIsEditing(true); setEditText(comment.body); }}
                 title="Edit comment"
-                className="p-1 rounded text-gray-300 hover:text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer"
+                className="p-1 rounded text-gray-300 dark:text-gray-600 hover:text-gray-600 dark:hover:text-gray-400 dark:text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 transition-colors cursor-pointer"
               >
                 <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -227,7 +227,7 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
                 type="button"
                 onClick={() => setIsDeleteModalOpen(true)}
                 title="Delete comment"
-                className="p-1 rounded text-gray-300 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                className="p-1 rounded text-gray-300 dark:text-gray-600 hover:text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 dark:bg-red-900/20 transition-colors cursor-pointer"
               >
                 <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -240,7 +240,7 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
             onClick={handleReport}
             title="Report comment"
             className={`p-1 rounded transition-colors group shrink-0 cursor-pointer ${
-              isReported ? 'text-red-600 bg-red-50' : 'text-gray-300 hover:text-red-600 hover:bg-red-50'
+              isReported ? 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20' : 'text-gray-300 dark:text-gray-600 hover:text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 dark:bg-red-900/20'
             }`}
           >
             <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform group-hover:scale-110" fill="currentColor" viewBox="0 0 20 20">
@@ -257,13 +257,13 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
               autoFocus
               value={editText}
               onChange={(e) => setEditText(e.target.value)}
-              className="w-full bg-white border border-gray-200 rounded-xl p-2.5 sm:p-3 text-xs sm:text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all min-h-20 resize-none"
+              className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-2.5 sm:p-3 text-xs sm:text-sm text-gray-800 dark:text-gray-200 dark:text-gray-300 placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all min-h-20 resize-none"
             />
             <div className="flex justify-end gap-2 mt-2">
               <button
                 type="button"
                 onClick={() => setIsEditing(false)}
-                className="px-3 py-1.5 text-xs font-semibold text-gray-500 hover:text-gray-800 transition-colors cursor-pointer"
+                className="px-3 py-1.5 text-xs font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-gray-800 dark:text-gray-200 dark:text-gray-300 transition-colors cursor-pointer"
               >
                 Cancel
               </button>
@@ -282,13 +282,13 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
           </form>
         </div>
       ) : (
-      <div className="pl-7 sm:pl-9 text-xs sm:text-sm text-gray-700">
+      <div className="pl-7 sm:pl-9 text-xs sm:text-sm text-gray-700 dark:text-gray-300 dark:text-gray-600">
         <div className={`space-y-2 sm:space-y-3 leading-relaxed wrap-break-words ${!isExpanded ? 'line-clamp-3 overflow-hidden' : ''}`}>
           {comment.body}
         </div>
 
         {comment.isEdited && (
-          <span className="inline-flex items-center gap-1 mt-1.5 text-[10px] text-gray-400 font-medium">
+          <span className="inline-flex items-center gap-1 mt-1.5 text-[10px] text-gray-400 dark:text-gray-500 font-medium">
             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
               <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
             </svg>
@@ -306,27 +306,27 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
           </button>
         )}
 
-        <div className="flex items-center gap-3 sm:gap-4 pt-2 text-gray-500 font-medium">
-          <div className="flex items-center gap-1 bg-gray-50 px-1.5 sm:px-2 py-0.5 rounded-lg border border-gray-100">
+        <div className="flex items-center gap-3 sm:gap-4 pt-2 text-gray-500 dark:text-gray-400 dark:text-gray-500 font-medium">
+          <div className="flex items-center gap-1 bg-gray-50 dark:bg-gray-800/50 px-1.5 sm:px-2 py-0.5 rounded-lg border border-gray-100 dark:border-gray-800">
             <button
               type="button"
               onClick={() => handleVote(1)}
               className={`p-0.5 rounded transition-colors cursor-pointer ${
-                voteState === 1 ? 'text-blue-500' : 'text-gray-400 hover:text-gray-600'
+                voteState === 1 ? 'text-blue-500' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 dark:text-gray-400 dark:text-gray-500'
               }`}
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
               </svg>
             </button>
-            <span className={`text-[11px] sm:text-xs font-bold px-0.5 ${voteState === 1 ? 'text-blue-500' : voteState === -1 ? 'text-[#FF4F00]' : 'text-gray-700'}`}>
+            <span className={`text-[11px] sm:text-xs font-bold px-0.5 ${voteState === 1 ? 'text-blue-500' : voteState === -1 ? 'text-[#FF4F00]' : 'text-gray-700 dark:text-gray-300 dark:text-gray-600'}`}>
               {voteCount}
             </span>
             <button
               type="button"
               onClick={() => handleVote(-1)}
               className={`p-0.5 rounded transition-colors cursor-pointer ${
-                voteState === -1 ? 'text-[#FF4F00]' : 'text-gray-400 hover:text-gray-600'
+                voteState === -1 ? 'text-[#FF4F00]' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 dark:text-gray-400 dark:text-gray-500'
               }`}
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
@@ -335,7 +335,7 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
             </button>
           </div>
 
-          <span className="text-[10px] sm:text-[11px] text-gray-400 font-medium">
+          <span className="text-[10px] sm:text-[11px] text-gray-400 dark:text-gray-500 font-medium">
             {voteTotal} {voteTotal === 1 ? 'vote' : 'votes'}
           </span>
 
@@ -344,7 +344,7 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
             onClick={() =>
               setReplyingToUser(replyingToUser?.id === 'main' ? null : { id: 'main', name: comment.author?.displayName || 'Student' })
             }
-            className="hover:text-gray-900 text-xs font-semibold transition-colors cursor-pointer"
+            className="hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100 text-xs font-semibold transition-colors cursor-pointer"
           >
             Reply
           </button>
@@ -353,7 +353,7 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
       )}
 
       {replies.length > 0 && (
-        <div className="mt-3 sm:mt-4 ml-4 sm:ml-9 pl-3 sm:pl-4 border-l-2 border-gray-100 space-y-3.5 sm:space-y-4">
+        <div className="mt-3 sm:mt-4 ml-4 sm:ml-9 pl-3 sm:pl-4 border-l-2 border-gray-100 dark:border-gray-800 space-y-3.5 sm:space-y-4">
           {replies.map((reply) => (
             <NestedReply
               key={reply.id}
@@ -368,15 +368,15 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
       )}
 
       {replyingToUser && (
-        <form onSubmit={handleSendReply} className="mt-3 sm:mt-4 ml-4 sm:ml-9 bg-gray-50 border border-gray-200 rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-2xs animate-in fade-in duration-150">
+        <form onSubmit={handleSendReply} className="mt-3 sm:mt-4 ml-4 sm:ml-9 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-800 rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-2xs animate-in fade-in duration-150">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] sm:text-xs font-semibold text-gray-500 truncate">
+            <span className="text-[11px] sm:text-xs font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-500 truncate">
               Replying to <strong className="text-[#FF4F00]">@{replyingToUser.name}</strong>
             </span>
             <button
               type="button"
               onClick={() => setReplyingToUser(null)}
-              className="text-[11px] sm:text-xs text-gray-400 hover:text-gray-600 shrink-0 ml-2 cursor-pointer"
+              className="text-[11px] sm:text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 dark:text-gray-400 dark:text-gray-500 shrink-0 ml-2 cursor-pointer"
             >
               Cancel
             </button>
@@ -387,14 +387,14 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
             value={replyText}
             onChange={(e) => setReplyText(e.target.value)}
             placeholder={`Write your reply to ${replyingToUser.name}...`}
-            className="w-full bg-white border border-gray-200 rounded-xl p-2.5 sm:p-3 text-xs text-gray-800 placeholder-gray-400 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all min-h-16.25 resize-none"
+            className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-2.5 sm:p-3 text-xs text-gray-800 dark:text-gray-200 dark:text-gray-300 placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all min-h-16.25 resize-none"
           />
 
           <div className="flex justify-end gap-2 mt-2">
             <button
               type="button"
               onClick={() => setReplyingToUser(null)}
-              className="px-3 py-1.5 text-xs font-semibold text-gray-500 hover:text-gray-800 transition-colors cursor-pointer"
+              className="px-3 py-1.5 text-xs font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-gray-800 dark:text-gray-200 dark:text-gray-300 transition-colors cursor-pointer"
             >
               Cancel
             </button>
@@ -539,17 +539,17 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
             userId={reply.author?.id || reply.authorId}
             size="xs"
           />
-          <span className="font-bold text-gray-900 text-xs truncate">{reply.author?.displayName || 'Student'}</span>
+          <span className="font-bold text-gray-900 dark:text-gray-100 text-xs truncate">{reply.author?.displayName || 'Student'}</span>
           <span
             className={`text-[8px] uppercase font-bold px-1.5 py-0.5 rounded tracking-wide shrink-0 ${
               reply.author?.role === 'PROFESSOR'
-                ? 'bg-orange-50 text-[#FF4F00] border border-orange-100'
-                : 'bg-gray-100 text-gray-500'
+                ? 'bg-orange-50 dark:bg-orange-900/20 text-[#FF4F00] border border-orange-100 dark:border-orange-900/30'
+                : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 dark:text-gray-500'
             }`}
           >
             {reply.author?.role || 'STUDENT'}
           </span>
-          <span className="text-gray-400 text-[11px] sm:text-xs flex items-center gap-1">
+          <span className="text-gray-400 dark:text-gray-500 text-[11px] sm:text-xs flex items-center gap-1">
             <span>•</span>
             {reply.timestamp}
           </span>
@@ -562,7 +562,7 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
                 type="button"
                 onClick={() => { setIsEditing(true); setEditText(reply.body); }}
                 title="Edit reply"
-                className="p-0.5 rounded text-gray-300 hover:text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer"
+                className="p-0.5 rounded text-gray-300 dark:text-gray-600 hover:text-gray-600 dark:hover:text-gray-400 dark:text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 transition-colors cursor-pointer"
               >
                 <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -572,7 +572,7 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
                 type="button"
                 onClick={() => setIsDeleteModalOpen(true)}
                 title="Delete reply"
-                className="p-0.5 rounded text-gray-300 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                className="p-0.5 rounded text-gray-300 dark:text-gray-600 hover:text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 dark:bg-red-900/20 transition-colors cursor-pointer"
               >
                 <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -585,7 +585,7 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
             onClick={handleReport}
             title="Report reply"
             className={`p-0.5 rounded transition-colors group shrink-0 cursor-pointer ${
-              isReported ? 'text-red-600 bg-red-50' : 'text-gray-300 hover:text-red-600 hover:bg-red-50'
+              isReported ? 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20' : 'text-gray-300 dark:text-gray-600 hover:text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 dark:bg-red-900/20'
             }`}
           >
             <svg className="w-3.5 h-3.5 transition-transform group-hover:scale-110" fill="currentColor" viewBox="0 0 20 20">
@@ -602,13 +602,13 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
               autoFocus
               value={editText}
               onChange={(e) => setEditText(e.target.value)}
-              className="w-full bg-white border border-gray-200 rounded-lg p-2 text-xs text-gray-800 placeholder-gray-400 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all min-h-15 resize-none"
+              className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg p-2 text-xs text-gray-800 dark:text-gray-200 dark:text-gray-300 placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all min-h-15 resize-none"
             />
             <div className="flex justify-end gap-2 mt-1.5">
               <button
                 type="button"
                 onClick={() => setIsEditing(false)}
-                className="px-2.5 py-1 text-[11px] font-semibold text-gray-500 hover:text-gray-800 transition-colors cursor-pointer"
+                className="px-2.5 py-1 text-[11px] font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-gray-800 dark:text-gray-200 dark:text-gray-300 transition-colors cursor-pointer"
               >
                 Cancel
               </button>
@@ -627,7 +627,7 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
           </form>
         </div>
       ) : (
-      <div className="pl-6 sm:pl-8 text-xs text-gray-700 leading-relaxed wrap-break-words">
+      <div className="pl-6 sm:pl-8 text-xs text-gray-700 dark:text-gray-300 dark:text-gray-600 leading-relaxed wrap-break-words">
         <p>
           {reply.replyingTo && (
             <span className="text-[#FF4F00] font-bold mr-1.5">@{reply.replyingTo}</span>
@@ -636,7 +636,7 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
         </p>
 
         {reply.isEdited && (
-          <span className="inline-flex items-center gap-1 mt-1 text-[10px] text-gray-400 font-medium">
+          <span className="inline-flex items-center gap-1 mt-1 text-[10px] text-gray-400 dark:text-gray-500 font-medium">
             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
               <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
             </svg>
@@ -644,27 +644,27 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
           </span>
         )}
 
-        <div className="flex items-center gap-2.5 sm:gap-3 pt-1.5 text-gray-500 font-medium">
-          <div className="flex items-center gap-0.5 sm:gap-1 bg-gray-50 px-1.5 py-0.5 rounded-md border border-gray-100">
+        <div className="flex items-center gap-2.5 sm:gap-3 pt-1.5 text-gray-500 dark:text-gray-400 dark:text-gray-500 font-medium">
+          <div className="flex items-center gap-0.5 sm:gap-1 bg-gray-50 dark:bg-gray-800/50 px-1.5 py-0.5 rounded-md border border-gray-100 dark:border-gray-800">
             <button
               type="button"
               onClick={() => handleVote(1)}
               className={`p-0.5 transition-colors cursor-pointer ${
-                voteState === 1 ? 'text-blue-500' : 'text-gray-400 hover:text-gray-600'
+                voteState === 1 ? 'text-blue-500' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 dark:text-gray-400 dark:text-gray-500'
               }`}
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
               </svg>
             </button>
-            <span className={`text-[10px] sm:text-[11px] font-bold px-0.5 ${voteState === 1 ? 'text-blue-500' : voteState === -1 ? 'text-[#FF4F00]' : 'text-gray-700'}`}>
+            <span className={`text-[10px] sm:text-[11px] font-bold px-0.5 ${voteState === 1 ? 'text-blue-500' : voteState === -1 ? 'text-[#FF4F00]' : 'text-gray-700 dark:text-gray-300 dark:text-gray-600'}`}>
               {voteCount}
             </span>
             <button
               type="button"
               onClick={() => handleVote(-1)}
               className={`p-0.5 transition-colors cursor-pointer ${
-                voteState === -1 ? 'text-[#FF4F00]' : 'text-gray-400 hover:text-gray-600'
+                voteState === -1 ? 'text-[#FF4F00]' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 dark:text-gray-400 dark:text-gray-500'
               }`}
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
@@ -673,14 +673,14 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
             </button>
           </div>
 
-          <span className="text-[10px] sm:text-[11px] text-gray-400 font-medium">
+          <span className="text-[10px] sm:text-[11px] text-gray-400 dark:text-gray-500 font-medium">
             {voteTotal} {voteTotal === 1 ? 'vote' : 'votes'}
           </span>
 
           <button
             type="button"
             onClick={() => onReplyClick({ id: reply.id, name: reply.author?.displayName || 'Student' })}
-            className="hover:text-gray-900 text-[11px] font-semibold transition-colors cursor-pointer"
+            className="hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100 text-[11px] font-semibold transition-colors cursor-pointer"
           >
              Reply
           </button>
@@ -689,7 +689,7 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
       )}
 
       {reply.replies?.length > 0 && (
-        <div className="mt-2 ml-4 sm:ml-8 pl-2 sm:pl-3 border-l-2 border-gray-100 space-y-3">
+        <div className="mt-2 ml-4 sm:ml-8 pl-2 sm:pl-3 border-l-2 border-gray-100 dark:border-gray-800 space-y-3">
           {reply.replies.map((sub) => (
             <NestedReply
               key={sub.id}
@@ -808,8 +808,8 @@ export default function PostDetailPage() {
         const el = document.getElementById(`comment-${commentId}`);
         if (el) {
           el.scrollIntoView({ behavior: "smooth", block: "start" });
-          el.classList.add("bg-amber-50");
-          setTimeout(() => el.classList.remove("bg-amber-50"), 2000);
+          el.classList.add("bg-amber-50 dark:bg-amber-900/20");
+          setTimeout(() => el.classList.remove("bg-amber-50 dark:bg-amber-900/20"), 2000);
         }
       }, 300);
     }
@@ -1083,7 +1083,7 @@ export default function PostDetailPage() {
   if (postLoading) {
     return (
       <ThreeColumnLayout>
-        <div className="flex flex-col items-center justify-center py-16 text-gray-400 gap-2">
+        <div className="flex flex-col items-center justify-center py-16 text-gray-400 dark:text-gray-500 gap-2">
           <div className="w-6 h-6 border-2 border-[#FF4F00] border-t-transparent rounded-full animate-spin" />
           <span className="text-xs font-semibold">Loading post...</span>
         </div>
@@ -1094,9 +1094,9 @@ export default function PostDetailPage() {
   if (notFound || !post) {
     return (
       <ThreeColumnLayout>
-        <div className="bg-white border border-gray-200 rounded-2xl p-10 text-center shadow-xs">
-          <h2 className="text-sm font-bold text-gray-900">Post not found</h2>
-          <p className="text-xs text-gray-500 mt-1">This post may have been removed.</p>
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-10 text-center shadow-xs">
+          <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100">Post not found</h2>
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">This post may have been removed.</p>
           <Link to="/" className="inline-block mt-4 text-xs font-bold text-[#FF4F00] hover:underline">
             Back to feed
           </Link>
@@ -1111,7 +1111,7 @@ export default function PostDetailPage() {
         {/* Breadcrumb Back Link */}
         <Link
           to="/"
-          className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-gray-500 hover:text-gray-900 font-semibold transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100 font-semibold transition-colors"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -1120,7 +1120,7 @@ export default function PostDetailPage() {
         </Link>
 
         {/* Main Post Card */}
-        <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl overflow-hidden shadow-xs">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl sm:rounded-2xl overflow-hidden shadow-xs">
           <div className="p-4 sm:p-6">
 
             {/* Header: Author + Options / Request CTA */}
@@ -1136,15 +1136,15 @@ export default function PostDetailPage() {
                   <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                     <Link
                       to={`/user/${authorProfileSlug}`}
-                      className="font-bold text-gray-900 text-xs sm:text-sm hover:text-[#FF4F00] transition-colors truncate"
+                      className="font-bold text-gray-900 dark:text-gray-100 text-xs sm:text-sm hover:text-[#FF4F00] transition-colors truncate"
                     >
                       {post.author}
                     </Link>
-                    <span className="bg-purple-50 text-[#8B5CF6] text-[9px] sm:text-[10px] uppercase font-bold px-2 py-0.5 rounded border border-purple-100 shrink-0">
+                    <span className="bg-purple-50 dark:bg-purple-900/20 text-[#8B5CF6] text-[9px] sm:text-[10px] uppercase font-bold px-2 py-0.5 rounded border border-purple-100 dark:border-purple-900/30 shrink-0">
                       {post.role}
                     </span>
                   </div>
-                  <div className="flex items-center text-[11px] sm:text-xs mt-0.5 text-gray-400">
+                  <div className="flex items-center text-[11px] sm:text-xs mt-0.5 text-gray-400 dark:text-gray-500">
                     <span className="text-[#FF4F00] font-bold">{post.tag || '#General'}</span>
                     <span className="mx-1.5">•</span>
                     <span>{post.timestamp}</span>
@@ -1158,7 +1158,7 @@ export default function PostDetailPage() {
                   <button
                     type="button"
                     onClick={() => navigate(`/request-session/${post.userId || ''}`)}
-                    className="text-[#FF4F00] border border-[#FF4F00] rounded-xl px-3 sm:px-4 py-1.5 text-xs font-bold hover:bg-orange-50 active:bg-orange-100 transition-colors cursor-pointer"
+                    className="text-[#FF4F00] border border-[#FF4F00] rounded-xl px-3 sm:px-4 py-1.5 text-xs font-bold hover:bg-orange-50 dark:hover:bg-orange-900/20 dark:bg-orange-900/20 active:bg-orange-100 dark:bg-orange-900/30 transition-colors cursor-pointer"
                   >
                     Request Session
                   </button>
@@ -1169,7 +1169,7 @@ export default function PostDetailPage() {
                   <button
                     type="button"
                     onClick={() => setIsMenuOpen(!isMenuOpen)}
-                    className="p-1.5 text-gray-400 hover:text-gray-700 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+                    className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300 dark:text-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-800 transition-colors cursor-pointer"
                     title="More options"
                     aria-label="More post options"
                   >
@@ -1179,7 +1179,7 @@ export default function PostDetailPage() {
                   </button>
 
                   {isMenuOpen && (
-                    <div className="absolute right-0 top-full mt-1 w-44 bg-white border border-gray-200 rounded-xl shadow-lg py-1.5 z-30 animate-in fade-in zoom-in-95 duration-100">
+                    <div className="absolute right-0 top-full mt-1 w-44 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-lg py-1.5 z-30 animate-in fade-in zoom-in-95 duration-100">
                       {isOwner ? (
                         <>
                           <button
@@ -1188,9 +1188,9 @@ export default function PostDetailPage() {
                               setIsMenuOpen(false);
                               setIsEditModalOpen(true);
                             }}
-                            className="w-full flex items-center gap-2 px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer text-left"
+                            className="w-full flex items-center gap-2 px-4 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 dark:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 transition-colors cursor-pointer text-left"
                           >
-                            <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                            <svg className="w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>
                             <span>Edit Post</span>
@@ -1202,9 +1202,9 @@ export default function PostDetailPage() {
                               setIsMenuOpen(false);
                               setIsDeleteModalOpen(true);
                             }}
-                            className="w-full flex items-center gap-2 px-4 py-2 text-xs font-bold text-red-600 hover:bg-red-50 transition-colors cursor-pointer text-left border-t border-gray-50"
+                            className="w-full flex items-center gap-2 px-4 py-2 text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 dark:bg-red-900/20 transition-colors cursor-pointer text-left border-t border-gray-50 dark:border-gray-800"
                           >
-                            <svg className="w-4 h-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                            <svg className="w-4 h-4 text-red-500 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                             </svg>
                             <span>Delete Post</span>
@@ -1215,9 +1215,9 @@ export default function PostDetailPage() {
                           <button
                             type="button"
                             onClick={handleCopyLink}
-                            className="w-full flex items-center gap-2 px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer text-left"
+                            className="w-full flex items-center gap-2 px-4 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 dark:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 transition-colors cursor-pointer text-left"
                           >
-                            <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                            <svg className="w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                             </svg>
                             <span>Copy Link</span>
@@ -1226,9 +1226,9 @@ export default function PostDetailPage() {
                           <button
                             type="button"
                             onClick={handleReport}
-                            className="w-full flex items-center gap-2 px-4 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors cursor-pointer text-left"
+                            className="w-full flex items-center gap-2 px-4 py-2 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 dark:bg-red-900/20 transition-colors cursor-pointer text-left"
                           >
-                            <svg className="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                            <svg className="w-4 h-4 text-red-500 dark:text-red-400" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                             </svg>
                             <span>{isReported ? 'Reported' : 'Report Post'}</span>
@@ -1248,7 +1248,7 @@ export default function PostDetailPage() {
                   <Link
                     key={t}
                     to={`/?tag=${encodeURIComponent(String(t).replace(/^#/, ''))}`}
-                    className="bg-orange-50 border border-orange-100 text-[#FF4F00] text-[10px] sm:text-[11px] font-bold px-2 sm:px-2.5 py-0.5 rounded-md hover:bg-orange-100 transition-colors"
+                    className="bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-900/30 text-[#FF4F00] text-[10px] sm:text-[11px] font-bold px-2 sm:px-2.5 py-0.5 rounded-md hover:bg-orange-100 dark:bg-orange-900/30 transition-colors"
                   >
                     #{String(t).replace(/^#/, '')}
                   </Link>
@@ -1257,12 +1257,12 @@ export default function PostDetailPage() {
             )}
 
             {/* Post Title & Content */}
-            <h1 className="text-base sm:text-xl font-bold text-gray-900 mb-2 sm:mb-3 leading-snug wrap-break-words">
+            <h1 className="text-base sm:text-xl font-bold text-gray-900 dark:text-gray-100 mb-2 sm:mb-3 leading-snug wrap-break-words">
               {post.title}
             </h1>
 
             {post.content ? (
-              <div className="relative text-xs sm:text-sm text-gray-700 leading-relaxed wrap-break-words">
+              <div className="relative text-xs sm:text-sm text-gray-700 dark:text-gray-300 dark:text-gray-600 leading-relaxed wrap-break-words">
                 <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isLongPost && !isBodyExpanded ? 'max-h-24' : 'max-h-[2000px]'}`}>
                   <p>{post.content}</p>
                 </div>
@@ -1273,7 +1273,7 @@ export default function PostDetailPage() {
                   <button
                     type="button"
                     onClick={() => setIsBodyExpanded(!isBodyExpanded)}
-                    className="mt-2 inline-flex items-center gap-1.5 text-xs font-bold text-[#FF4F00] hover:text-orange-700 transition-colors cursor-pointer group"
+                    className="mt-2 inline-flex items-center gap-1.5 text-xs font-bold text-[#FF4F00] hover:text-orange-700 dark:hover:text-orange-300 transition-colors cursor-pointer group"
                   >
                     {isBodyExpanded ? (
                       <>
@@ -1297,7 +1297,7 @@ export default function PostDetailPage() {
 
         {/* Attached Image */}
         {post.image_url && (
-          <div className="mt-3 rounded-xl overflow-hidden border border-gray-100 bg-gray-50">
+          <div className="mt-3 rounded-xl overflow-hidden border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
             <img
               src={post.image_url}
               alt={post.title}
@@ -1309,15 +1309,15 @@ export default function PostDetailPage() {
           </div>
 
           {/* Post Bottom Controls */}
-          <div className="flex flex-wrap items-center justify-between gap-2.5 px-4 sm:px-6 py-2.5 sm:py-3 border-t border-gray-100 bg-white text-gray-500 text-xs sm:text-sm font-medium">
+          <div className="flex flex-wrap items-center justify-between gap-2.5 px-4 sm:px-6 py-2.5 sm:py-3 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 dark:text-gray-500 text-xs sm:text-sm font-medium">
             <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
               {/* Voting Capsule */}
-              <div className="flex items-center gap-1 bg-gray-50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-lg border border-gray-100">
+              <div className="flex items-center gap-1 bg-gray-50 dark:bg-gray-800/50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-lg border border-gray-100 dark:border-gray-800">
                  <button
                    type="button"
                    onClick={() => handlePostVote(1)}
-                   className={`p-0.5 sm:p-1 rounded hover:bg-blue-50 transition-colors cursor-pointer ${
-                     postVoteState === 1 ? 'text-blue-500' : 'text-gray-400'
+                   className={`p-0.5 sm:p-1 rounded hover:bg-blue-50 dark:bg-blue-900/20 transition-colors cursor-pointer ${
+                     postVoteState === 1 ? 'text-blue-500' : 'text-gray-400 dark:text-gray-500'
                    }`}
                    title="Upvote"
                  >
@@ -1327,7 +1327,7 @@ export default function PostDetailPage() {
                   </button>
 
                   <span className={`text-[11px] sm:text-xs font-bold px-0.5 ${
-                    postVoteState === 1 ? 'text-blue-500' : postVoteState === -1 ? 'text-[#FF4F00]' : 'text-gray-700'
+                    postVoteState === 1 ? 'text-blue-500' : postVoteState === -1 ? 'text-[#FF4F00]' : 'text-gray-700 dark:text-gray-300 dark:text-gray-600'
                   }`}>
                     {postVoteCount}
                   </span>
@@ -1335,8 +1335,8 @@ export default function PostDetailPage() {
                   <button
                     type="button"
                     onClick={() => handlePostVote(-1)}
-                    className={`p-0.5 sm:p-1 rounded hover:bg-orange-50 transition-colors cursor-pointer ${
-                      postVoteState === -1 ? 'text-[#FF4F00]' : 'text-gray-400'
+                    className={`p-0.5 sm:p-1 rounded hover:bg-orange-50 dark:hover:bg-orange-900/20 dark:bg-orange-900/20 transition-colors cursor-pointer ${
+                      postVoteState === -1 ? 'text-[#FF4F00]' : 'text-gray-400 dark:text-gray-500'
                     }`}
                     title="Downvote"
                   >
@@ -1350,17 +1350,17 @@ export default function PostDetailPage() {
               <button
                 type="button"
                 onClick={scrollToComments}
-                className="flex items-center gap-1 sm:gap-1.5 text-xs text-gray-500 font-semibold cursor-pointer hover:text-gray-800 transition-colors"
+                className="flex items-center gap-1 sm:gap-1.5 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 font-semibold cursor-pointer hover:text-gray-800 dark:text-gray-200 dark:text-gray-300 transition-colors"
               >
-                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                 </svg>
                 <span>{countComments(comments)} comments</span>
               </button>
 
               {/* Total Votes */}
-              <div className="flex items-center gap-1 sm:gap-1.5 text-xs text-gray-500 font-semibold">
-                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <div className="flex items-center gap-1 sm:gap-1.5 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 font-semibold">
+                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                 </svg>
                 <span>{postVoteTotal} {postVoteTotal === 1 ? 'vote' : 'votes'}</span>
@@ -1370,9 +1370,9 @@ export default function PostDetailPage() {
               <button
                 type="button"
                 onClick={handleCopyLink}
-                className="flex items-center gap-1 sm:gap-1.5 text-xs font-semibold hover:text-gray-800 transition-colors cursor-pointer"
+                className="flex items-center gap-1 sm:gap-1.5 text-xs font-semibold hover:text-gray-800 dark:text-gray-200 dark:text-gray-300 transition-colors cursor-pointer"
               >
-                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
                 </svg>
                 <span className="hidden xs:inline">{isCopied ? 'Copied!' : 'Share'}</span>
@@ -1383,7 +1383,7 @@ export default function PostDetailPage() {
                 type="button"
                 onClick={handleSaveToggle}
                 className={`flex items-center gap-1 sm:gap-1.5 text-xs font-semibold transition-colors cursor-pointer ${
-                  isSaved ? 'text-[#FF4F00] font-bold' : 'hover:text-gray-800'
+                  isSaved ? 'text-[#FF4F00] font-bold' : 'hover:text-gray-800 dark:text-gray-200 dark:text-gray-300'
                 }`}
               >
                 <svg
@@ -1402,12 +1402,12 @@ export default function PostDetailPage() {
         </div>
 
         {/* Main Comment Box */}
-        <div ref={commentBoxRef} className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-3.5 sm:p-5 shadow-xs">
+        <div ref={commentBoxRef} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl sm:rounded-2xl p-3.5 sm:p-5 shadow-xs">
           <textarea
             rows={3}
             value={commentText}
             onChange={(e) => setCommentText(e.target.value)}
-            className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl p-3 text-xs sm:text-sm text-gray-800 placeholder-gray-400 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all min-h-20 sm:min-h-22.5 resize-none mb-3"
+            className="w-full bg-[#FAFAFA] dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl p-3 text-xs sm:text-sm text-gray-800 dark:text-gray-200 dark:text-gray-300 placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:bg-white dark:bg-gray-900 focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all min-h-20 sm:min-h-22.5 resize-none mb-3"
             placeholder="Share your knowledge or ask a follow-up..."
           />
           <div className="flex justify-end">
@@ -1424,8 +1424,8 @@ export default function PostDetailPage() {
 
         {/* Sort Filter Tabs */}
         <div className="flex items-center justify-between sm:justify-start gap-2 sm:gap-3 text-xs sm:text-sm font-medium pt-1">
-          <span className="text-gray-400 text-xs">Sort by:</span>
-          <div className="flex items-center gap-1 bg-[#FAFAFA] border border-gray-200 p-1 rounded-xl">
+          <span className="text-gray-400 dark:text-gray-500 text-xs">Sort by:</span>
+          <div className="flex items-center gap-1 bg-[#FAFAFA] dark:bg-gray-800 border border-gray-200 dark:border-gray-800 p-1 rounded-xl">
              {['top', 'new'].map((tab) => (
               <button
                 key={tab}
@@ -1434,7 +1434,7 @@ export default function PostDetailPage() {
                 className={`capitalize px-2.5 sm:px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                   sortBy === tab
                     ? 'bg-[#FF4F00] text-white shadow-2xs'
-                    : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100/70'
+                    : 'text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-800/70'
                 }`}
               >
                 {tab}
@@ -1444,11 +1444,11 @@ export default function PostDetailPage() {
         </div>
 
         {/* Comments List */}
-        <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-xs space-y-5 sm:space-y-6">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-xs space-y-5 sm:space-y-6">
           {sortedComments.length === 0 ? (
             <div className="text-center py-10">
-              <h3 className="text-sm font-bold text-gray-900">No comments yet</h3>
-              <p className="text-xs text-gray-500 mt-1">Be the first to share your knowledge.</p>
+              <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">No comments yet</h3>
+              <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">Be the first to share your knowledge.</p>
             </div>
           ) : (
             sortedComments.map((comment) => (

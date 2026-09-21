@@ -17,7 +17,7 @@ export function RequestSessionButton({ mentorId, commentId }) {
       type="button"
       onClick={() => navigate(`/request-session/${mentorId || ""}`)}
       title="Request a mentoring session"
-      className="text-[10px] sm:text-[11px] font-bold text-[#FF4F00] hover:text-orange-700 transition-colors cursor-pointer"
+      className="text-[10px] sm:text-[11px] font-bold text-[#FF4F00] hover:text-orange-700 dark:hover:text-orange-300 transition-colors cursor-pointer"
     >
       Request Session
     </button>

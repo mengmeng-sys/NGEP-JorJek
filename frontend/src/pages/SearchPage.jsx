@@ -90,7 +90,7 @@ export default function SearchPage() {
         {/* Search input lives in the navbar now (kept in sync with ?q= via
             Navbar.jsx) — this page used to render its own second, unsynced
             search box directly below it, which is the "2 search bars" bug. */}
-        <h1 className="text-sm font-bold text-gray-800">
+        <h1 className="text-sm font-bold text-gray-800 dark:text-gray-200 dark:text-gray-300">
           {loading
             ? "Searching..."
             : q.trim()
@@ -99,14 +99,14 @@ export default function SearchPage() {
         </h1>
 
         {error && (
-          <p className="text-[11px] text-red-600 font-semibold bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+          <p className="text-[11px] text-red-600 dark:text-red-400 font-semibold bg-red-50 dark:bg-red-900/20 border border-red-100 rounded-lg px-3 py-2">
             {error}
           </p>
         )}
 
         {users.length > 0 && (
-          <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-3.5 sm:p-4 shadow-xs">
-            <h2 className="text-[11px] font-bold text-gray-400 uppercase tracking-wide mb-2.5">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl sm:rounded-2xl p-3.5 sm:p-4 shadow-xs">
+            <h2 className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-2.5">
               People
             </h2>
             <div className="space-y-2">
@@ -114,14 +114,14 @@ export default function SearchPage() {
                 <div
                   key={u.id}
                   onClick={() => navigate(`/user/${u.handle}`)}
-                  className="flex items-center gap-3 p-2 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer"
+                  className="flex items-center gap-3 p-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 transition-colors cursor-pointer"
                 >
-                   <UserAvatar initials={u.initials} userId={u.id} size="md" gradient className="ring-2 ring-white shadow-xs" avatarUrl={u.avatarUrl} />
+                   <UserAvatar initials={u.initials} userId={u.id} size="md" gradient className="ring-2 ring-white dark:ring-gray-900 shadow-xs" avatarUrl={u.avatarUrl} />
                   <div className="flex-1 min-w-0">
-                    <p className="text-[13px] font-semibold text-gray-900 truncate leading-tight">
+                    <p className="text-[13px] font-semibold text-gray-900 dark:text-gray-100 truncate leading-tight">
                       {u.displayName}
                     </p>
-                    <p className="text-[11px] text-gray-400 font-medium">{u.role}</p>
+                    <p className="text-[11px] text-gray-400 dark:text-gray-500 font-medium">{u.role}</p>
                   </div>
                 </div>
               ))}
@@ -131,9 +131,9 @@ export default function SearchPage() {
 
         <div className="space-y-3 sm:space-y-4">
           {results.length === 0 && users.length === 0 && !loading && q.trim() ? (
-            <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-8 sm:p-12 text-center shadow-xs">
-              <h3 className="text-sm font-bold text-gray-900">No results found</h3>
-              <p className="text-xs text-gray-500 mt-1 max-w-sm mx-auto">
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl sm:rounded-2xl p-8 sm:p-12 text-center shadow-xs">
+              <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">No results found</h3>
+              <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1 max-w-sm mx-auto">
                 Try different keywords or browse the campus feed instead.
               </p>
             </div>

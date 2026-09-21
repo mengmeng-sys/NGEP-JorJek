@@ -2,7 +2,6 @@ import React from 'react';
 import { TopUsersList } from '@/components/profile/TopMentorsList';
 import { CommunityRulesCard } from './CommunityRulesCard';
 import { GettingStartedCard } from './GettingStartedCard';
-import { ThemeToggle } from '@/components/shared/ThemeToggle';
 
 export function RightSidebar({ onOpenAuth }) {
   return (
@@ -27,7 +26,7 @@ export function RightSidebar({ onOpenAuth }) {
                </div>
                <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">Top Users</h3>
              </div>
-             <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-100">
+             <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-2 py-0.5 rounded-md border border-amber-100 dark:border-amber-900/30">
                This Week
              </span>
            </div>
@@ -38,10 +37,7 @@ export function RightSidebar({ onOpenAuth }) {
            </div>
          </div>
 
-         {/* Theme Toggle */}
-         <ThemeToggle className="w-full justify-center" />
-
-       </div>
+        </div>
     </aside>
   );
 }

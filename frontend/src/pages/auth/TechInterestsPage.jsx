@@ -130,11 +130,11 @@ export default function TechInterestsPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#FBFBFB] flex flex-col justify-center items-center px-3.5 sm:px-6 py-6 sm:py-12 relative">
+    <div className="min-h-screen w-full bg-[#FBFBFB] dark:bg-gray-950 flex flex-col justify-center items-center px-3.5 sm:px-6 py-6 sm:py-12 relative">
       <div className="absolute top-4 sm:top-6 left-4 sm:left-6">
         <BackHomeArrow />
       </div>
-      <div className="w-full max-w-lg sm:max-w-2xl bg-white border border-gray-200 rounded-xl sm:rounded-2xl shadow-xs p-4 sm:p-7 md:p-8">
+      <div className="w-full max-w-lg sm:max-w-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl sm:rounded-2xl shadow-xs p-4 sm:p-7 md:p-8">
         
         {/* Brand & Progress Header */}
         <div className="text-center mb-5 sm:mb-6">
@@ -146,14 +146,14 @@ export default function TechInterestsPage() {
             />
           </Link>
           <div>
-            <span className="text-[10px] font-black uppercase tracking-wider text-[#FF4F00] bg-orange-50 px-2.5 py-1 rounded-md border border-orange-100 inline-block">
+            <span className="text-[10px] font-black uppercase tracking-wider text-[#FF4F00] bg-orange-50 dark:bg-orange-900/20 px-2.5 py-1 rounded-md border border-orange-100 dark:border-orange-900/30 inline-block">
               Step 2 of 2 • Personalize
             </span>
           </div>
-          <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mt-2 leading-tight">
+          <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100 mt-2 leading-tight">
             Select Your Technical Interests
           </h1>
-          <p className="text-[11px] sm:text-xs text-gray-500 mt-1 max-w-md mx-auto leading-relaxed">
+          <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1 max-w-md mx-auto leading-relaxed">
             Choose subjects you want to explore. We tailor your campus discussion feed and peer mentor recommendations to these areas.
           </p>
         </div>
@@ -169,8 +169,8 @@ export default function TechInterestsPage() {
                 onClick={() => toggleInterest(cat.id)}
                 className={`w-full text-left p-3 sm:p-3.5 rounded-xl border flex items-center justify-between cursor-pointer transition-all active:scale-[0.99] select-none ${
                   isSelected
-                    ? 'border-[#FF4F00] bg-orange-50/50 text-gray-900 shadow-2xs'
-                    : 'border-gray-200 bg-[#FAFAFA] hover:bg-white text-gray-700 hover:border-gray-300'
+                    ? 'border-[#FF4F00] bg-orange-50 dark:bg-orange-900/20/50 text-gray-900 dark:text-gray-100 shadow-2xs'
+                    : 'border-gray-200 dark:border-gray-800 bg-[#FAFAFA] dark:bg-gray-800 hover:bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 dark:text-gray-600 hover:border-gray-300 dark:border-gray-700'
                 }`}
               >
                 <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
@@ -179,14 +179,14 @@ export default function TechInterestsPage() {
                     className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors ${
                       isSelected
                         ? 'bg-[#FF4F00] text-white shadow-2xs'
-                        : 'bg-white border border-gray-200 text-gray-600'
+                        : 'bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 dark:text-gray-500'
                     }`}
                   >
                     {cat.icon}
                   </div>
 
                   <div className="min-w-0">
-                    <h2 className="text-xs font-bold leading-snug truncate text-gray-900">
+                    <h2 className="text-xs font-bold leading-snug truncate text-gray-900 dark:text-gray-100">
                       {cat.name}
                     </h2>
                     <span className="text-[10px] font-semibold text-[#FF4F00] block mt-0.5">
@@ -200,7 +200,7 @@ export default function TechInterestsPage() {
                   className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black transition-colors flex-shrink-0 ml-2 ${
                     isSelected
                       ? 'bg-[#FF4F00] text-white shadow-2xs'
-                      : 'border border-gray-300 bg-white'
+                      : 'border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900'
                   }`}
                 >
                   {isSelected && (
@@ -216,15 +216,15 @@ export default function TechInterestsPage() {
 
         {/* Action Controls */}
         {error && (
-          <p className="text-[11px] text-red-600 font-semibold bg-red-50 border border-red-100 rounded-lg px-3 py-2 mb-3">
+          <p className="text-[11px] text-red-600 dark:text-red-400 font-semibold bg-red-50 dark:bg-red-900/20 border border-red-100 rounded-lg px-3 py-2 mb-3">
             {error}
           </p>
         )}
-        <div className="flex flex-col-reverse xs:flex-row items-center justify-between gap-3 pt-4 border-t border-gray-100">
+        <div className="flex flex-col-reverse xs:flex-row items-center justify-between gap-3 pt-4 border-t border-gray-100 dark:border-gray-800">
           <button
             type="button"
             onClick={() => navigate('/')}
-            className="w-full xs:w-auto text-center py-2 text-xs font-semibold text-gray-400 hover:text-gray-700 transition-colors cursor-pointer"
+            className="w-full xs:w-auto text-center py-2 text-xs font-semibold text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300 dark:text-gray-600 transition-colors cursor-pointer"
           >
             Skip for now
           </button>

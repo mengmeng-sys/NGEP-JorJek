@@ -146,9 +146,9 @@ export default function MfaSetupPage() {
 
   if (step === "loading") {
     return (
-      <div className="min-h-screen w-full bg-[#FBFBFB] flex flex-col justify-center items-center px-4">
-        <div className="w-full max-w-sm bg-white border border-gray-200 rounded-2xl shadow-xs p-6 text-center">
-          <p className="text-xs text-gray-500">Loading...</p>
+      <div className="min-h-screen w-full bg-[#FBFBFB] dark:bg-gray-950 flex flex-col justify-center items-center px-4">
+        <div className="w-full max-w-sm bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-xs p-6 text-center">
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Loading...</p>
         </div>
       </div>
     );
@@ -156,20 +156,20 @@ export default function MfaSetupPage() {
 
   if (step === "already-enabled") {
     return (
-      <div className="min-h-screen w-full bg-[#FBFBFB] flex flex-col justify-center items-center px-4">
-        <div className="w-full max-w-sm bg-white border border-gray-200 rounded-2xl shadow-xs p-6 text-center space-y-4">
-          <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-            <svg className="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+      <div className="min-h-screen w-full bg-[#FBFBFB] dark:bg-gray-950 flex flex-col justify-center items-center px-4">
+        <div className="w-full max-w-sm bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-xs p-6 text-center space-y-4">
+          <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto">
+            <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h1 className="text-lg font-bold text-gray-900">Authenticator Enabled</h1>
-          <p className="text-xs text-gray-500">Your account is protected with two-factor authentication.</p>
+          <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Authenticator Enabled</h1>
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Your account is protected with two-factor authentication.</p>
 
           <div className="space-y-2">
             <button
               onClick={() => setStep("disable")}
-              className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold py-2.5 rounded-xl transition-all cursor-pointer"
+              className="w-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 dark:text-gray-600 text-xs font-bold py-2.5 rounded-xl transition-all cursor-pointer"
             >
               Disable Authenticator
             </button>
@@ -187,10 +187,10 @@ export default function MfaSetupPage() {
 
   if (step === "disable") {
     return (
-      <div className="min-h-screen w-full bg-[#FBFBFB] flex flex-col justify-center items-center px-4">
-        <div className="w-full max-w-sm bg-white border border-gray-200 rounded-2xl shadow-xs p-6 space-y-4">
-          <h1 className="text-lg font-bold text-gray-900 text-center">Disable Authenticator</h1>
-          <p className="text-xs text-gray-500 text-center">Enter a verification code to disable 2FA.</p>
+      <div className="min-h-screen w-full bg-[#FBFBFB] dark:bg-gray-950 flex flex-col justify-center items-center px-4">
+        <div className="w-full max-w-sm bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-xs p-6 space-y-4">
+          <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100 text-center">Disable Authenticator</h1>
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 text-center">Enter a verification code to disable 2FA.</p>
 
           <form onSubmit={(e) => { e.preventDefault(); handleDisable(); }} className="space-y-3">
             <input
@@ -198,13 +198,13 @@ export default function MfaSetupPage() {
               value={code}
               onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
               placeholder="6-digit code"
-              className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl px-4 py-3 text-xs text-center tracking-widest text-gray-900 outline-none focus:border-[#FF4F00] transition-all"
+              className="w-full bg-[#FAFAFA] dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 text-xs text-center tracking-widest text-gray-900 dark:text-gray-100 outline-none focus:border-[#FF4F00] transition-all"
             />
-            {error && <p className="text-[11px] text-red-600 text-center">{error}</p>}
+            {error && <p className="text-[11px] text-red-600 dark:text-red-400 text-center">{error}</p>}
             <button
               type="submit"
               disabled={loading || code.length !== 6}
-              className="w-full bg-red-500 hover:bg-red-600 text-white text-xs font-bold py-2.5 rounded-xl transition-all cursor-pointer disabled:opacity-50"
+              className="w-full bg-red-50 dark:bg-red-900/200 hover:bg-red-600 text-white text-xs font-bold py-2.5 rounded-xl transition-all cursor-pointer disabled:opacity-50"
             >
               {loading ? "Disabling..." : "Disable 2FA"}
             </button>
@@ -216,18 +216,18 @@ export default function MfaSetupPage() {
 
   if (step === "scan") {
     return (
-      <div className="min-h-screen w-full bg-[#FBFBFB] flex flex-col justify-center items-center px-4 py-8">
-        <div className="w-full max-w-sm bg-white border border-gray-200 rounded-2xl shadow-xs p-6 space-y-5">
+      <div className="min-h-screen w-full bg-[#FBFBFB] dark:bg-gray-950 flex flex-col justify-center items-center px-4 py-8">
+        <div className="w-full max-w-sm bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-xs p-6 space-y-5">
           <div className="text-center">
             <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <svg className="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <svg className="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
               </svg>
             </div>
-            <h1 className="text-lg font-bold text-gray-900">
+            <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">
               {isMandatory ? "Secure Your Account" : "Set Up Authenticator"}
             </h1>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">
               {isMandatory
                 ? "You must set up two-factor authentication to continue"
                 : "Scan the QR code with Microsoft Authenticator"}
@@ -235,19 +235,19 @@ export default function MfaSetupPage() {
           </div>
 
           <div className="flex flex-col items-center gap-3">
-            <div className="border-2 border-gray-100 rounded-xl p-3 bg-white">
+            <div className="border-2 border-gray-100 dark:border-gray-800 rounded-xl p-3 bg-white dark:bg-gray-900">
               <canvas ref={canvasRef} className="w-48 h-48" />
             </div>
 
-            <div className="w-full bg-gray-50 rounded-lg p-3 text-center">
-              <p className="text-[10px] text-gray-500 mb-1">Can't scan? Enter this code manually:</p>
-              <p className="text-xs font-mono font-bold text-gray-900 tracking-wider break-all">{secret}</p>
+            <div className="w-full bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3 text-center">
+              <p className="text-[10px] text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-1">Can't scan? Enter this code manually:</p>
+              <p className="text-xs font-mono font-bold text-gray-900 dark:text-gray-100 tracking-wider break-all">{secret}</p>
             </div>
           </div>
 
           <form onSubmit={handleEnable} className="space-y-3">
             <div>
-              <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">
+              <label className="block text-[11px] font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider mb-1.5">
                 Enter 6-digit code from app
               </label>
               <input
@@ -255,11 +255,11 @@ export default function MfaSetupPage() {
                 value={code}
                 onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
                 placeholder="000000"
-                className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl px-4 py-3 text-xs text-center tracking-[0.3em] text-gray-900 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all"
+                className="w-full bg-[#FAFAFA] dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 text-xs text-center tracking-[0.3em] text-gray-900 dark:text-gray-100 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all"
               />
             </div>
             {error && (
-              <p className="text-[11px] text-red-600 font-semibold bg-red-50 border border-red-100 rounded-lg px-3 py-2">{error}</p>
+              <p className="text-[11px] text-red-600 dark:text-red-400 font-semibold bg-red-50 dark:bg-red-900/20 border border-red-100 rounded-lg px-3 py-2">{error}</p>
             )}
             <button
               type="submit"
@@ -276,25 +276,25 @@ export default function MfaSetupPage() {
 
   if (step === "backup-codes") {
     return (
-      <div className="min-h-screen w-full bg-[#FBFBFB] flex flex-col justify-center items-center px-4 py-8">
-        <div className="w-full max-w-sm bg-white border border-gray-200 rounded-2xl shadow-xs p-6 space-y-5">
+      <div className="min-h-screen w-full bg-[#FBFBFB] dark:bg-gray-950 flex flex-col justify-center items-center px-4 py-8">
+        <div className="w-full max-w-sm bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-xs p-6 space-y-5">
           <div className="text-center">
-            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <svg className="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
+              <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h1 className="text-lg font-bold text-gray-900">Authenticator Enabled!</h1>
-            <p className="text-xs text-gray-500 mt-1">Save these backup codes in a safe place</p>
+            <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Authenticator Enabled!</h1>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">Save these backup codes in a safe place</p>
           </div>
 
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+          <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 rounded-lg p-3">
             <p className="text-[10px] text-amber-700 font-semibold mb-2">
               WARNING: Each code can only be used once. Store these somewhere safe.
             </p>
             <div className="grid grid-cols-2 gap-1.5">
               {backupCodes.map((bc, i) => (
-                <code key={i} className="text-[11px] font-mono text-gray-700 bg-white px-2 py-1 rounded border border-gray-100">
+                <code key={i} className="text-[11px] font-mono text-gray-700 dark:text-gray-300 dark:text-gray-600 bg-white dark:bg-gray-900 px-2 py-1 rounded border border-gray-100 dark:border-gray-800">
                   {bc}
                 </code>
               ))}
@@ -313,9 +313,9 @@ export default function MfaSetupPage() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-[#FBFBFB] flex flex-col justify-center items-center px-4">
-      <div className="w-full max-w-sm bg-white border border-gray-200 rounded-2xl shadow-xs p-6 text-center space-y-3">
-        <p className="text-xs text-red-600">{error || "Something went wrong."}</p>
+    <div className="min-h-screen w-full bg-[#FBFBFB] dark:bg-gray-950 flex flex-col justify-center items-center px-4">
+      <div className="w-full max-w-sm bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-xs p-6 text-center space-y-3">
+        <p className="text-xs text-red-600 dark:text-red-400">{error || "Something went wrong."}</p>
         <button onClick={() => navigate("/")} className="text-xs text-[#FF4F00] font-semibold hover:underline">
           Go Home
         </button>

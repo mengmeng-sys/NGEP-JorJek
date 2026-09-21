@@ -1,4 +1,4 @@
 // Owner: CS2
 export function KarmaBadge({ karma }) {
-  return <span>⭐ {karma} karma</span>;
+  return <span className="dark:text-gray-200">⭐ {karma} karma</span>;
 }

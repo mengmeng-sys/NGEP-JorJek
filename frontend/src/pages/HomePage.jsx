@@ -117,7 +117,7 @@ export default function HomePage() {
   if (loading) {
     return (
       <ThreeColumnLayout>
-        <div className="flex flex-col items-center justify-center py-16 text-gray-400 gap-2">
+        <div className="flex flex-col items-center justify-center py-16 text-gray-400 dark:text-gray-500 gap-2">
           <div className="w-6 h-6 border-2 border-[#FF4F00] border-t-transparent rounded-full animate-spin" />
           <span className="text-xs font-semibold">Loading campus feed...</span>
         </div>
@@ -131,17 +131,17 @@ export default function HomePage() {
         
         {/* Active Filter Pill Bar */}
         {selectedTag && (
-          <div className="flex items-center justify-between gap-2 bg-[#FFF4F0] border border-orange-200 rounded-xl px-3.5 sm:px-4 py-2 sm:py-2.5">
+          <div className="flex items-center justify-between gap-2 bg-[#FFF4F0] dark:bg-orange-900/20 border border-orange-200 dark:border-orange-900/30 rounded-xl px-3.5 sm:px-4 py-2 sm:py-2.5">
             <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
-              <span className="text-[11px] sm:text-xs text-gray-600 font-medium truncate">Filter:</span>
-              <span className="text-[11px] sm:text-xs font-bold text-[#FF4F00] bg-white px-2 py-0.5 rounded-md border border-orange-200 truncate">
+              <span className="text-[11px] sm:text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 font-medium truncate">Filter:</span>
+              <span className="text-[11px] sm:text-xs font-bold text-[#FF4F00] bg-white dark:bg-gray-900 px-2 py-0.5 rounded-md border border-orange-200 dark:border-orange-900/30 truncate">
                 #{selectedTag}
               </span>
             </div>
             <button
               type="button"
               onClick={() => navigate('/')}
-              className="text-[11px] sm:text-xs font-bold text-gray-500 hover:text-gray-900 transition-colors shrink-0 cursor-pointer"
+              className="text-[11px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100 transition-colors shrink-0 cursor-pointer"
             >
               Clear ×
             </button>
@@ -149,11 +149,11 @@ export default function HomePage() {
         )}
 
         {/* Sort Controls Bar */}
-        <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border border-gray-200 rounded-xl sm:rounded-2xl px-2.5 py-2 sm:px-4 sm:py-3 flex items-center justify-between gap-3 shadow-xs -mx-3 sm:mx-0">
+        <div className="sticky top-0 z-10 bg-white dark:bg-gray-900/95 backdrop-blur-sm border border-gray-200 dark:border-gray-800 rounded-xl sm:rounded-2xl px-2.5 py-2 sm:px-4 sm:py-3 flex items-center justify-between gap-3 shadow-xs -mx-3 sm:mx-0">
           
           {/* Scrollable Sort Pills on Mobile */}
           <div className="flex items-center gap-1.5 sm:gap-3 overflow-x-auto no-scrollbar py-0.5 -mx-1 px-1 sm:mx-0 sm:px-0">
-            <span className="hidden sm:inline text-xs font-medium text-gray-400 mr-1 shrink-0">
+            <span className="hidden sm:inline text-xs font-medium text-gray-400 dark:text-gray-500 mr-1 shrink-0">
               Sort:
             </span>
 
@@ -167,7 +167,7 @@ export default function HomePage() {
                   className={`px-3 py-1.5 rounded-lg sm:rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
                     isActive
                       ? 'bg-[#FF4F00] text-white shadow-2xs'
-                      : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
+                      : 'text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50'
                   }`}
                 >
                   {option.label}
@@ -177,21 +177,21 @@ export default function HomePage() {
           </div>
 
           {/* Post Counter Badge */}
-          <span className="text-[11px] sm:text-xs text-gray-400 font-medium whitespace-nowrap pl-2 border-l border-gray-100 sm:border-l-0 shrink-0">
+          <span className="text-[11px] sm:text-xs text-gray-400 dark:text-gray-500 font-medium whitespace-nowrap pl-2 border-l border-gray-100 dark:border-gray-800 sm:border-l-0 shrink-0">
             {sortedPosts.length} <span className="hidden xs:inline">posts</span>
           </span>
         </div>
 
         {/* Post Feed Container */}
         {sortedPosts.length === 0 ? (
-          <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-8 sm:p-12 text-center shadow-xs">
-            <div className="w-10 h-10 rounded-full bg-orange-50 text-[#FF4F00] flex items-center justify-center mx-auto mb-3">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl sm:rounded-2xl p-8 sm:p-12 text-center shadow-xs">
+            <div className="w-10 h-10 rounded-full bg-orange-50 dark:bg-orange-900/20 text-[#FF4F00] flex items-center justify-center mx-auto mb-3">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
               </svg>
             </div>
-            <h3 className="text-sm font-bold text-gray-900">No posts found</h3>
-            <p className="text-xs text-gray-500 mt-1 max-w-sm mx-auto">
+            <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">No posts found</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1 max-w-sm mx-auto">
               {selectedTag 
                 ? `There are no questions or discussions tagged with #${selectedTag} yet.`
                 : 'No posts have been published on the campus feed yet.'}
@@ -216,14 +216,14 @@ export default function HomePage() {
             {hasMore && <div ref={sentinelRef} className="h-px w-full" aria-hidden="true" />}
 
             {loadingMore && (
-              <div className="flex items-center justify-center py-5 text-gray-400 gap-2">
+              <div className="flex items-center justify-center py-5 text-gray-400 dark:text-gray-500 gap-2">
                 <div className="w-4 h-4 border-2 border-[#FF4F00] border-t-transparent rounded-full animate-spin" />
                 <span className="text-xs font-semibold">Loading more posts...</span>
               </div>
             )}
 
             {!hasMore && !loadingMore && sortedPosts.length > 0 && (
-              <p className="text-center text-[11px] text-gray-400 font-medium py-5">
+              <p className="text-center text-[11px] text-gray-400 dark:text-gray-500 font-medium py-5">
                 You're all caught up 🎉
               </p>
             )}

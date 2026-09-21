@@ -55,7 +55,7 @@ export default function MicrosoftAuthButton({ mode = "login", disabled = false }
         type="button"
         onClick={login}
         disabled={disabled || inProgress !== "none"}
-        className="w-full flex items-center justify-center gap-2 bg-white border border-gray-300 rounded-xl px-4 py-2.5 sm:py-3 text-xs font-bold text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all shadow-xs cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+        className="w-full flex items-center justify-center gap-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 sm:py-3 text-xs font-bold text-gray-700 dark:text-gray-300 dark:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 hover:border-gray-400 transition-all shadow-xs cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
       >
         <svg width="18" height="18" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M1 1h10v10H1z" fill="#F25022" />
@@ -65,7 +65,7 @@ export default function MicrosoftAuthButton({ mode = "login", disabled = false }
         </svg>
         {inProgress !== "none" ? "Redirecting…" : label}
       </button>
-      {error && <p className="text-[11px] text-red-600 mt-1">{error}</p>}
+      {error && <p className="text-[11px] text-red-600 dark:text-red-400 mt-1">{error}</p>}
     </div>
   );
 }

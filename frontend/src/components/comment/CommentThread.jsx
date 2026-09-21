@@ -10,8 +10,8 @@ export function CommentThread({ comments }) {
     <ul>
       {topLevel.map((c) => (
         <li key={c.id}>
-          <p>{c.body}</p>
-          <span>{c.author.displayName}</span>
+          <p className="dark:text-gray-200">{c.body}</p>
+          <span className="dark:text-gray-300">{c.author.displayName}</span>
           <VoteButtons commentId={c.id} />
           {/* Routes to the Request Session page (Phase 2 booking, blurred Coming Soon) */}
           <RequestSessionButton mentorId={c.author.id} commentId={c.id} />

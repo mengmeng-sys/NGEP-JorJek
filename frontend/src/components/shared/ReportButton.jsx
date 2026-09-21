@@ -9,5 +9,5 @@ export function ReportButton({ postId, commentId }) {
     await apiFetch("/reports", { method: "POST", body: JSON.stringify({ postId, commentId, reason }) });
   }
 
-  return <button onClick={report}>Report</button>;
+  return <button onClick={report} className="dark:text-gray-300">Report</button>;
 }

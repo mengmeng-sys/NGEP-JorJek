@@ -907,3 +907,134 @@
     padding: 12px 14px;
   }
 }
+
+/* ───────────────────────── Dark mode ───────────────────────── */
+.dark {
+  --jd-bg: #030712;
+  --jd-surface: #111827;
+  --jd-border: #1f2937;
+  --jd-text: #f3f4f6;
+  --jd-text-muted: #9ca3af;
+  --jd-accent-soft: #2a1a14;
+}
+
+.dark .admin-shell {
+  background: var(--jd-bg);
+  color: var(--jd-text);
+}
+
+.dark .admin-sidebar {
+  background: var(--jd-surface);
+  border-color: var(--jd-border);
+}
+
+.dark .admin-side-link:hover {
+  background: var(--jd-accent-soft);
+  color: var(--jd-text);
+}
+
+.dark .admin-side-link.active {
+  background: var(--jd-accent-soft);
+}
+
+.dark .admin-card,
+.dark .admin-panel,
+.dark .jd-report-card,
+.dark .jd-mentor-card,
+.dark .jd-modal,
+.dark .jd-option {
+  background: var(--jd-surface);
+  border-color: var(--jd-border);
+}
+
+.dark .admin-card:hover,
+.dark .admin-panel:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.dark .admin-table th,
+.dark .admin-table td {
+  border-color: var(--jd-border);
+  background: var(--jd-surface);
+}
+
+.dark .admin-table tbody tr:hover {
+  background: var(--jd-bg);
+}
+
+.dark .admin-filters input,
+.dark .admin-filters select,
+.dark .jd-role-select,
+.dark .jd-modal textarea,
+.dark .jd-modal input {
+  background: var(--jd-surface);
+  border-color: var(--jd-border);
+  color: var(--jd-text);
+}
+
+.dark .admin-panel > h2 {
+  background: var(--jd-bg);
+  border-color: var(--jd-border);
+}
+
+.dark .admin-panel-body .snippet,
+.dark .jd-report-card .snippet {
+  background: var(--jd-bg);
+  border-color: var(--jd-border);
+  color: var(--jd-text);
+}
+
+.dark .jd-badge-active,
+.dark .jd-badge-approved,
+.dark .jd-badge-accepted,
+.dark .jd-badge-completed {
+  background: #14532d;
+  color: #bbf7d0;
+}
+
+.dark .jd-badge-pending {
+  background: #451a03;
+  color: #fde68a;
+}
+
+.dark .jd-badge-suspended,
+.dark .jd-badge-warned,
+.dark .jd-badge-rejected,
+.dark .jd-badge-cancelled {
+  background: #450a0a;
+  color: #fecaca;
+}
+
+.dark .jd-badge-dismissed {
+  background: #1f2937;
+  color: #d1d5db;
+}
+
+.dark .jd-badge-banned {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.dark .jd-btn {
+  background: var(--jd-surface);
+  border-color: var(--jd-border);
+  color: var(--jd-text);
+}
+
+.dark .jd-btn:hover {
+  background: #1f2937;
+}
+
+.dark .jd-coming-soon-overlay {
+  background: linear-gradient(to bottom, rgba(3, 7, 18, 0.35), rgba(3, 7, 18, 0.88));
+}
+
+.dark .jd-alert {
+  background: #14532d;
+  border-color: #166534;
+  color: #bbf7d0;
+}
+
+.dark .admin-backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}

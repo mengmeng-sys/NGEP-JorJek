@@ -77,8 +77,8 @@ export function LeftSidebar({ savedCount, skillTags: externalTags = [] }) {
   const getNavLinkClass = ({ isActive }) =>
     `flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-bold transition-colors ${
       isActive && !activeTag
-        ? 'bg-[#FFF4F0] text-[#FF4F00]'
-        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium'
+        ? 'bg-[#FFF4F0] dark:bg-orange-900/20 text-[#FF4F00]'
+        : 'text-gray-600 dark:text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100 font-medium'
     }`;
 
   const handleTagClick = (tag) => {
@@ -92,7 +92,7 @@ export function LeftSidebar({ savedCount, skillTags: externalTags = [] }) {
   return (
     <aside className="w-full space-y-8">
       <div>
-        <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-3 px-4">Navigation</p>
+        <p className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3 px-4">Navigation</p>
         <nav className="space-y-1">
           <NavLink to="/" end className={getNavLinkClass}>
             <div className="flex items-center gap-3">
@@ -125,12 +125,12 @@ export function LeftSidebar({ savedCount, skillTags: externalTags = [] }) {
       </div>
 
       <div>
-        <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-3 px-4">Skill Tags</p>
+        <p className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3 px-4">Skill Tags</p>
         <div className="flex flex-col space-y-1">
           {skillTags.map((tag) => {
             const isSelected = activeTag != null && activeTag.toLowerCase() === tag.toLowerCase();
             return (
-              <button key={tag} type="button" onClick={() => handleTagClick(tag)} className={`text-left px-4 py-2 rounded-xl text-sm font-semibold transition-all ${isSelected ? 'bg-[#FFF4F0] text-[#FF4F00] font-bold' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'}`}>
+              <button key={tag} type="button" onClick={() => handleTagClick(tag)} className={`text-left px-4 py-2 rounded-xl text-sm font-semibold transition-all ${isSelected ? 'bg-[#FFF4F0] dark:bg-orange-900/20 text-[#FF4F00] font-bold' : 'text-gray-600 dark:text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50'}`}>
                 #{tag}
               </button>
             );
@@ -138,14 +138,14 @@ export function LeftSidebar({ savedCount, skillTags: externalTags = [] }) {
         </div>
       </div>
 
-      <div className="pt-6 border-t border-gray-200 px-3 text-[11px] text-gray-400 space-y-2">
+      <div className="pt-6 border-t border-gray-200 dark:border-gray-800 px-3 text-[11px] text-gray-400 dark:text-gray-500 space-y-2">
         <div className="flex flex-wrap gap-x-3 gap-y-1 font-medium">
-          <Link to="/about" className="hover:text-gray-700 transition-colors">About Us</Link>
-          <Link to="/contact" className="hover:text-gray-700 transition-colors">Contact</Link>
-          <Link to="/privacy" className="hover:text-gray-700 transition-colors">Privacy</Link>
-          <Link to="/terms" className="hover:text-gray-700 transition-colors">Terms</Link>
+          <Link to="/about" className="hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300 dark:text-gray-600 transition-colors">About Us</Link>
+          <Link to="/contact" className="hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300 dark:text-gray-600 transition-colors">Contact</Link>
+          <Link to="/privacy" className="hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300 dark:text-gray-600 transition-colors">Privacy</Link>
+          <Link to="/terms" className="hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300 dark:text-gray-600 transition-colors">Terms</Link>
         </div>
-        <p className="text-[10px] text-gray-400">© 2026 JorJek Campus. All rights reserved.</p>
+        <p className="text-[10px] text-gray-400 dark:text-gray-500">© 2026 JorJek Campus. All rights reserved.</p>
       </div>
     </aside>
   );
