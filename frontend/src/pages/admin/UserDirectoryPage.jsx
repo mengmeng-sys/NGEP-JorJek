@@ -62,8 +62,9 @@ export default function UserDirectoryPage() {
     }
   }
 
-  async function submitEnforcement() {
-    if (action !== "restore" && !note.trim()) {
+  async function submitEnforcement(overrideAction) {
+    const act = overrideAction ?? action;
+    if (act !== "restore" && !note.trim()) {
       setToast({ kind: "error", text: "A mandatory moderator note is required (SRS 2.1)." });
       return;
     }
@@ -72,8 +73,8 @@ export default function UserDirectoryPage() {
       await apiFetch(`/api/admin/users/${selected.id}/action`, {
         method: "POST",
         body: JSON.stringify({
-          action,
-          duration_days: action === "suspend" ? duration : undefined,
+          action: act,
+          duration_days: act === "suspend" ? duration : undefined,
           reason: note.trim(),
         }),
       });
@@ -195,7 +196,7 @@ export default function UserDirectoryPage() {
               <>
                 <p>This account is currently {selected.status.toLowerCase()}. You can restore it to ACTIVE.</p>
                 <div style={{ display: "flex", gap: 8 }}>
-                  <button className="jd-btn jd-btn-primary" onClick={() => { setAction("restore"); submitEnforcement(); }}>
+                  <button className="jd-btn jd-btn-primary" onClick={() => submitEnforcement("restore")}>
                     Restore account
                   </button>
                 </div>
