@@ -27,6 +27,10 @@ export const authApi = {
   mfaValidate: (mfaToken, totpCode) =>
     apiFetch("/auth/mfa/validate", { method: "POST", body: { mfaToken, totpCode } }),
   mfaStatus: () => apiFetch("/auth/mfa/status"),
+  forgotPassword: (email) =>
+    apiFetch("/auth/forgot-password", { method: "POST", body: { email } }),
+  resetPassword: (email, otpCode, newPassword) =>
+    apiFetch("/auth/reset-password", { method: "POST", body: { email, otpCode, newPassword } }),
 };
 
 export const uploadsApi = {
