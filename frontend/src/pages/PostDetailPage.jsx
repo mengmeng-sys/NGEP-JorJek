@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ThreeColumnLayout } from '@/components/layout/ThreeColumnLayout';
 import { CreatePostModal } from '@/components/post/CreatePostModal';
 import { DeletePostModal } from '@/components/post/DeletePostModal';
@@ -733,6 +733,7 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
 export default function PostDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, markOnboardingComplete } = useAuth();
   const { joinPost, leavePost, on, off } = useSocket();
 
@@ -811,19 +812,19 @@ export default function PostDetailPage() {
 
   useEffect(() => {
     if (!id || comments.length === 0) return;
-    const hash = window.location.hash;
+    const hash = location.hash || window.location.hash;
     if (hash.startsWith("#comment-")) {
       const commentId = hash.replace("#comment-", "");
       setTimeout(() => {
         const el = document.getElementById(`comment-${commentId}`);
         if (el) {
           el.scrollIntoView({ behavior: "smooth", block: "start" });
-          el.classList.add("bg-amber-50 dark:bg-amber-900/20");
-          setTimeout(() => el.classList.remove("bg-amber-50 dark:bg-amber-900/20"), 2000);
+          el.classList.add("bg-amber-50", "dark:bg-amber-900/20");
+          setTimeout(() => el.classList.remove("bg-amber-50", "dark:bg-amber-900/20"), 2500);
         }
-      }, 300);
+      }, 400);
     }
-  }, [id, comments]);
+  }, [id, comments, location.hash]);
 
   useEffect(() => {
     if (!id) return;

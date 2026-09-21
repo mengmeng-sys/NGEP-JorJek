@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { NavLink, Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { NavLink, Link, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { CreatePostModal } from '@/components/post/CreatePostModal';
 import { useAuth } from '@/context/AuthContext';
 import { useSocket } from '@/context/SocketContext';
@@ -58,6 +58,18 @@ export default function Navbar() {
       cancelled = true;
     };
   }, []);
+
+  // Lock body scroll when mobile sidebar drawer is open
+  useEffect(() => {
+    if (isSidebarDrawerOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isSidebarDrawerOpen]);
 
   useEffect(() => {
     if (!user) {
