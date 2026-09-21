@@ -3,6 +3,7 @@ const crypto = require("crypto");
 const { env } = require("./env");
 
 const JWKS_URL = "https://login.microsoftonline.com/1e9461ec-5362-4329-ae46-61fa3e91c6d2/discovery/v2.0/keys";
+const EXPECTED_ISSUER = "https://login.microsoftonline.com/1e9461ec-5362-4329-ae46-61fa3e91c6d2/v2.0";
 
 let keyCache = null;
 let keyCacheTime = 0;
@@ -29,6 +30,7 @@ async function validateMicrosoftIdToken(token) {
   const payload = jwt.verify(token, pem, {
     algorithms: ["RS256"],
     audience: env.microsoftClientId,
+    issuer: EXPECTED_ISSUER,
   });
 
   const email = (payload.email || payload.preferred_username || "").toLowerCase();

@@ -140,17 +140,18 @@ router.post("/reset-password", async (req, res, next) => {
 
     const { data: user, error } = await supabase
       .from("users")
-      .select("id")
+      .select("id, token_version")
       .eq("email", ms.email)
       .maybeSingle();
     if (error) throw error;
     if (!user) return res.status(404).json({ error: "No account found" });
 
     const passwordHash = await bcrypt.hash(newPassword, 10);
-    await supabase
+    const { error: updateError } = await supabase
       .from("users")
-      .update({ password_hash: passwordHash, token_version: 0 })
+      .update({ password_hash: passwordHash, token_version: (user.token_version ?? 0) + 1 })
       .eq("id", user.id);
+    if (updateError) throw updateError;
 
     res.json({ message: "Password reset successfully — please log in" });
   } catch (err) {

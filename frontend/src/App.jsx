@@ -28,6 +28,7 @@ import ForgotPasswordPage from "@/pages/auth/ForgotPasswordPage";
 import SignupPage from "@/pages/auth/SignupPage";
 import OtpVerificationPage from "@/pages/auth/OtpVerificationPage";
 import TechInterestsPage from "@/pages/auth/TechInterestsPage";
+import MfaSetupPage from "@/pages/auth/MfaSetupPage";
 
 // Admin Dashboard
 import AdminLayout from "@/pages/admin/AdminLayout";
@@ -59,6 +60,7 @@ function AppRoutes() {
     || pathname.startsWith('/auth/forgot-password')
     || pathname.startsWith('/auth/verify-otp')
     || pathname.startsWith('/auth/tech-interests')
+    || pathname.startsWith('/auth/mfa-setup')
     || pathname.startsWith('/admin');
 
   // SUPER_ADMIN/MODERATOR accounts live in the admin dashboard only — bounce
@@ -112,6 +114,7 @@ function AppRoutes() {
         <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/auth/verify-otp" element={<OtpVerificationPage />} />
         <Route path="/auth/tech-interests" element={<TechInterestsPage />} />
+        <Route path="/auth/mfa-setup" element={<MfaSetupPage />} />
 
         {/* Canonical Redirects */}
         <Route path="/login" element={<Navigate to="/auth/login" replace />} />

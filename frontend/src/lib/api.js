@@ -21,6 +21,12 @@ export const authApi = {
     apiFetch("/auth/microsoft/login", { method: "POST", body: { idToken } }),
   microsoftResetPassword: (idToken, newPassword) =>
     apiFetch("/auth/microsoft/reset-password", { method: "POST", body: { idToken, newPassword } }),
+  mfaSetup: () => apiFetch("/auth/mfa/setup", { method: "POST" }),
+  mfaEnable: (token) => apiFetch("/auth/mfa/enable", { method: "POST", body: { token } }),
+  mfaDisable: (token) => apiFetch("/auth/mfa/disable", { method: "POST", body: { token } }),
+  mfaValidate: (mfaToken, totpCode) =>
+    apiFetch("/auth/mfa/validate", { method: "POST", body: { mfaToken, totpCode } }),
+  mfaStatus: () => apiFetch("/auth/mfa/status"),
 };
 
 export const uploadsApi = {

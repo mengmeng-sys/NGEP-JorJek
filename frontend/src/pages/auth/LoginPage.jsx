@@ -7,7 +7,7 @@ import { BackHomeArrow } from '@/components/shared/BackHomeArrow';
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { login, loginMicrosoft } = useAuth();
+  const { login, loginMicrosoft, verifyMfa } = useAuth();
   const { instance, inProgress, accounts } = useMsal();
 
   const [email, setEmail] = useState('');
@@ -15,30 +15,42 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [mfaRequired, setMfaRequired] = useState(false);
+  const [mfaToken, setMfaToken] = useState('');
+  const [totpCode, setTotpCode] = useState('');
 
-  useEffect(() => {
-    instance.handleRedirectPromise().then(async (res) => {
-      if (res?.account) {
-        instance.setActiveAccount(res.account);
-        try {
-          let idToken = res.idToken;
-          if (!idToken) {
-            const tokenRes = await instance.acquireTokenSilent(loginRequest);
-            idToken = tokenRes.idToken;
-          }
-          await loginMicrosoft(idToken);
-          navigate('/');
-        } catch (err) {
-          const msg = err?.message || '';
-          if (msg.toLowerCase().includes('no account') || msg.includes('404')) {
-            navigate('/auth/signup');
-          } else {
-            setError(msg || 'Microsoft sign in failed.');
-          }
-        }
-      }
-    }).catch(() => {});
-  }, [instance]);
+   useEffect(() => {
+     instance.handleRedirectPromise().then(async (res) => {
+       if (res?.account) {
+         instance.setActiveAccount(res.account);
+         try {
+           let idToken = res.idToken;
+           if (!idToken) {
+             try {
+               const tokenRes = await instance.acquireTokenSilent(loginRequest, { account: res.account });
+               idToken = tokenRes.idToken;
+             } catch {
+               await instance.acquireTokenRedirect(loginRequest);
+               return;
+             }
+           }
+           if (!idToken) {
+             setError('Microsoft sign in failed. Please try again.');
+             return;
+           }
+           await loginMicrosoft(idToken);
+           navigate('/');
+         } catch (err) {
+           const msg = err?.message || '';
+           if (msg.toLowerCase().includes('no account') || msg.includes('404')) {
+             navigate('/auth/signup');
+           } else {
+             setError(msg || 'Microsoft sign in failed.');
+           }
+         }
+       }
+     }).catch(() => {});
+   }, [instance]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -46,14 +58,48 @@ export default function LoginPage() {
     setError('');
     setSubmitting(true);
     try {
-      const loggedInUser = await login(email.trim(), password);
-      const isAdmin = loggedInUser?.role === 'SUPER_ADMIN' || loggedInUser?.role === 'MODERATOR';
+      const result = await login(email.trim(), password);
+      if (result?.mfaRequired) {
+        setMfaToken(result.mfaToken);
+        setMfaRequired(true);
+        setSubmitting(false);
+        return;
+      }
+      if (result?.mfaSetupRequired) {
+        navigate("/auth/mfa-setup", { state: { mfaToken: result.mfaToken } });
+        return;
+      }
+      const isAdmin = result?.role === 'SUPER_ADMIN' || result?.role === 'MODERATOR';
       navigate(isAdmin ? '/admin' : '/');
     } catch (err) {
       setError(err?.message || 'Sign in failed. Check your credentials and try again.');
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleMfaVerify = async (e) => {
+    e.preventDefault();
+    if (totpCode.length < 6) return;
+    setError('');
+    setSubmitting(true);
+    try {
+      const user = await verifyMfa(mfaToken, totpCode);
+      const isAdmin = user?.role === 'SUPER_ADMIN' || user?.role === 'MODERATOR';
+      navigate(isAdmin ? '/admin' : '/');
+    } catch (err) {
+      setError(err?.message || 'Invalid verification code. Please try again.');
+      setTotpCode('');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleMfaBack = () => {
+    setMfaRequired(false);
+    setMfaToken('');
+    setTotpCode('');
+    setError('');
   };
 
   const handleMicrosoftLogin = async () => {
@@ -116,34 +162,67 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">Welcome Back</h1>
-            <p className="text-xs text-gray-500 mt-1">Sign in with your CADT university credentials</p>
+            <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">
+              {mfaRequired ? 'Two-Factor Authentication' : 'Welcome Back'}
+            </h1>
+            <p className="text-xs text-gray-500 mt-1">
+              {mfaRequired
+                ? 'Enter the 6-digit code from your authenticator app'
+                : 'Sign in with your CADT university credentials'}
+            </p>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">CADT Email Address</label>
-              <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="e.g. srun.vireak@student.cadt.edu.kh" className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs text-gray-900 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs" />
-            </div>
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="text-[11px] font-bold text-gray-900 uppercase tracking-wider">Password</label>
-                <Link to="/auth/forgot-password" className="text-[11px] sm:text-xs font-semibold text-[#FF4F00] hover:underline">Forgot password?</Link>
+          {mfaRequired ? (
+            <form onSubmit={handleMfaVerify} className="space-y-4">
+              <div>
+                <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">Verification Code</label>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  required
+                  value={totpCode}
+                  onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  placeholder="000000"
+                  className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl px-3.5 sm:px-4 py-3 sm:py-3.5 text-xs text-center tracking-[0.4em] text-gray-900 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs"
+                />
               </div>
-              <div className="relative">
-                <input type={showPassword ? 'text' : 'password'} required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter your password" className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs text-gray-900 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs pr-14" />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 text-xs font-bold p-1 cursor-pointer">
-                  {showPassword ? 'Hide' : 'Show'}
-                </button>
+              {error && (
+                <p className="text-[11px] sm:text-xs text-red-600 font-semibold bg-red-50 border border-red-100 rounded-lg px-3 py-2">{error}</p>
+              )}
+              <button type="submit" disabled={submitting || totpCode.length < 6} className="w-full bg-[#FF4F00] hover:bg-[#E64700] text-white text-xs font-bold py-3 sm:py-3.5 rounded-xl transition-all shadow-xs cursor-pointer active:scale-98 disabled:opacity-60 disabled:cursor-not-allowed">
+                {submitting ? 'Verifying…' : 'Verify'}
+              </button>
+              <button type="button" onClick={handleMfaBack} className="w-full text-center text-xs text-gray-500 hover:text-gray-700 font-semibold cursor-pointer">
+                Back to sign in
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div>
+                <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">CADT Email Address</label>
+                <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="e.g. srun.vireak@student.cadt.edu.kh" className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs text-gray-900 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs" />
               </div>
-            </div>
-            {error && (
-              <p className="text-[11px] sm:text-xs text-red-600 font-semibold bg-red-50 border border-red-100 rounded-lg px-3 py-2">{error}</p>
-            )}
-            <button type="submit" disabled={submitting} className="w-full bg-[#FF4F00] hover:bg-[#E64700] text-white text-xs font-bold py-3 sm:py-3.5 rounded-xl transition-all shadow-xs cursor-pointer active:scale-98 disabled:opacity-60 disabled:cursor-not-allowed">
-              {submitting ? 'Signing in…' : 'Sign In'}
-            </button>
-          </form>
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-[11px] font-bold text-gray-900 uppercase tracking-wider">Password</label>
+                  <Link to="/auth/forgot-password" className="text-[11px] sm:text-xs font-semibold text-[#FF4F00] hover:underline">Forgot password?</Link>
+                </div>
+                <div className="relative">
+                  <input type={showPassword ? 'text' : 'password'} required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter your password" className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs text-gray-900 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs pr-14" />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 text-xs font-bold p-1 cursor-pointer">
+                    {showPassword ? 'Hide' : 'Show'}
+                  </button>
+                </div>
+              </div>
+              {error && (
+                <p className="text-[11px] sm:text-xs text-red-600 font-semibold bg-red-50 border border-red-100 rounded-lg px-3 py-2">{error}</p>
+              )}
+              <button type="submit" disabled={submitting} className="w-full bg-[#FF4F00] hover:bg-[#E64700] text-white text-xs font-bold py-3 sm:py-3.5 rounded-xl transition-all shadow-xs cursor-pointer active:scale-98 disabled:opacity-60 disabled:cursor-not-allowed">
+                {submitting ? 'Signing in…' : 'Sign In'}
+              </button>
+            </form>
+          )}
 
           <div className="flex items-center gap-3 my-2">
             <div className="flex-1 h-px bg-gray-200"></div>

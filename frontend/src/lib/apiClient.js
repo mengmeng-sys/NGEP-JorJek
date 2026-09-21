@@ -82,3 +82,30 @@ export async function apiFetch(path, options = {}) {
     throw new Error(getApiErrorMessage(err));
   }
 }
+
+export async function mfaApiFetch(mfaToken, path, options = {}) {
+  const { method = "GET", body, headers, params } = options;
+
+  let data = body;
+  if (body && typeof body === "string") {
+    try {
+      data = JSON.parse(body);
+    } catch {
+      data = body;
+    }
+  }
+
+  try {
+    const res = await axios.request({
+      baseURL: API_URL,
+      url: path,
+      method,
+      data,
+      params,
+      headers: { ...headers, Authorization: `Bearer ${mfaToken}` },
+    });
+    return res.status === 204 ? null : res.data;
+  } catch (err) {
+    throw new Error(getApiErrorMessage(err));
+  }
+}

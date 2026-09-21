@@ -42,8 +42,19 @@ export default function ForgotPasswordPage() {
     setError('');
     setSending(true);
     try {
-      const tokenResult = await instance.acquireTokenSilent(loginRequest).catch(() => null);
-      const idToken = tokenResult?.idToken || '';
+      let idToken = '';
+      try {
+        const tokenResult = await instance.acquireTokenSilent(loginRequest, { account });
+        idToken = tokenResult.idToken;
+      } catch {
+        await instance.acquireTokenRedirect(loginRequest);
+        return;
+      }
+      if (!idToken) {
+        setError('Could not verify your identity. Please try again.');
+        setSending(false);
+        return;
+      }
       await resetPasswordMicrosoft(idToken, newPassword);
       setDone(true);
     } catch (err) {
