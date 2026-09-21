@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/apiClient";
+import { adminApi } from "@/lib/api";
+
+const ROLES = ["STUDENT", "PROFESSOR", "MODERATOR", "SUPER_ADMIN"];
 
 const STATUS_LABEL = { ACTIVE: "active", SUSPENDED: "suspended", BANNED: "banned" };
 const DURATIONS = [
@@ -46,6 +49,17 @@ export default function UserDirectoryPage() {
     const data = await apiFetch(`/api/admin/users/${user.id}/actions`);
     setSelected(user);
     setLog(data);
+  }
+
+  async function changeRole(user, newRole) {
+    if (newRole === user.role) return;
+    try {
+      await adminApi.updateRole(user.id, newRole);
+      setToast({ kind: "ok", text: `${user.display_name} changed to ${newRole}.` });
+      loadUsers(filters);
+    } catch (e) {
+      setToast({ kind: "error", text: e.message });
+    }
   }
 
   async function submitEnforcement() {
@@ -135,9 +149,17 @@ export default function UserDirectoryPage() {
                 <tr key={u.id}>
                   <td>{u.display_name} {u.is_mentor ? "· ⭐ Mentor" : ""}</td>
                   <td className="jd-muted">{u.email}</td>
-                  <td>
-                    <span className="jd-badge jd-badge-role">{u.role}</span>
-                  </td>
+                   <td>
+                     <select
+                       value={u.role}
+                       onChange={(e) => changeRole(u, e.target.value)}
+                       className="jd-role-select"
+                     >
+                       {ROLES.map((r) => (
+                         <option key={r} value={r}>{r}</option>
+                       ))}
+                     </select>
+                   </td>
                   <td>
                     <span className={`jd-badge jd-badge-${STATUS_LABEL[u.status] ?? "active"}`}>{u.status}</span>
                     {u.suspended_until && u.status === "SUSPENDED" && (

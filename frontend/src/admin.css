@@ -349,6 +349,23 @@
   border-bottom: none;
 }
 
+.jd-role-select {
+  border: 1px solid var(--jd-border);
+  border-radius: var(--jd-radius);
+  padding: 4px 8px;
+  font-size: 13px;
+  background: var(--jd-surface);
+  color: var(--jd-text);
+  cursor: pointer;
+  transition: border-color 0.15s var(--jd-ease);
+}
+
+.jd-role-select:focus {
+  outline: none;
+  border-color: var(--jd-accent);
+  box-shadow: 0 0 0 3px var(--jd-accent-soft);
+}
+
 .admin-table tbody tr {
   transition: background 0.12s var(--jd-ease);
 }

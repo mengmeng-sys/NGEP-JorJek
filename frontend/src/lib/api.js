@@ -231,3 +231,8 @@ export const notificationsApi = {
 export const reportsApi = {
   create: (payload) => apiFetch("/reports", { method: "POST", body: payload }),
 };
+
+export const adminApi = {
+  updateRole: (id, role) =>
+    apiFetch(`/api/admin/users/${id}/role`, { method: "POST", body: JSON.stringify({ role }) }),
+};

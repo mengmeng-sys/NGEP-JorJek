@@ -148,6 +148,44 @@ adminRouter.get("/users/:id/actions", async (req, res, next) => {
   }
 });
 
+// ─── Role assignment (SUPER_ADMIN only) ────────────────────────
+const ADMIN_ROLES = ["SUPER_ADMIN", "MODERATOR", "PROFESSOR", "STUDENT"];
+
+adminRouter.post("/users/:id/role", requireRole("SUPER_ADMIN"), async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { role } = req.body;
+
+    if (!ADMIN_ROLES.includes(role)) {
+      return res.status(400).json({ error: `role must be one of: ${ADMIN_ROLES.join(", ")}` });
+    }
+
+    const { data: target, error: findErr } = await supabase
+      .from("users")
+      .select("id,display_name,email,role")
+      .eq("id", id)
+      .maybeSingle();
+    if (findErr) throw findErr;
+    if (!target) return res.status(404).json({ error: "User not found" });
+    if (target.id === req.admin.id) {
+      return res.status(400).json({ error: "You cannot change your own role" });
+    }
+    if (target.role === role) {
+      return res.status(400).json({ error: `User already has the role ${role}` });
+    }
+
+    const { error: updateErr } = await supabase
+      .from("users")
+      .update({ role })
+      .eq("id", id);
+    if (updateErr) throw updateErr;
+
+    res.json({ user: { id, email: target.email, display_name: target.display_name, role } });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // ─── User enforcement action ───────────────────────────────────
 adminRouter.post("/users/:id/action", async (req, res, next) => {
   try {
