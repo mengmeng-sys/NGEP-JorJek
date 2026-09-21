@@ -142,11 +142,7 @@ export default function OtpVerificationPage() {
           {isResetFlow ? 'Reset Your Password' : 'Check Your Email'}
         </h1>
 
-<<<<<<< HEAD
         <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 mt-1 max-w-xs mx-auto leading-relaxed break-words">
-=======
-        <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1 max-w-xs mx-auto leading-relaxed break-words">
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
           {isResetFlow
             ? 'Enter the 6-digit code we sent to:  '
             : 'We sent a 6-digit confirmation code to: <br/>'}
@@ -176,11 +172,7 @@ export default function OtpVerificationPage() {
                 value={digit}
                 onChange={(e) => handleOtpChange(i, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(i, e)}
-<<<<<<< HEAD
                 className="w-10 h-12 xs:w-11 xs:h-13 sm:w-12 sm:h-14 text-center text-base sm:text-lg font-black text-gray-900 dark:text-gray-100 bg-[#FAFAFA] dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-lg sm:rounded-xl outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs"
-=======
-                className="w-10 h-12 xs:w-11 xs:h-13 sm:w-12 sm:h-14 text-center text-base sm:text-lg font-black text-gray-900 dark:text-gray-100 bg-[#FAFAFA] dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-lg sm:rounded-xl outline-none focus:bg-white dark:bg-gray-900 focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs"
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
               />
             ))}
           </div>
@@ -198,20 +190,12 @@ export default function OtpVerificationPage() {
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="Create strong password"
-<<<<<<< HEAD
                     className="w-full bg-[#FAFAFA] dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs text-gray-900 dark:text-gray-100 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs pr-14"
-=======
-                    className="w-full bg-[#FAFAFA] dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs text-gray-900 dark:text-gray-100 outline-none focus:bg-white dark:bg-gray-900 focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs pr-14"
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-<<<<<<< HEAD
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-xs font-bold p-1 cursor-pointer"
-=======
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300 dark:text-gray-600 text-xs font-bold p-1 cursor-pointer"
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
                   >
                     {showPassword ? 'Hide' : 'Show'}
                   </button>
@@ -243,11 +227,7 @@ export default function OtpVerificationPage() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Re-enter your new password"
-<<<<<<< HEAD
                   className="w-full bg-[#FAFAFA] dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs text-gray-900 dark:text-gray-100 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs"
-=======
-                  className="w-full bg-[#FAFAFA] dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs text-gray-900 dark:text-gray-100 outline-none focus:bg-white dark:bg-gray-900 focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs"
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
                 />
               </div>
             </div>
@@ -283,11 +263,7 @@ export default function OtpVerificationPage() {
       <div className="mt-4 text-center">
         <Link
           to={isResetFlow ? '/auth/forgot-password' : '/auth/signup'}
-<<<<<<< HEAD
           className="text-xs font-semibold text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-=======
-          className="text-xs font-semibold text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300 dark:text-gray-600 transition-colors"
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
         >
           ← Back to {isResetFlow ? 'request' : 'registration'}
         </Link>

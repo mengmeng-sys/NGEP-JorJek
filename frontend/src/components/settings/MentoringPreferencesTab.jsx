@@ -28,13 +28,8 @@ export function MentoringPreferencesTab() {
   };
 
   const getStatusDotColor = () => {
-<<<<<<< HEAD
     if (mentoringStatus.startsWith('Available')) return 'bg-emerald-50 dark:bg-emerald-900/20';
     if (mentoringStatus.startsWith('Busy')) return 'bg-amber-50 dark:bg-amber-900/20';
-=======
-    if (mentoringStatus.startsWith('Available')) return 'bg-emerald-50 dark:bg-emerald-900/200';
-    if (mentoringStatus.startsWith('Busy')) return 'bg-amber-50 dark:bg-amber-900/200';
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
     return 'bg-rose-500';
   };
 
@@ -72,11 +67,7 @@ export function MentoringPreferencesTab() {
         <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 leading-tight">
           Mentoring Preferences
         </h2>
-<<<<<<< HEAD
         <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 mt-0.5 leading-snug">
-=======
-        <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-0.5 leading-snug">
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
           Control your availability, active weekly schedule, specialties, and session limits.
         </p>
       </div>
@@ -94,13 +85,8 @@ export function MentoringPreferencesTab() {
 
           <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 gap-2.5 mb-3">
             {[
-<<<<<<< HEAD
               { label: 'Available for Sessions', desc: 'Open to all requests', dot: 'bg-emerald-50 dark:bg-emerald-900/20', activeRing: 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-950' },
               { label: 'Busy / Paused', desc: 'Temporarily unavailable', dot: 'bg-amber-50 dark:bg-amber-900/20', activeRing: 'border-amber-500 bg-amber-50 dark:bg-amber-900/20 text-amber-950' },
-=======
-              { label: 'Available for Sessions', desc: 'Open to all requests', dot: 'bg-emerald-50 dark:bg-emerald-900/200', activeRing: 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20/50 text-emerald-950' },
-              { label: 'Busy / Paused', desc: 'Temporarily unavailable', dot: 'bg-amber-50 dark:bg-amber-900/200', activeRing: 'border-amber-500 bg-amber-50 dark:bg-amber-900/20/50 text-amber-950' },
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
               { label: 'Not Accepting', desc: 'Closed for requests', dot: 'bg-rose-500', activeRing: 'border-rose-500 bg-rose-50/50 text-rose-950' },
             ].map((status) => {
               const isSelected = mentoringStatus === status.label;
@@ -111,13 +97,7 @@ export function MentoringPreferencesTab() {
                   onClick={() => setMentoringStatus(status.label)}
                   className={`flex flex-col text-left p-3 rounded-xl border transition-all cursor-pointer select-none active:scale-98 ${
                     isSelected
-<<<<<<< HEAD
                       ? `${status.activeRing} shadow-2xs ring-1 ring-offset-0` : 'border-gray-200 dark:border-gray-800 bg-[#FAFAFA] dark:bg-gray-800 hover:bg-white text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:border-gray-700' }`}
-=======
-                      ? `${status.activeRing} shadow-2xs ring-1 ring-offset-0`
-                      : 'border-gray-200 dark:border-gray-800 bg-[#FAFAFA] dark:bg-gray-800 hover:bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 dark:text-gray-600 hover:border-gray-300 dark:border-gray-700'
-                  }`}
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <span className={`w-2 h-2 rounded-full ${status.dot} flex-shrink-0`} />
@@ -133,11 +113,7 @@ export function MentoringPreferencesTab() {
 
           <div className="bg-[#FAFAFA] dark:bg-gray-800 border border-gray-100 dark:border-gray-800 rounded-xl p-2.5 sm:p-3 flex items-center gap-2 text-xs">
             <span className={`w-2 h-2 rounded-full ${getStatusDotColor()}`} />
-<<<<<<< HEAD
             <span className="text-[11px] sm:text-xs font-semibold text-gray-700 dark:text-gray-300">
-=======
-            <span className="text-[11px] sm:text-xs font-semibold text-gray-700 dark:text-gray-300 dark:text-gray-600">
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
               Active status: <strong className="text-gray-900 dark:text-gray-100">{mentoringStatus}</strong>
             </span>
           </div>
@@ -168,11 +144,7 @@ export function MentoringPreferencesTab() {
                   className={`flex flex-col items-center justify-center py-2.5 sm:py-3 px-1 rounded-xl border text-center transition-all cursor-pointer active:scale-95 select-none ${
                     isSelected
                       ? 'bg-[#FFF4F0] dark:bg-orange-900/20 border-[#FF4F00] text-[#FF4F00] font-black shadow-2xs'
-<<<<<<< HEAD
                       : 'bg-[#FAFAFA] dark:bg-gray-800 border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:bg-white hover:border-gray-300 font-bold'
-=======
-                      : 'bg-[#FAFAFA] dark:bg-gray-800 border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 dark:text-gray-500 hover:bg-white dark:bg-gray-900 hover:border-gray-300 dark:border-gray-700 font-bold'
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
                   }`}
                   title={day.full}
                 >
@@ -191,33 +163,21 @@ export function MentoringPreferencesTab() {
             <button
               type="button"
               onClick={() => setAvailableDays(['mon', 'tue', 'wed', 'thu', 'fri'])}
-<<<<<<< HEAD
               className="text-[10px] font-semibold text-gray-500 dark:text-gray-400 hover:text-gray-800 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 px-2 py-1 rounded-md transition-colors cursor-pointer"
-=======
-              className="text-[10px] font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-gray-800 dark:text-gray-200 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded-md transition-colors cursor-pointer"
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
             >
               Weekdays only
             </button>
             <button
               type="button"
               onClick={() => setAvailableDays(['sat', 'sun'])}
-<<<<<<< HEAD
               className="text-[10px] font-semibold text-gray-500 dark:text-gray-400 hover:text-gray-800 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 px-2 py-1 rounded-md transition-colors cursor-pointer"
-=======
-              className="text-[10px] font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-gray-800 dark:text-gray-200 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded-md transition-colors cursor-pointer"
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
             >
               Weekends only
             </button>
             <button
               type="button"
               onClick={() => setAvailableDays([])}
-<<<<<<< HEAD
               className="text-[10px] font-semibold text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 px-2 py-1 transition-colors cursor-pointer"
-=======
-              className="text-[10px] font-semibold text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300 dark:text-gray-600 px-2 py-1 transition-colors cursor-pointer"
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
             >
               Clear all
             </button>
@@ -242,11 +202,7 @@ export function MentoringPreferencesTab() {
                 className={`w-10 h-10 rounded-xl font-black text-xs flex items-center justify-center transition-all cursor-pointer active:scale-95 shadow-2xs ${
                   maxSessions === num
                     ? 'bg-[#FF4F00] text-white shadow-xs'
-<<<<<<< HEAD
                     : 'border border-gray-200 dark:border-gray-800 bg-[#FAFAFA] dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-white'
-=======
-                    : 'border border-gray-200 dark:border-gray-800 bg-[#FAFAFA] dark:bg-gray-800 text-gray-700 dark:text-gray-300 dark:text-gray-600 hover:bg-white dark:bg-gray-900'
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
                 }`}
               >
                 {num}
@@ -264,19 +220,11 @@ export function MentoringPreferencesTab() {
             Areas of Expertise
           </h3>
           <p className="text-[11px] sm:text-xs text-gray-400 dark:text-gray-500 mb-3">
-<<<<<<< HEAD
             Type a topic and press <kbd className="font-sans font-semibold bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-gray-600 dark:text-gray-400">Enter</kbd> or comma to add.
           </p>
 
           {/* Integrated Tag Container */}
           <div className="w-full bg-[#FAFAFA] dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl p-2 sm:p-2.5 flex flex-wrap items-center gap-2 focus-within:bg-white dark:focus-within:bg-gray-800 focus-within:border-[#FF4F00] focus-within:ring-1 focus-within:ring-[#FF4F00] transition-all shadow-2xs">
-=======
-            Type a topic and press <kbd className="font-sans font-semibold bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-gray-600 dark:text-gray-400 dark:text-gray-500">Enter</kbd> or comma to add.
-          </p>
-
-          {/* Integrated Tag Container */}
-          <div className="w-full bg-[#FAFAFA] dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl p-2 sm:p-2.5 flex flex-wrap items-center gap-2 focus-within:bg-white dark:focus-within:bg-gray-800 dark:bg-gray-900 focus-within:border-[#FF4F00] focus-within:ring-1 focus-within:ring-[#FF4F00] transition-all shadow-2xs">
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
             {expertiseTags.map((tag) => (
               <span
                 key={tag}
@@ -306,11 +254,7 @@ export function MentoringPreferencesTab() {
                   if (tagInput.trim()) handleAddTag(tagInput);
                 }}
                 placeholder={expertiseTags.length === 0 ? "e.g. Python, SQL..." : "Add more..."}
-<<<<<<< HEAD
                 className="w-full bg-transparent border-0 outline-none text-xs text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 font-medium py-1"
-=======
-                className="w-full bg-transparent border-0 outline-none text-xs text-gray-800 dark:text-gray-200 dark:text-gray-300 placeholder-gray-400 dark:placeholder-gray-500 font-medium py-1"
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
               />
             </div>
           </div>

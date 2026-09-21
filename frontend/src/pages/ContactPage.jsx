@@ -20,11 +20,7 @@ export default function ContactPage() {
           <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1 leading-tight">
             Get in Touch
           </h1>
-<<<<<<< HEAD
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 sm:mt-1.5 leading-relaxed">
-=======
           <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1 sm:mt-1.5 leading-relaxed">
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
             Have feedback, report a system issue, or suggest a new course tag?
           </p>
         </div>
@@ -33,11 +29,7 @@ export default function ContactPage() {
           <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-900/30 rounded-xl p-6 sm:p-8 text-center animate-in fade-in duration-200">
             <span className="text-3xl sm:text-4xl block">📬</span>
             <h3 className="text-sm sm:text-base font-bold text-gray-900 dark:text-gray-100 mt-3">Message Sent!</h3>
-<<<<<<< HEAD
-            <p className="text-xs text-gray-600 dark:text-gray-400 mt-1.5 max-w-sm mx-auto leading-relaxed">
-=======
             <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 mt-1.5 max-w-sm mx-auto leading-relaxed">
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
               Thanks for reaching out. A campus admin will review your message shortly.
             </p>
             <button
@@ -60,11 +52,7 @@ export default function ContactPage() {
                   required
                   type="text"
                   placeholder="e.g., Yola Osei"
-<<<<<<< HEAD
-                  className="w-full border border-gray-200 dark:border-gray-800 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs text-gray-800 dark:text-gray-200 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] bg-[#FAFAFA] dark:bg-gray-800 focus:bg-white transition-all shadow-2xs"
-=======
                   className="w-full border border-gray-200 dark:border-gray-800 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs text-gray-800 dark:text-gray-200 dark:text-gray-300 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] bg-[#FAFAFA] dark:bg-gray-800 focus:bg-white dark:bg-gray-900 transition-all shadow-2xs"
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
                 />
               </div>
               <div>
@@ -75,11 +63,7 @@ export default function ContactPage() {
                   required
                   type="email"
                   placeholder="student@cadt.edu.kh"
-<<<<<<< HEAD
-                  className="w-full border border-gray-200 dark:border-gray-800 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs text-gray-800 dark:text-gray-200 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] bg-[#FAFAFA] dark:bg-gray-800 focus:bg-white transition-all shadow-2xs"
-=======
                   className="w-full border border-gray-200 dark:border-gray-800 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs text-gray-800 dark:text-gray-200 dark:text-gray-300 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] bg-[#FAFAFA] dark:bg-gray-800 focus:bg-white dark:bg-gray-900 transition-all shadow-2xs"
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
                 />
               </div>
             </div>
@@ -90,11 +74,7 @@ export default function ContactPage() {
                 Subject
               </label>
               <div className="relative">
-<<<<<<< HEAD
-                <select className="w-full appearance-none border border-gray-200 dark:border-gray-800 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 pr-9 text-xs text-gray-800 dark:text-gray-200 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] bg-[#FAFAFA] dark:bg-gray-800 focus:bg-white transition-all shadow-2xs cursor-pointer">
-=======
                 <select className="w-full appearance-none border border-gray-200 dark:border-gray-800 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 pr-9 text-xs text-gray-800 dark:text-gray-200 dark:text-gray-300 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] bg-[#FAFAFA] dark:bg-gray-800 focus:bg-white dark:bg-gray-900 transition-all shadow-2xs cursor-pointer">
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
                   <option value="general">General Feedback</option>
                   <option value="bug">Report a Bug / Glitch</option>
                   <option value="mentor">Mentor Application Question</option>
@@ -117,11 +97,7 @@ export default function ContactPage() {
                 required
                 rows={4}
                 placeholder="Describe your question or issue in detail..."
-<<<<<<< HEAD
-                className="w-full border border-gray-200 dark:border-gray-800 rounded-xl p-3 sm:p-3.5 text-xs text-gray-800 dark:text-gray-200 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] bg-[#FAFAFA] dark:bg-gray-800 focus:bg-white transition-all resize-none shadow-2xs min-h-27.5"
-=======
                 className="w-full border border-gray-200 dark:border-gray-800 rounded-xl p-3 sm:p-3.5 text-xs text-gray-800 dark:text-gray-200 dark:text-gray-300 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] bg-[#FAFAFA] dark:bg-gray-800 focus:bg-white dark:bg-gray-900 transition-all resize-none shadow-2xs min-h-27.5"
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
               />
             </div>
 

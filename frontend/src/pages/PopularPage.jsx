@@ -101,11 +101,7 @@ export default function PopularPage() {
                     className={`flex-1 sm:flex-none px-3 py-1.5 text-xs font-bold rounded-lg transition-all text-center cursor-pointer ${
                       isActive
                         ? 'bg-[#FF4F00] text-white shadow-xs'
-<<<<<<< HEAD
-                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-800/70'
-=======
                         : 'text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-800/70'
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
                     }`}
                   >
                     {opt.label}
@@ -131,11 +127,7 @@ export default function PopularPage() {
               </svg>
             </div>
             <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">No discussions found</h3>
-<<<<<<< HEAD
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 max-w-sm mx-auto">
-=======
             <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1 max-w-sm mx-auto">
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
               No top-voted posts match this period ({timeframeOptions.find(t => t.id === timeframe)?.label}).
             </p>
           </div>

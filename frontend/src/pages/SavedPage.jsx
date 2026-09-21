@@ -77,11 +77,7 @@ export default function SavedPage() {
               <h1 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 leading-tight truncate">
                 Your Saved Resources
               </h1>
-<<<<<<< HEAD
               <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 mt-0.5 leading-snug truncate">
-=======
-              <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-0.5 leading-snug truncate">
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
                 {savedPosts.length === 0
                   ? 'Posts you save will appear here for quick access'
                   : `${savedPosts.length} ${savedPosts.length === 1 ? 'post' : 'posts'} saved to your bookmarks`}
@@ -110,11 +106,7 @@ export default function SavedPage() {
           </div>
         ) : savedPosts.length === 0 ? (
           <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl sm:rounded-2xl p-8 sm:p-14 flex flex-col items-center justify-center text-center shadow-xs min-h-90 sm:min-h-100">
-<<<<<<< HEAD
             <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-900/30 text-[#FF4F00] flex items-center justify-center mb-4">
-=======
-            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-orange-50 dark:bg-orange-900/20/70 border border-orange-100 dark:border-orange-900/30 text-[#FF4F00] flex items-center justify-center mb-4">
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
               <svg
                 className="w-7 h-7 sm:w-8 sm:h-8"
                 fill="none"
@@ -134,11 +126,7 @@ export default function SavedPage() {
               Nothing saved yet!
             </h2>
             <p className="text-xs text-gray-400 dark:text-gray-500 max-w-xs mb-5 sm:mb-6 leading-relaxed">
-<<<<<<< HEAD
               Click the <strong className="font-semibold text-gray-700 dark:text-gray-300">Save</strong> bookmark button on questions or study guides to collect them here.
-=======
-              Click the <strong className="font-semibold text-gray-700 dark:text-gray-300 dark:text-gray-600">Save</strong> bookmark button on questions or study guides to collect them here.
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
             </p>
 
             <Link

@@ -23,17 +23,10 @@ export function DeletePostModal({ isOpen, onClose, onConfirm, postTitle = '' }) 
           Delete Discussion?
         </h3>
 
-<<<<<<< HEAD
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5 leading-relaxed break-words px-2">
           Are you sure you want to permanently delete{' '}
           {postTitle ? (
             <strong className="text-gray-800 dark:text-gray-200 font-semibold">"{postTitle}"</strong>
-=======
-        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1.5 leading-relaxed break-words px-2">
-          Are you sure you want to permanently delete{' '}
-          {postTitle ? (
-            <strong className="text-gray-800 dark:text-gray-200 dark:text-gray-300 font-semibold">"{postTitle}"</strong>
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
           ) : (
             'this post'
           )}
@@ -45,11 +38,7 @@ export function DeletePostModal({ isOpen, onClose, onConfirm, postTitle = '' }) 
           <button
             type="button"
             onClick={onClose}
-<<<<<<< HEAD
             className="w-full xs:flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 transition-colors cursor-pointer text-center"
-=======
-            className="w-full xs:flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 dark:text-gray-600 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:bg-gray-700 transition-colors cursor-pointer text-center"
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
           >
             Cancel
           </button>

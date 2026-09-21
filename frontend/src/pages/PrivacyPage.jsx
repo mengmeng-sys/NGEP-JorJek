@@ -41,11 +41,7 @@ export default function PrivacyPage() {
         </div>
 
         {/* Policy Sections */}
-<<<<<<< HEAD
         <div className="space-y-4 sm:space-y-5 text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-=======
-        <div className="space-y-4 sm:space-y-5 text-xs sm:text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed">
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
           {sections.map((sec) => (
             <section
               key={sec.number}
@@ -55,11 +51,7 @@ export default function PrivacyPage() {
                 <span className="text-[#FF4F00] font-black">{sec.number}.</span>
                 <span>{sec.title}</span>
               </h2>
-<<<<<<< HEAD
               <p className="leading-relaxed text-gray-600 dark:text-gray-400 wrap-break-words">
-=======
-              <p className="leading-relaxed text-gray-600 dark:text-gray-400 dark:text-gray-500 wrap-break-words">
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
                 {sec.content}
               </p>
             </section>
