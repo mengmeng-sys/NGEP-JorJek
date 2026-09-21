@@ -35,15 +35,22 @@ adminRouter.get("/overview", async (_req, res, next) => {
       supabase.from("reports").select("id,reason,created_at,target_user_id,status").eq("status", "PENDING").order("created_at", { ascending: false }).limit(5),
     ]);
 
-    const statusCounts = { active: 0, suspended: 0, banned: 0 };
+    // NOTE: users.status/role are stored as uppercase enum strings (ACTIVE,
+    // SUSPENDED, BANNED, SUPER_ADMIN, MODERATOR, PROFESSOR, STUDENT — see
+    // seed.js and the check constraints in database.sql). Keeping these keys
+    // uppercase, instead of lowercasing them, matches what the frontend
+    // overview cards read (accountStanding.ACTIVE, roles.SUPER_ADMIN, etc.) —
+    // the previous lowercase keys meant every lookup missed and fell back to
+    // the `|| 0` default, so the cards always showed zero regardless of data.
+    const statusCounts = { ACTIVE: 0, SUSPENDED: 0, BANNED: 0 };
     if (byStatus) byStatus.forEach((s) => {
-      const key = s.status.toLowerCase();
+      const key = s.status;
       statusCounts[key] = (statusCounts[key] || 0) + 1;
     });
 
-    const roleCounts = { super_admin: 0, moderator: 0, professor: 0, student: 0 };
+    const roleCounts = { SUPER_ADMIN: 0, MODERATOR: 0, PROFESSOR: 0, STUDENT: 0 };
     if (byRole) byRole.forEach((r) => {
-      const key = r.role.toLowerCase();
+      const key = r.role;
       roleCounts[key] = (roleCounts[key] || 0) + 1;
     });
 
@@ -143,44 +150,6 @@ adminRouter.get("/users/:id/actions", async (req, res, next) => {
     if (error) throw error;
 
     res.json({ user, actions: actions || [] });
-  } catch (err) {
-    next(err);
-  }
-});
-
-// ─── Role assignment (SUPER_ADMIN only) ────────────────────────
-const ADMIN_ROLES = ["SUPER_ADMIN", "MODERATOR", "PROFESSOR", "STUDENT"];
-
-adminRouter.post("/users/:id/role", requireRole("SUPER_ADMIN"), async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const { role } = req.body;
-
-    if (!ADMIN_ROLES.includes(role)) {
-      return res.status(400).json({ error: `role must be one of: ${ADMIN_ROLES.join(", ")}` });
-    }
-
-    const { data: target, error: findErr } = await supabase
-      .from("users")
-      .select("id,display_name,email,role")
-      .eq("id", id)
-      .maybeSingle();
-    if (findErr) throw findErr;
-    if (!target) return res.status(404).json({ error: "User not found" });
-    if (target.id === req.admin.id) {
-      return res.status(400).json({ error: "You cannot change your own role" });
-    }
-    if (target.role === role) {
-      return res.status(400).json({ error: `User already has the role ${role}` });
-    }
-
-    const { error: updateErr } = await supabase
-      .from("users")
-      .update({ role })
-      .eq("id", id);
-    if (updateErr) throw updateErr;
-
-    res.json({ user: { id, email: target.email, display_name: target.display_name, role } });
   } catch (err) {
     next(err);
   }

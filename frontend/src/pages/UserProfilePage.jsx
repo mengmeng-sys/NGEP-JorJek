@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ThreeColumnLayout } from '@/components/layout/ThreeColumnLayout';
 import { PostCard } from '@/components/post/PostCard';
@@ -8,17 +8,22 @@ import { ReportModal } from '@/components/shared/ReportModal';
 import { useAuth } from '@/context/AuthContext';
 import { useSocket } from '@/context/SocketContext';
 import { UserAvatar } from '@/components/shared/UserAvatar';
-import { postsApi, usersApi, reportsApi } from '@/lib/api';
+import { postsApi, usersApi, uploadsApi, reportsApi } from '@/lib/api';
 import { normalizeUser } from '@/lib/adapters';
 import { getApiErrorMessage } from '@/lib/apiClient';
 import { copyToClipboard } from '@/lib/clipboard';
 
+const MAX_AVATAR_SIZE = 5 * 1024 * 1024; // 5MB — matches the /uploads endpoint's limit
+const ALLOWED_AVATAR_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
 export default function UserProfilePage() {
   const { username } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, updateUserProfile } = useAuth();
   const { on, off } = useSocket();
   const [activeTab, setActiveTab] = useState('posts');
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const avatarInputRef = useRef(null);
 
   // Edit / Create Modal State
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
@@ -188,6 +193,7 @@ export default function UserProfilePage() {
       handle: profileUser.handle || 'student',
       role: profileUser.role || 'STUDENT',
       avatarInitials: profileUser.initials || 'CA',
+      avatarUrl: profileUser.avatarUrl || null,
       gen: profileUser.gen ?? null,
       department: profileUser.department || null,
       specialization: profileUser.specialization || null,
@@ -210,6 +216,7 @@ export default function UserProfilePage() {
       gen: profileUser?.gen ?? '',
       department: profileUser?.department || '',
       specialization: profileUser?.specialization || '',
+      avatarUrl: profileUser?.avatarUrl || null,
     });
     setIsEditing(true);
   }, [profileUser]);
@@ -218,6 +225,37 @@ export default function UserProfilePage() {
     setIsEditing(false);
     setEditForm({});
   }, []);
+
+  const handleAvatarPick = () => avatarInputRef.current?.click();
+
+  const handleAvatarChange = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = ''; // allow picking the same file again later
+    if (!file) return;
+
+    if (!ALLOWED_AVATAR_TYPES.includes(file.type)) {
+      alert('Please choose a JPEG, PNG, or WebP image.');
+      return;
+    }
+    if (file.size > MAX_AVATAR_SIZE) {
+      alert('Image must be smaller than 5MB.');
+      return;
+    }
+
+    setAvatarUploading(true);
+    try {
+      const { url } = await uploadsApi.upload(file);
+      setEditForm((p) => ({ ...p, avatarUrl: url }));
+    } catch (err) {
+      alert(err?.message || 'Could not upload the image. Please try again.');
+    } finally {
+      setAvatarUploading(false);
+    }
+  };
+
+  const handleRemoveAvatar = () => {
+    setEditForm((p) => ({ ...p, avatarUrl: null }));
+  };
 
   const maxGen = new Date().getFullYear() - 2014 + 1;
 
@@ -238,16 +276,24 @@ export default function UserProfilePage() {
       if (editForm.gen !== undefined && editForm.gen !== '') payload.gen = Number(editForm.gen);
       if (editForm.department) payload.department = editForm.department;
       if (editForm.specialization) payload.specialization = editForm.specialization.trim();
+      // Always send avatarUrl (even when null) so removing a photo actually
+      // clears it — the backend treats `avatarUrl: null` as "remove photo".
+      payload.avatarUrl = editForm.avatarUrl || null;
 
-      const updated = await usersApi.update(profileUser.id, payload);
-      setProfile((prev) => ({ ...prev, ...updated }));
+      // Editing here is only ever shown for the signed-in user's own profile
+      // (see the isOwnProfile check around the "Edit Profile" button), so
+      // updateUserProfile — which also refreshes the AuthContext user object
+      // — is the right call. Calling usersApi.update directly here used to
+      // save to the database fine, but left the on-screen profile (and the
+      // avatar/name shown in the navbar) stale until the next full reload.
+      await updateUserProfile(payload);
       setIsEditing(false);
     } catch (err) {
       alert(getApiErrorMessage(err));
     } finally {
       setSaving(false);
     }
-  }, [profileUser?.id, editForm]);
+  }, [profileUser?.id, editForm, updateUserProfile]);
 
   if (profileLoading) {
     return (
@@ -298,6 +344,56 @@ export default function UserProfilePage() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
                 <span className="text-xs font-bold uppercase tracking-wider">Editing Profile</span>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">Profile Picture</label>
+                <div className="flex items-center gap-4 p-3 bg-[#FAFAFA] rounded-xl border border-gray-100">
+                  <div className="relative shrink-0">
+                    <div className="w-16 h-16 rounded-2xl bg-[#8B5CF6] text-white text-lg font-bold flex items-center justify-center shadow-xs overflow-hidden">
+                      {avatarUploading ? (
+                        <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                        </svg>
+                      ) : editForm.avatarUrl ? (
+                        <img src={editForm.avatarUrl} alt={editForm.displayName || 'Profile picture'} className="w-full h-full object-cover" />
+                      ) : (
+                        fullProfile.avatarInitials
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleAvatarPick}
+                      disabled={avatarUploading}
+                      className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-[#FF4F00] hover:bg-[#E64700] text-white flex items-center justify-center ring-2 ring-white shadow-xs cursor-pointer transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                      aria-label="Change profile picture"
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                      </svg>
+                    </button>
+                    <input
+                      ref={avatarInputRef}
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      className="hidden"
+                      onChange={handleAvatarChange}
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[11px] text-gray-500 leading-relaxed">JPEG, PNG, or WebP. Max 5MB.</p>
+                    {editForm.avatarUrl && !avatarUploading && (
+                      <button
+                        type="button"
+                        onClick={handleRemoveAvatar}
+                        className="text-[10px] font-bold text-gray-400 hover:text-red-500 transition-colors mt-1 cursor-pointer"
+                      >
+                        Remove photo
+                      </button>
+                    )}
+                  </div>
+                </div>
               </div>
 
               <div>
@@ -407,6 +503,7 @@ export default function UserProfilePage() {
                 <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 sm:gap-5">
                   <UserAvatar
                     initials={fullProfile.avatarInitials}
+                    avatarUrl={fullProfile.avatarUrl}
                     userId={fullProfile.id}
                     size="xl"
                     rounded="rounded-2xl"

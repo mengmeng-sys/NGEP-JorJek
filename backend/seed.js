@@ -20,7 +20,13 @@ async function upsertUser({ email, display_name, role, status, is_mentor, karma 
   const password_hash = await bcrypt.hash(SEED_PASSWORD, 10);
   const { data: existing } = await supabase.from("users").select("id").eq("email", email).maybeSingle();
   if (existing) {
-    await supabase.from("users").update({ role, status, is_mentor, karma }).eq("id", existing.id);
+    // NOTE: password_hash is included here so that re-running the seed with a
+    // new SEED_PASSWORD actually resets the password on existing accounts.
+    // Previously this branch only updated role/status/is_mentor/karma, so
+    // changing SEED_PASSWORD and re-seeding silently left the OLD password
+    // hash in place — login would then fail with "Invalid credentials" even
+    // though the console log said the new password should work.
+    await supabase.from("users").update({ role, status, is_mentor, karma, password_hash }).eq("id", existing.id);
     return { id: existing.id, email };
   }
   const { data, error } = await supabase

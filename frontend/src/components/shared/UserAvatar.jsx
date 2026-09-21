@@ -16,7 +16,7 @@ const dotSizes = {
   xl: "w-4 h-4 border-2",
 };
 
-export function UserAvatar({ initials = "U", size = "md", userId, className = "", gradient = false, rounded = "rounded-full", bg }) {
+export function UserAvatar({ initials = "U", size = "md", userId, className = "", gradient = false, rounded = "rounded-full", bg, avatarUrl }) {
   const { isOnline } = useOnline();
   const online = userId ? isOnline(userId) : false;
   const sizeClass = sizes[size] || sizes.md;
@@ -26,9 +26,13 @@ export function UserAvatar({ initials = "U", size = "md", userId, className = ""
   return (
     <div className={`relative shrink-0 ${className}`}>
       <div
-        className={`${sizeClass} ${rounded} ${bgClass} flex items-center justify-center font-bold text-white`}
+        className={`${sizeClass} ${rounded} ${bgClass} flex items-center justify-center font-bold text-white overflow-hidden`}
       >
-        {initials}
+        {avatarUrl ? (
+          <img src={avatarUrl} alt={initials} className="w-full h-full object-cover" />
+        ) : (
+          initials
+        )}
       </div>
       {userId && (
         <span

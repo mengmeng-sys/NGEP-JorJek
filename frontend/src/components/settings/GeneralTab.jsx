@@ -1,139 +1,56 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
-import { uploadsApi } from '@/lib/api';
 
-const MAX_AVATAR_SIZE = 5 * 1024 * 1024; // 5MB — matches the /uploads endpoint's limit
-const ALLOWED_AVATAR_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
-
+// This tab used to be a second, independent editor for displayName/bio/avatar
+// — the exact same fields the "Edit Profile" panel on the user's own profile
+// page (UserProfilePage.jsx) edits. Two editable forms for the same data is a
+// real footgun (whichever was saved last silently wins, and it's unclear to
+// the user which page is "the" place to edit their profile), so this is now
+// a read-only summary with a link to the one place profile editing happens.
 export function GeneralTab() {
-  const { user, updateUserProfile } = useAuth();
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const fileInputRef = useRef(null);
+  const { user } = useAuth();
 
-  const [displayName, setDisplayName] = useState('');
-  const [bio, setBio] = useState('');
-  const [avatarUrl, setAvatarUrl] = useState(null);
-  const [avatarUploading, setAvatarUploading] = useState(false);
-
-  useEffect(() => {
-    if (user) {
-      setDisplayName(user.displayName || '');
-      setBio(user.bio || '');
-      setAvatarUrl(user.avatarUrl || null);
-    }
-  }, [user?.displayName, user?.bio, user?.avatarUrl]);
-
-  const hasChanges =
-    displayName.trim() !== (user?.displayName || '') ||
-    bio.trim() !== (user?.bio || '') ||
-    (avatarUrl || null) !== (user?.avatarUrl || null);
-
-  const handleAvatarPick = () => fileInputRef.current?.click();
-
-  const handleAvatarChange = async (e) => {
-    const file = e.target.files?.[0];
-    e.target.value = ''; // allow picking the same file again later
-    if (!file) return;
-
-    if (!ALLOWED_AVATAR_TYPES.includes(file.type)) {
-      alert('Please choose a JPEG, PNG, or WebP image.');
-      return;
-    }
-    if (file.size > MAX_AVATAR_SIZE) {
-      alert('Image must be smaller than 5MB.');
-      return;
-    }
-
-    setAvatarUploading(true);
-    setSaved(false);
-    try {
-      const { url } = await uploadsApi.upload(file);
-      setAvatarUrl(url);
-    } catch (err) {
-      alert(err?.message || 'Could not upload the image. Please try again.');
-    } finally {
-      setAvatarUploading(false);
-    }
-  };
-
-  const handleRemoveAvatar = () => {
-    setAvatarUrl(null);
-    setSaved(false);
-  };
-
-  const handleSave = async () => {
-    if (!user?.id) return;
-    setSaving(true);
-    setSaved(false);
-    try {
-      await updateUserProfile({ displayName: displayName.trim(), bio: bio.trim(), avatarUrl });
-      setSaved(true);
-      setTimeout(() => setSaved(false), 3000);
-    } catch (err) {
-      alert(err?.message || 'Could not save changes. Please try again.');
-    } finally {
-      setSaving(false);
-    }
-  };
+  const initials =
+    user?.initials ||
+    (user?.displayName
+      ? user.displayName.trim().split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase()
+      : 'U');
 
   return (
     <div className="w-full">
       {/* Section Header */}
-      <div className="border-b border-gray-100 pb-4 sm:pb-5 mb-5 sm:mb-6">
-        <h2 className="text-base sm:text-lg font-bold text-gray-900 leading-tight">General</h2>
-        <p className="text-[11px] sm:text-xs text-gray-500 mt-0.5 leading-snug">
-          Manage your public profile information visible to other CADT students.
-        </p>
+      <div className="border-b border-gray-100 pb-4 sm:pb-5 mb-5 sm:mb-6 flex items-center justify-between gap-4">
+        <div>
+          <h2 className="text-base sm:text-lg font-bold text-gray-900 leading-tight">General</h2>
+          <p className="text-[11px] sm:text-xs text-gray-500 mt-0.5 leading-snug">
+            A summary of your public profile. Head to your profile page to make changes.
+          </p>
+        </div>
+        <Link
+          to={`/user/${user?.handle || 'me'}`}
+          className="shrink-0 inline-flex items-center gap-1.5 bg-[#FF4F00] hover:bg-[#E64700] text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all shadow-xs cursor-pointer"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+          Edit Profile
+        </Link>
       </div>
 
       <div className="space-y-5 sm:space-y-6">
-        {/* Avatar + Name Preview */}
+        {/* Avatar + Name */}
         <div className="flex items-center gap-4 p-4 bg-gray-50/70 rounded-xl border border-gray-100">
-          <div className="relative flex-shrink-0">
-            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 text-white text-lg font-bold flex items-center justify-center ring-2 ring-white shadow-xs overflow-hidden">
-              {avatarUploading ? (
-                <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                </svg>
-              ) : avatarUrl ? (
-                <img src={avatarUrl} alt={displayName || 'Profile picture'} className="w-full h-full object-cover" />
-              ) : (
-                displayName ? displayName.trim().split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase() : (user?.initials || 'U')
-              )}
-            </div>
-            <button
-              type="button"
-              onClick={handleAvatarPick}
-              disabled={avatarUploading}
-              className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-[#FF4F00] hover:bg-[#E64700] text-white flex items-center justify-center ring-2 ring-white shadow-xs cursor-pointer transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-              aria-label="Change profile picture"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-              </svg>
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              className="hidden"
-              onChange={handleAvatarChange}
-            />
+          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 text-white text-lg font-bold flex items-center justify-center ring-2 ring-white shadow-xs overflow-hidden shrink-0">
+            {user?.avatarUrl ? (
+              <img src={user.avatarUrl} alt={user.displayName || 'Profile picture'} className="w-full h-full object-cover" />
+            ) : (
+              initials
+            )}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-bold text-gray-900 truncate">{displayName || 'Your Name'}</p>
-            <p className="text-xs text-gray-400 truncate">@{displayName ? displayName.toLowerCase().replace(/\s+/g, '') : 'username'}</p>
-            {avatarUrl && !avatarUploading && (
-              <button
-                type="button"
-                onClick={handleRemoveAvatar}
-                className="text-[10px] font-bold text-gray-400 hover:text-red-500 transition-colors mt-1 cursor-pointer"
-              >
-                Remove photo
-              </button>
-            )}
+            <p className="text-sm font-bold text-gray-900 truncate">{user?.displayName || 'Your Name'}</p>
+            <p className="text-xs text-gray-400 truncate">@{user?.handle || 'username'}</p>
           </div>
           <span className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full ${
             user?.role === 'PROFESSOR'
@@ -144,38 +61,39 @@ export function GeneralTab() {
           </span>
         </div>
 
-        {/* Display Name */}
-        <div>
-          <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">
-            Display Name
-          </label>
-          <input
-            type="text"
-            value={displayName}
-            onChange={(e) => { setDisplayName(e.target.value); setSaved(false); }}
-            placeholder="How should we call you?"
-            className="w-full border border-gray-200 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm text-gray-900 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all bg-[#FAFAFA] shadow-2xs"
-          />
-          <p className="text-[10px] text-gray-400 mt-1">This is the name other users will see on your posts and comments.</p>
-        </div>
-
         {/* Bio */}
-        <div>
-          <div className="flex items-center justify-between mb-1.5">
-            <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider">
-              Bio
-            </label>
-            <span className="text-[10px] text-gray-400">{bio.length}/200</span>
+        {user?.bio && (
+          <div>
+            <h3 className="text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-2">Bio</h3>
+            <p className="text-xs sm:text-sm text-gray-600 leading-relaxed bg-gray-50/70 rounded-xl border border-gray-100 p-3.5">
+              {user.bio}
+            </p>
           </div>
-          <textarea
-            rows={3}
-            maxLength={200}
-            value={bio}
-            onChange={(e) => { setBio(e.target.value); setSaved(false); }}
-            placeholder="Tell others about yourself, what you're studying, or what you're working on..."
-            className="w-full border border-gray-200 rounded-xl p-3 text-xs sm:text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all bg-[#FAFAFA] focus:bg-white resize-none shadow-2xs leading-relaxed"
-          />
-        </div>
+        )}
+
+        {/* Academic Info */}
+        {(user?.gen || user?.department || user?.specialization) && (
+          <div>
+            <h3 className="text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-2">Academic Info</h3>
+            <div className="flex flex-wrap gap-2">
+              {user?.gen && (
+                <span className="text-[11px] font-medium text-gray-600 bg-gray-50/70 border border-gray-100 rounded-lg px-2.5 py-1.5">
+                  Gen {user.gen}
+                </span>
+              )}
+              {user?.department && (
+                <span className="text-[11px] font-medium text-gray-600 bg-gray-50/70 border border-gray-100 rounded-lg px-2.5 py-1.5">
+                  {user.department}
+                </span>
+              )}
+              {user?.specialization && (
+                <span className="text-[11px] font-medium text-gray-600 bg-gray-50/70 border border-gray-100 rounded-lg px-2.5 py-1.5">
+                  {user.specialization}
+                </span>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Account Info (Read-only) */}
         <div className="pt-4 border-t border-gray-100">
@@ -202,32 +120,6 @@ export function GeneralTab() {
               </span>
             </div>
           </div>
-        </div>
-
-        {/* Save Footer */}
-        <div className="pt-4 border-t border-gray-100 flex items-center justify-between">
-          <div>
-            {saved && (
-              <span className="text-[11px] font-bold text-emerald-600 flex items-center gap-1">
-                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-                Changes saved
-              </span>
-            )}
-          </div>
-          <button
-            type="button"
-            onClick={handleSave}
-            disabled={saving || !hasChanges}
-            className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all text-center ${
-              hasChanges && !saving
-                ? 'bg-[#FF4F00] hover:bg-[#E64700] text-white shadow-xs cursor-pointer active:scale-98'
-                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-            }`}
-          >
-            {saving ? 'Saving…' : 'Save Changes'}
-          </button>
         </div>
       </div>
     </div>
