@@ -4,7 +4,7 @@ const crypto = require("crypto");
 const { supabase } = require("../config/db");
 const { env } = require("../config/env");
 const { requireAuth } = require("../middleware/auth.middleware");
-const { requireMfaTempToken } = require("../middleware/mfa.middleware");
+const { requireMfaTempToken, requireAuthOrMfaTemp } = require("../middleware/mfa.middleware");
 const { signAccessToken, signRefreshToken, userSafe } = require("../lib/token");
 const { hashToken, storeRefreshToken } = require("../lib/tokenStore");
 const {
@@ -32,7 +32,7 @@ function verifyMfaTempToken(token) {
   }
 }
 
-mfaRouter.post("/setup", requireMfaTempToken, async (req, res, next) => {
+mfaRouter.post("/setup", requireAuthOrMfaTemp, async (req, res, next) => {
   try {
     const { data: user } = await supabase
       .from("users")
@@ -63,7 +63,7 @@ mfaRouter.post("/setup", requireMfaTempToken, async (req, res, next) => {
   }
 });
 
-mfaRouter.post("/enable", requireMfaTempToken, async (req, res, next) => {
+mfaRouter.post("/enable", requireAuthOrMfaTemp, async (req, res, next) => {
   try {
     const { token } = req.body;
     if (!token) return res.status(400).json({ error: "Verification code required" });
