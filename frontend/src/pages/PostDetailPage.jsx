@@ -753,6 +753,12 @@ export default function PostDetailPage() {
   const [isBodyExpanded, setIsBodyExpanded] = useState(false);
   const menuRef = useRef(null);
   const commentBoxRef = useRef(null);
+  const scrolledToRef = useRef(null);
+
+  // Reset scroll tracker when navigating to a different post
+  useEffect(() => {
+    scrolledToRef.current = null;
+  }, [id]);
 
   const scrollToComments = () => {
     commentBoxRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -811,19 +817,29 @@ export default function PostDetailPage() {
   }, [id, refreshComments]);
 
   useEffect(() => {
-    if (!id || comments.length === 0) return;
+    if (!id) return;
     const hash = location.hash || window.location.hash;
-    if (hash.startsWith("#comment-")) {
-      const commentId = hash.replace("#comment-", "");
-      setTimeout(() => {
-        const el = document.getElementById(`comment-${commentId}`);
-        if (el) {
-          el.scrollIntoView({ behavior: "smooth", block: "start" });
-          el.classList.add("bg-amber-50", "dark:bg-amber-900/20");
-          setTimeout(() => el.classList.remove("bg-amber-50", "dark:bg-amber-900/20"), 2500);
-        }
-      }, 400);
-    }
+    if (!hash.startsWith("#comment-")) return;
+    const commentId = hash.replace("#comment-", "");
+    if (scrolledToRef.current === commentId) return;
+
+    let attempts = 0;
+    const maxAttempts = 20;
+    const interval = setInterval(() => {
+      attempts++;
+      const el = document.getElementById(`comment-${commentId}`);
+      if (el) {
+        clearInterval(interval);
+        scrolledToRef.current = commentId;
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        el.classList.add("bg-amber-50", "dark:bg-amber-900/20");
+        setTimeout(() => el.classList.remove("bg-amber-50", "dark:bg-amber-900/20"), 2500);
+      } else if (attempts >= maxAttempts) {
+        clearInterval(interval);
+      }
+    }, 150);
+
+    return () => clearInterval(interval);
   }, [id, comments, location.hash]);
 
   useEffect(() => {
