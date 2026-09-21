@@ -7,6 +7,7 @@ import { useTheme } from '@/context/ThemeContext';
 import { notificationsApi, postsApi, tagsApi } from "@/lib/api";
 import { normalizeNotification } from "@/lib/adapters";
 import { getApiErrorMessage } from "@/lib/apiClient";
+import { UserAvatar } from "@/components/shared/UserAvatar";
 
 export default function Navbar() {
   const navigate = useNavigate();
