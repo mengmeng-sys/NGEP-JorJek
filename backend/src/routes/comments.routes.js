@@ -9,7 +9,7 @@ const { getIO } = require("../lib/socket");
 
 const commentsRouter = Router();
 
-const USER_SAFE = "id,email,display_name,role,bio,karma,created_at";
+const USER_SAFE = "id,email,display_name,role,bio,avatar_url,karma,created_at";
 
 // GET /posts/:postId/comments -- READ all comments for a post
 

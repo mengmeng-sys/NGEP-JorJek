@@ -4,7 +4,7 @@ const { requireAuth } = require("../middleware/auth.middleware");
 
 const savedRouter = Router();
 
-const USER_SAFE = "id,email,display_name,role,bio,karma,created_at";
+const USER_SAFE = "id,email,display_name,role,bio,avatar_url,karma,created_at";
 
 // GET /saved -- READ the current user's saved posts
 
