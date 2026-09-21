@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import { useSocket } from '@/context/SocketContext';
 import { GeneralTab } from '@/components/settings/GeneralTab';
 import { MentoringDashboardTab } from '@/components/settings/MentoringDashboardTab';
 import { MentoringPreferencesTab } from '@/components/settings/MentoringPreferencesTab';
@@ -10,8 +11,12 @@ import { postsApi } from '@/lib/api';
 
 export default function SettingsPage() {
   const { user } = useAuth();
+  const { on, off } = useSocket();
   const [activeTab, setActiveTab] = useState('general');
   const [postCount, setPostCount] = useState(0);
+
+  const [liveKarma, setLiveKarma] = useState(null);
+  const displayKarma = liveKarma ?? user?.karma ?? 0;
 
   useEffect(() => {
     if (!user?.id) return;
@@ -27,6 +32,15 @@ export default function SettingsPage() {
       cancelled = true;
     };
   }, [user?.id]);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    const handleKarmaUpdated = ({ userId, karma }) => {
+      if (userId === user.id) setLiveKarma(karma);
+    };
+    on("karma_updated", handleKarmaUpdated);
+    return () => off("karma_updated", handleKarmaUpdated);
+  }, [on, off, user?.id]);
 
   const navigationItems = [
     {
@@ -119,7 +133,7 @@ export default function SettingsPage() {
 
           <div className="flex items-center divide-x divide-gray-100 self-stretch md:self-auto justify-around md:justify-end gap-2 md:gap-0 pt-4 md:pt-0 border-t md:border-t-0 border-gray-100">
             <div className="px-6 text-center">
-              <span className="text-2xl font-bold text-gray-900 block leading-tight">{user?.karma ?? 0}</span>
+               <span className="text-2xl font-bold text-gray-900 block leading-tight">{displayKarma}</span>
               <span className="text-xs text-gray-400 font-medium">Campus Karma</span>
             </div>
             <div className="px-6 text-center">

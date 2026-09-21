@@ -90,6 +90,18 @@ export default function UserProfilePage() {
     return () => off("profile_updated", handleProfileUpdated);
   }, [on, off, isOwnProfile, profile?.id]);
 
+  // Listen for real-time karma updates
+  useEffect(() => {
+    if (!profileUser?.id) return;
+    const handleKarmaUpdated = ({ userId, karma }) => {
+      if (userId === profileUser.id) {
+        setProfile((prev) => (prev ? { ...prev, karma } : prev));
+      }
+    };
+    on("karma_updated", handleKarmaUpdated);
+    return () => off("karma_updated", handleKarmaUpdated);
+  }, [on, off, profileUser?.id]);
+
   // Load posts authored by this profile.
   useEffect(() => {
     let cancelled = false;

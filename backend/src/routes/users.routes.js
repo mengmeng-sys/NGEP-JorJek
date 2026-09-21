@@ -100,6 +100,7 @@ usersRouter.get("/top-mentors", async (_req, res, next) => {
     const { data: topMentors, error } = await supabase
       .from("users")
       .select("id, displayName:display_name, role, karma")
+      .eq("status", "ACTIVE")
       .order("karma", { ascending: false })
       .limit(10);
     if (error) throw error;
