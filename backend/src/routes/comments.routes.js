@@ -4,6 +4,7 @@ const { requireAuth } = require("../middleware/auth.middleware");
 const { requireVerifiedEmail } = require("../middleware/verifiedEmail.middleware");
 const { commentLimiter } = require("../middleware/rateLimit.middleware");
 const { notify } = require("../services/notification.service");
+const { recalculateKarma } = require("../services/karma.service");
 const { getIO } = require("../lib/socket");
 
 const commentsRouter = Router();
@@ -384,12 +385,20 @@ commentsRouter.delete("/comments/:id", requireAuth, requireVerifiedEmail, async 
       return res.status(403).json({ error: "You can only delete your own comments" });
     }
 
+    const authorId = existing.author_id;
+
     const { error } = await supabase.from("comments").delete().eq("id", req.params.id);
     if (error) throw error;
+
+    let newKarma = null;
+    if (authorId) newKarma = await recalculateKarma(authorId).catch(() => null);
 
     const io = getIO();
     if (io) {
       io.to(`post:${existing.post_id}`).emit("comment_deleted", { id: req.params.id, postId: existing.post_id });
+      if (authorId && newKarma !== null) {
+        io.emit("karma_updated", { userId: authorId, karma: newKarma });
+      }
     }
 
     res.status(204).send();

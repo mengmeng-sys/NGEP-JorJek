@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from "@/lib/apiClient";
 import { UserAvatar } from "@/components/shared/UserAvatar";
+import { useSocket } from "@/context/SocketContext";
 
 const ROLE_COLORS = {
   PROFESSOR: { bg: "bg-orange-50", text: "text-[#FF4F00]", border: "border-orange-100" },
@@ -17,10 +18,21 @@ const RANK_STYLES = [
 export function TopUsersList() {
   const [users, setUsers] = useState([]);
   const navigate = useNavigate();
+  const { on, off } = useSocket();
 
   useEffect(() => {
     apiFetch("/users/top-mentors").then(setUsers);
   }, []);
+
+  useEffect(() => {
+    const handleKarmaUpdated = ({ userId, karma }) => {
+      setUsers((prev) =>
+        prev.map((u) => (u.id === userId ? { ...u, karma } : u))
+      );
+    };
+    on("karma_updated", handleKarmaUpdated);
+    return () => off("karma_updated", handleKarmaUpdated);
+  }, [on, off]);
 
   const handleUserClick = (user) => {
     const handle = user.handle || (user.displayName || user.display_name || "").toLowerCase().replace(/\s+/g, "");
