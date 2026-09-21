@@ -231,6 +231,7 @@ export function normalizeMentor(row) {
     name,
     handle: row.handle || handleFrom(name),
     initials: row.initials || initialsFrom(name),
+    avatarUrl: row.avatarUrl || row.avatar_url || null,
     role: row.role || "STUDENT",
     karma: row.karma ?? 0,
     specialty: row.bio || "Peer mentor",

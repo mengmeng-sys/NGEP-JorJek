@@ -40,12 +40,20 @@ export function GettingStartedCard({ onOpenAuth }) {
         <h3 className="text-xs font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider">
           Getting Started
         </h3>
+<<<<<<< HEAD
         <span className={`text-xs font-bold ${completedCount > 0 ? 'text-[#FF4F00]' : 'text-gray-400 dark:text-gray-500'}`}>
+=======
+        <span className={`text-xs font-bold ${completedCount > 0 ? 'text-[#FF4F00]' : 'text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500'}`}>
+>>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
           {completedCount}/{tasks.length} Completed
         </span>
       </div>
 
+<<<<<<< HEAD
       <p className="text-xs text-gray-500 dark:text-gray-400 mb-4 leading-relaxed">
+=======
+      <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-4 leading-relaxed">
+>>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
         Complete your setup to unlock the Top Mentors leaderboard.
       </p>
 
@@ -76,8 +84,13 @@ export function GettingStartedCard({ onOpenAuth }) {
              <span
               className={`text-xs font-medium ${
                 task.completed
+<<<<<<< HEAD
                   ? 'text-gray-400 dark:text-gray-500 line-through'
                   : 'text-gray-700 dark:text-gray-300'
+=======
+                  ? 'text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500 line-through'
+                  : 'text-gray-700 dark:text-gray-300 dark:text-gray-600 dark:text-gray-300 dark:text-gray-600'
+>>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
               }`}
             >
               {task.label}

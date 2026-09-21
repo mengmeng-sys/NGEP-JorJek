@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import { useSocket } from '@/context/SocketContext';
 import { GeneralTab } from '@/components/settings/GeneralTab';
 import { MentoringDashboardTab } from '@/components/settings/MentoringDashboardTab';
 import { MentoringPreferencesTab } from '@/components/settings/MentoringPreferencesTab';
@@ -10,8 +11,12 @@ import { postsApi } from '@/lib/api';
 
 export default function SettingsPage() {
   const { user } = useAuth();
+  const { on, off } = useSocket();
   const [activeTab, setActiveTab] = useState('general');
   const [postCount, setPostCount] = useState(0);
+
+  const [liveKarma, setLiveKarma] = useState(null);
+  const displayKarma = liveKarma ?? user?.karma ?? 0;
 
   useEffect(() => {
     if (!user?.id) return;
@@ -27,6 +32,15 @@ export default function SettingsPage() {
       cancelled = true;
     };
   }, [user?.id]);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    const handleKarmaUpdated = ({ userId, karma }) => {
+      if (userId === user.id) setLiveKarma(karma);
+    };
+    on("karma_updated", handleKarmaUpdated);
+    return () => off("karma_updated", handleKarmaUpdated);
+  }, [on, off, user?.id]);
 
   const navigationItems = [
     {
@@ -87,10 +101,10 @@ export default function SettingsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#FBFBFB] py-8">
+    <div className="min-h-screen bg-[#FBFBFB] dark:bg-gray-950 py-8">
       <div className="max-w-6xl mx-auto px-6">
         {/* Back Link */}
-        <Link to="/" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 mb-6 font-medium transition-colors">
+        <Link to="/" className="inline-flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100 mb-6 font-medium transition-colors">
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
           </svg>
@@ -98,7 +112,7 @@ export default function SettingsPage() {
         </Link>
 
         {/* User Stats Card */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 sm:p-8 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
           <div className="flex items-center gap-5">
             <div className="w-16 h-16 rounded-full bg-[#111827] text-white text-xl font-bold flex items-center justify-center shrink-0 shadow-sm overflow-hidden">
               {user?.avatarUrl ? (
@@ -108,27 +122,27 @@ export default function SettingsPage() {
               )}
             </div>
             <div>
-              <h1 className="text-xl font-bold text-gray-900 leading-tight">{user?.displayName || 'Student'}</h1>
-              <p className="text-sm text-gray-500 mt-0.5">{user?.email || ''}</p>
+              <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 leading-tight">{user?.displayName || 'Student'}</h1>
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-0.5">{user?.email || ''}</p>
               <div className="flex items-center gap-2 mt-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                <span className="text-xs font-semibold text-gray-600">Available for Sessions</span>
+                <span className="w-2 h-2 rounded-full bg-emerald-50 dark:bg-emerald-900/200" />
+                <span className="text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-500">Available for Sessions</span>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center divide-x divide-gray-100 self-stretch md:self-auto justify-around md:justify-end gap-2 md:gap-0 pt-4 md:pt-0 border-t md:border-t-0 border-gray-100">
+          <div className="flex items-center divide-x divide-gray-100 dark:divide-gray-800 self-stretch md:self-auto justify-around md:justify-end gap-2 md:gap-0 pt-4 md:pt-0 border-t md:border-t-0 border-gray-100 dark:border-gray-800">
             <div className="px-6 text-center">
-              <span className="text-2xl font-bold text-gray-900 block leading-tight">{user?.karma ?? 0}</span>
-              <span className="text-xs text-gray-400 font-medium">Campus Karma</span>
+               <span className="text-2xl font-bold text-gray-900 dark:text-gray-100 block leading-tight">{displayKarma}</span>
+              <span className="text-xs text-gray-400 dark:text-gray-500 font-medium">Campus Karma</span>
             </div>
             <div className="px-6 text-center">
-              <span className="text-2xl font-bold text-gray-900 block leading-tight">{postCount}</span>
-              <span className="text-xs text-gray-400 font-medium">Posts Created</span>
+              <span className="text-2xl font-bold text-gray-900 dark:text-gray-100 block leading-tight">{postCount}</span>
+              <span className="text-xs text-gray-400 dark:text-gray-500 font-medium">Posts Created</span>
             </div>
             <div className="px-6 text-center">
-              <span className="text-2xl font-bold text-gray-900 block leading-tight">0</span>
-              <span className="text-xs text-gray-400 font-medium">Sessions Done</span>
+              <span className="text-2xl font-bold text-gray-900 dark:text-gray-100 block leading-tight">0</span>
+              <span className="text-xs text-gray-400 dark:text-gray-500 font-medium">Sessions Done</span>
             </div>
           </div>
         </div>
@@ -136,10 +150,10 @@ export default function SettingsPage() {
         {/* Layout Grid */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
           {/* Sidebar Tabs */}
-          <div className="md:col-span-4 lg:col-span-3 bg-white border border-gray-200 rounded-2xl p-4 shadow-sm space-y-6">
+          <div className="md:col-span-4 lg:col-span-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-4 shadow-sm space-y-6">
             {navigationItems.map((group) => (
               <div key={group.section}>
-                <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2 px-3">{group.section}</p>
+                <p className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 px-3">{group.section}</p>
                 <div className="space-y-1">
                   {group.items.map((item) => {
                     const isActive = activeTab === item.id;
@@ -150,11 +164,11 @@ export default function SettingsPage() {
                         onClick={() => setActiveTab(item.id)}
                         className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-left ${
                           isActive
-                            ? 'bg-[#FFF4F0] text-[#FF4F00] border-l-4 border-[#FF4F00] rounded-l-none'
-                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium'
+                            ? 'bg-[#FFF4F0] dark:bg-orange-900/20 text-[#FF4F00] border-l-4 border-[#FF4F00] rounded-l-none'
+                            : 'text-gray-600 dark:text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100 font-medium'
                         }`}
                       >
-                        <span className={isActive ? 'text-[#FF4F00]' : 'text-gray-400'}>{item.icon}</span>
+                        <span className={isActive ? 'text-[#FF4F00]' : 'text-gray-400 dark:text-gray-500'}>{item.icon}</span>
                         <span>{item.label}</span>
                       </button>
                     );
@@ -165,7 +179,7 @@ export default function SettingsPage() {
           </div>
 
           {/* Tab Content Display */}
-          <div className="md:col-span-8 lg:col-span-9 bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 shadow-sm">
+          <div className="md:col-span-8 lg:col-span-9 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 sm:p-8 shadow-sm">
             {activeTab === 'general' && <GeneralTab />}
             {activeTab === 'mentoring-dashboard' && <MentoringDashboardTab />}
             {activeTab === 'preferences' && <MentoringPreferencesTab />}

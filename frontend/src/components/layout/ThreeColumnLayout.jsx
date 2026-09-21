@@ -53,7 +53,11 @@ export function ThreeColumnLayout({ children, onOpenAuth }) {
               <button
                 type="button"
                 onClick={() => setIsMobileSidebarOpen(false)}
+<<<<<<< HEAD
                 className="text-xs font-bold text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 p-1 cursor-pointer"
+=======
+                className="text-xs font-bold text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300 dark:text-gray-600 p-1 cursor-pointer"
+>>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
               >
                 Close ✕
               </button>

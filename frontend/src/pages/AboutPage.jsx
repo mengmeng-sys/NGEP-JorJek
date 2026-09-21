@@ -43,7 +43,11 @@ export default function AboutPage() {
           <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-gray-100 mt-1 leading-tight tracking-tight">
             Empowering Campus Academic Collaboration
           </h1>
+<<<<<<< HEAD
           <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-2.5 sm:mt-3 leading-relaxed">
+=======
+          <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 mt-2.5 sm:mt-3 leading-relaxed">
+>>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
             <strong className="text-gray-900 dark:text-gray-100 font-semibold">JorJek</strong> is an academic community platform designed specifically for students and faculty. It combines modern forum discussions with a structured peer mentoring network to make technical help accessible anytime.
           </p>
         </div>
@@ -53,7 +57,11 @@ export default function AboutPage() {
           {values.map((val) => (
             <div
               key={val.title}
+<<<<<<< HEAD
               className="bg-[#FAFAFA] dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl p-4 sm:p-5 flex flex-col justify-start hover:border-gray-300 transition-colors"
+=======
+              className="bg-[#FAFAFA] dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl p-4 sm:p-5 flex flex-col justify-start hover:border-gray-300 dark:border-gray-700 transition-colors"
+>>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
             >
               <div className="w-8 h-8 rounded-lg bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-900/30 flex items-center justify-center mb-3">
                 {val.icon}
@@ -61,7 +69,11 @@ export default function AboutPage() {
               <h2 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-gray-100 mb-1 leading-snug">
                 {val.title}
               </h2>
+<<<<<<< HEAD
               <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+=======
+              <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 leading-relaxed">
+>>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
                 {val.desc}
               </p>
             </div>
@@ -73,7 +85,11 @@ export default function AboutPage() {
           <h2 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-gray-100 mb-1.5 sm:mb-2 uppercase tracking-wide">
             Our Mission
           </h2>
+<<<<<<< HEAD
           <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+=======
+          <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed">
+>>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
             We believe that no student should be blocked on a problem simply because office hours ended. By bridging the gap between juniors seeking guidance and seniors or professors eager to mentor, JorJek strengthens our academic ecosystem.
           </p>
         </div>

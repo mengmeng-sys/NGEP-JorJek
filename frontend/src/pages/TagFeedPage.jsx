@@ -54,7 +54,11 @@ export default function TagFeedPage() {
         </p>
       )}
       {posts.length === 0 ? (
+<<<<<<< HEAD
         <p className="text-xs text-gray-500 dark:text-gray-400 py-10 text-center">No posts tagged #{tag} yet.</p>
+=======
+        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 py-10 text-center">No posts tagged #{tag} yet.</p>
+>>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
       ) : (
         posts.map((p) => <PostCard key={p.id} post={p} onEdit={openEdit} onDelete={() => setPostToDelete(p.id)} />)
       )}

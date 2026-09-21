@@ -22,7 +22,11 @@ export function DeleteCommentModal({ isOpen, onClose, onConfirm, isReply = false
           Delete {isReply ? 'Reply' : 'Comment'}?
         </h3>
 
+<<<<<<< HEAD
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5 leading-relaxed px-2">
+=======
+        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1.5 leading-relaxed px-2">
+>>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
           Are you sure you want to permanently delete this {isReply ? 'reply' : 'comment'}?
           {isReply ? '' : ' All replies linked to it will also be removed.'}
         </p>
@@ -31,7 +35,11 @@ export function DeleteCommentModal({ isOpen, onClose, onConfirm, isReply = false
           <button
             type="button"
             onClick={onClose}
+<<<<<<< HEAD
             className="w-full xs:flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 transition-colors cursor-pointer text-center"
+=======
+            className="w-full xs:flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 dark:text-gray-600 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:bg-gray-700 transition-colors cursor-pointer text-center"
+>>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
           >
             Cancel
           </button>

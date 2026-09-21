@@ -274,8 +274,9 @@ votesRouter.post("/vote", requireAuth, requireVerifiedEmail, voteLimiter, async 
       authorId = comment?.author_id ?? null;
     }
 
+    let newKarma = null;
     if (authorId) {
-      await recalculateKarma(authorId);
+      newKarma = await recalculateKarma(authorId);
     }
 
     if (authorId && authorId !== req.userId && isUpvote && !existing) {
@@ -323,6 +324,9 @@ votesRouter.post("/vote", requireAuth, requireVerifiedEmail, voteLimiter, async 
         if (comment) {
           io.to(`post:${comment.post_id}`).emit("vote_update", { target: "comment", id: commentId, postId: comment.post_id, value: voteValue, voterId: req.userId, isNew: !existing });
         }
+      }
+      if (authorId && newKarma !== null) {
+        io.emit("karma_updated", { userId: authorId, karma: newKarma });
       }
     }
 
@@ -408,7 +412,8 @@ votesRouter.delete("/vote", requireAuth, requireVerifiedEmail, async (req, res, 
       const { data: comment } = await supabase.from("comments").select("author_id").eq("id", commentId).maybeSingle();
       authorId = comment?.author_id ?? null;
     }
-    if (authorId) await recalculateKarma(authorId);
+    let newKarma = null;
+    if (authorId) newKarma = await recalculateKarma(authorId);
 
     const io = getIO();
     if (io) {
@@ -420,6 +425,9 @@ votesRouter.delete("/vote", requireAuth, requireVerifiedEmail, async (req, res, 
         if (comment) {
           io.to(`post:${comment.post_id}`).emit("vote_update", { target: "comment", id: commentId, postId: comment.post_id, value: existingVoteValue, voterId: req.userId, removed: true });
         }
+      }
+      if (authorId && newKarma !== null) {
+        io.emit("karma_updated", { userId: authorId, karma: newKarma });
       }
     }
 

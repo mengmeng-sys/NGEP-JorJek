@@ -15,14 +15,22 @@ export function SecurityTab() {
   }, []);
 
   if (loading) {
+<<<<<<< HEAD
     return <p className="text-xs text-gray-500 dark:text-gray-400">Loading...</p>;
+=======
+    return <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Loading...</p>;
+>>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
   }
 
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">Two-Factor Authentication</h2>
+<<<<<<< HEAD
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+=======
+        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">
+>>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
           Add an extra layer of security using Microsoft Authenticator
         </p>
       </div>
@@ -44,7 +52,11 @@ export function SecurityTab() {
             <p className="text-xs font-bold text-gray-900 dark:text-gray-100">
               {enabled ? "Authenticator is enabled" : "Authenticator is disabled"}
             </p>
+<<<<<<< HEAD
             <p className="text-[11px] text-gray-500 dark:text-gray-400">
+=======
+            <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">
+>>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
               {enabled
                 ? "Your account is protected with 2FA"
                 : "Sign in with password + authenticator code"}
@@ -57,7 +69,11 @@ export function SecurityTab() {
           onClick={() => navigate("/auth/mfa-setup")}
           className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
             enabled
+<<<<<<< HEAD
               ? "bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
+=======
+              ? "bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50"
+>>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
               : "bg-[#FF4F00] text-white hover:bg-[#E64700]"
           }`}
         >
@@ -66,8 +82,13 @@ export function SecurityTab() {
       </div>
 
       <div className="border-t border-gray-100 dark:border-gray-800 pt-4">
+<<<<<<< HEAD
         <h3 className="text-xs font-bold text-gray-700 dark:text-gray-300 mb-2">How it works</h3>
         <ol className="text-[11px] text-gray-500 dark:text-gray-400 space-y-1.5 list-decimal list-inside">
+=======
+        <h3 className="text-xs font-bold text-gray-700 dark:text-gray-300 dark:text-gray-600 mb-2">How it works</h3>
+        <ol className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 space-y-1.5 list-decimal list-inside">
+>>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
           <li>Install Microsoft Authenticator on your phone</li>
           <li>Scan the QR code during setup</li>
           <li>Enter the 6-digit code from the app when signing in</li>

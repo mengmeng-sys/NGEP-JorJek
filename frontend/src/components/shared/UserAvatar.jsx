@@ -36,7 +36,7 @@ export function UserAvatar({ initials = "U", size = "md", userId, className = ""
       </div>
       {userId && (
         <span
-          className={`absolute -bottom-0.5 -right-0.5 ${dotSize} rounded-full border-white ${
+          className={`absolute -bottom-0.5 -right-0.5 ${dotSize} rounded-full border-white dark:border-gray-900 ${
             online ? "bg-green-500" : "bg-gray-300"
           }`}
           title={online ? "Online" : "Offline"}

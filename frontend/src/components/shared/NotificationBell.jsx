@@ -19,5 +19,5 @@ export function NotificationBell() {
     return () => off("notification", handleNotification);
   }, [on, off]);
 
-  return <span title="Notifications">🔔 {count > 0 ? count : ""}</span>;
+  return <span title="Notifications" className="dark:text-gray-200">🔔 {count > 0 ? count : ""}</span>;
 }

@@ -95,6 +95,18 @@ export default function UserProfilePage() {
     return () => off("profile_updated", handleProfileUpdated);
   }, [on, off, isOwnProfile, profile?.id]);
 
+  // Listen for real-time karma updates
+  useEffect(() => {
+    if (!profileUser?.id) return;
+    const handleKarmaUpdated = ({ userId, karma }) => {
+      if (userId === profileUser.id) {
+        setProfile((prev) => (prev ? { ...prev, karma } : prev));
+      }
+    };
+    on("karma_updated", handleKarmaUpdated);
+    return () => off("karma_updated", handleKarmaUpdated);
+  }, [on, off, profileUser?.id]);
+
   // Load posts authored by this profile.
   useEffect(() => {
     let cancelled = false;
@@ -298,7 +310,7 @@ export default function UserProfilePage() {
   if (profileLoading) {
     return (
       <ThreeColumnLayout>
-        <div className="flex flex-col items-center justify-center py-16 text-gray-400 gap-2">
+        <div className="flex flex-col items-center justify-center py-16 text-gray-400 dark:text-gray-500 gap-2">
           <div className="w-6 h-6 border-2 border-[#FF4F00] border-t-transparent rounded-full animate-spin" />
           <span className="text-xs font-semibold">Loading profile...</span>
         </div>
@@ -309,9 +321,9 @@ export default function UserProfilePage() {
   if (!fullProfile) {
     return (
       <ThreeColumnLayout>
-        <div className="bg-white border border-gray-200 rounded-2xl p-10 text-center shadow-xs">
-          <h2 className="text-sm font-bold text-gray-900">User not found</h2>
-          <p className="text-xs text-gray-500 mt-1">This profile does not exist.</p>
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-10 text-center shadow-xs">
+          <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100">User not found</h2>
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">This profile does not exist.</p>
           <Link to="/" className="inline-block mt-4 text-xs font-bold text-[#FF4F00] hover:underline">
             Back to feed
           </Link>
@@ -327,7 +339,7 @@ export default function UserProfilePage() {
         {/* Back Link */}
         <Link
           to="/"
-          className="inline-flex items-center gap-2 text-xs sm:text-sm text-gray-500 hover:text-gray-900 font-semibold transition-colors"
+          className="inline-flex items-center gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100 font-semibold transition-colors"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -336,7 +348,7 @@ export default function UserProfilePage() {
         </Link>
 
         {/* Profile Card Header */}
-        <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 shadow-xs">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 shadow-xs">
           {isEditing ? (
             <div className="space-y-4">
               <div className="flex items-center gap-2 text-[#FF4F00] mb-2">
@@ -347,8 +359,8 @@ export default function UserProfilePage() {
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">Profile Picture</label>
-                <div className="flex items-center gap-4 p-3 bg-[#FAFAFA] rounded-xl border border-gray-100">
+                <label className="block text-[11px] font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider mb-1.5">Profile Picture</label>
+                <div className="flex items-center gap-4 p-3 bg-[#FAFAFA] dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-800">
                   <div className="relative shrink-0">
                     <div className="w-16 h-16 rounded-2xl bg-[#8B5CF6] text-white text-lg font-bold flex items-center justify-center shadow-xs overflow-hidden">
                       {avatarUploading ? (
@@ -366,7 +378,7 @@ export default function UserProfilePage() {
                       type="button"
                       onClick={handleAvatarPick}
                       disabled={avatarUploading}
-                      className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-[#FF4F00] hover:bg-[#E64700] text-white flex items-center justify-center ring-2 ring-white shadow-xs cursor-pointer transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                      className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-[#FF4F00] hover:bg-[#E64700] text-white flex items-center justify-center ring-2 ring-white dark:ring-gray-900 shadow-xs cursor-pointer transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                       aria-label="Change profile picture"
                     >
                       <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
@@ -382,12 +394,12 @@ export default function UserProfilePage() {
                     />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-[11px] text-gray-500 leading-relaxed">JPEG, PNG, or WebP. Max 5MB.</p>
+                    <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 leading-relaxed">JPEG, PNG, or WebP. Max 5MB.</p>
                     {editForm.avatarUrl && !avatarUploading && (
                       <button
                         type="button"
                         onClick={handleRemoveAvatar}
-                        className="text-[10px] font-bold text-gray-400 hover:text-red-500 transition-colors mt-1 cursor-pointer"
+                        className="text-[10px] font-bold text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 dark:text-red-400 transition-colors mt-1 cursor-pointer"
                       >
                         Remove photo
                       </button>
@@ -397,28 +409,28 @@ export default function UserProfilePage() {
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">Display Name</label>
+                <label className="block text-[11px] font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider mb-1.5">Display Name</label>
                 <input
                   type="text"
                   value={editForm.displayName}
                   onChange={(e) => setEditForm((p) => ({ ...p, displayName: e.target.value }))}
-                  className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all"
+                  className="w-full bg-[#FAFAFA] dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 dark:text-gray-100 outline-none focus:bg-white dark:bg-gray-900 focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">Bio</label>
+                <label className="block text-[11px] font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider mb-1.5">Bio</label>
                 <textarea
                   value={editForm.bio}
                   onChange={(e) => setEditForm((p) => ({ ...p, bio: e.target.value }))}
                   rows={3}
                   placeholder="Tell others about yourself..."
-                  className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all resize-none"
+                  className="w-full bg-[#FAFAFA] dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 dark:text-gray-100 outline-none focus:bg-white dark:bg-gray-900 focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all resize-none"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">Generation (Gen)</label>
+                <label className="block text-[11px] font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider mb-1.5">Generation (Gen)</label>
                 <input
                   type="number"
                   min="1"
@@ -431,13 +443,13 @@ export default function UserProfilePage() {
                     }
                   }}
                   placeholder={`1 - ${maxGen}`}
-                  className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs"
+                  className="w-full bg-[#FAFAFA] dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 dark:text-gray-100 outline-none focus:bg-white dark:bg-gray-900 focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs"
                 />
-                <p className="text-[10px] text-gray-400 mt-1">CADT started in 2014. Max: Gen {maxGen}</p>
+                <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">CADT started in 2014. Max: Gen {maxGen}</p>
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">Department</label>
+                <label className="block text-[11px] font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider mb-1.5">Department</label>
                 <div className="grid grid-cols-1 gap-2">
                   {departmentOptions.map((dept) => (
                     <button
@@ -447,7 +459,7 @@ export default function UserProfilePage() {
                       className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                         editForm.department === dept.name
                           ? 'bg-[#FF4F00] border-[#FF4F00] text-white'
-                          : 'bg-white border-gray-200 text-gray-600 hover:border-[#FF4F00] hover:text-[#FF4F00]'
+                          : 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 dark:text-gray-500 hover:border-[#FF4F00] hover:text-[#FF4F00]'
                       }`}
                     >
                       {dept.name}
@@ -458,7 +470,7 @@ export default function UserProfilePage() {
 
               {editForm.department && (
                 <div>
-                  <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">Specialization</label>
+                  <label className="block text-[11px] font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider mb-1.5">Specialization</label>
                   <div className="grid grid-cols-1 gap-2">
                     {(departmentOptions.find((d) => d.name === editForm.department)?.specializations || []).map((spec) => (
                       <button
@@ -468,7 +480,7 @@ export default function UserProfilePage() {
                         className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                           editForm.specialization === spec
                             ? 'bg-[#FF4F00] border-[#FF4F00] text-white'
-                            : 'bg-white border-gray-200 text-gray-600 hover:border-[#FF4F00] hover:text-[#FF4F00]'
+                            : 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 dark:text-gray-500 hover:border-[#FF4F00] hover:text-[#FF4F00]'
                         }`}
                       >
                         {spec}
@@ -483,7 +495,7 @@ export default function UserProfilePage() {
                   type="button"
                   onClick={cancelEditing}
                   disabled={saving}
-                  className="flex-1 bg-white border border-gray-200 text-gray-700 text-xs font-bold py-2.5 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer"
+                  className="flex-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 dark:text-gray-600 text-xs font-bold py-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -513,42 +525,42 @@ export default function UserProfilePage() {
 
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
-                      <h1 className="text-lg sm:text-xl font-bold text-gray-900 leading-tight">
+                      <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100 leading-tight">
                         {fullProfile.displayName}
                       </h1>
-                      <span className="bg-purple-50 text-[#8B5CF6] text-[9px] sm:text-[10px] uppercase font-bold px-2 py-0.5 rounded tracking-wide border border-purple-100">
+                      <span className="bg-purple-50 dark:bg-purple-900/20 text-[#8B5CF6] text-[9px] sm:text-[10px] uppercase font-bold px-2 py-0.5 rounded tracking-wide border border-purple-100 dark:border-purple-900/30">
                         {fullProfile.role}
                       </span>
                       {fullProfile.gen && (
-                        <span className="bg-blue-50 text-blue-600 text-[9px] sm:text-[10px] uppercase font-bold px-2 py-0.5 rounded tracking-wide border border-blue-100">
+                        <span className="bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-[9px] sm:text-[10px] uppercase font-bold px-2 py-0.5 rounded tracking-wide border border-blue-100 dark:border-blue-900/30">
                           Gen {fullProfile.gen}
                         </span>
                       )}
                       {fullProfile.isAvailableForMentoring && (
-                        <span className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                        <span className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-0.5 rounded-full border border-emerald-100 dark:border-emerald-900/30">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-50 dark:bg-emerald-900/200" />
                           Available
                         </span>
                       )}
                     </div>
 
-                    <p className="text-xs text-gray-500 font-medium">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 font-medium">
                       @{fullProfile.handle}
                     </p>
 
                     {(fullProfile.department || fullProfile.specialization) && (
                       <div className="flex flex-wrap items-center gap-2 justify-center sm:justify-start">
                         {fullProfile.department && (
-                          <span className="inline-flex items-center gap-1 text-[11px] text-gray-600 bg-gray-100 px-2 py-0.5 rounded-lg">
-                            <svg className="w-3 h-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                          <span className="inline-flex items-center gap-1 text-[11px] text-gray-600 dark:text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-lg">
+                            <svg className="w-3 h-3 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                             </svg>
                             {fullProfile.department}
                           </span>
                         )}
                         {fullProfile.specialization && (
-                          <span className="inline-flex items-center gap-1 text-[11px] text-gray-600 bg-gray-100 px-2 py-0.5 rounded-lg">
-                            <svg className="w-3 h-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                          <span className="inline-flex items-center gap-1 text-[11px] text-gray-600 dark:text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-lg">
+                            <svg className="w-3 h-3 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                             </svg>
                             {fullProfile.specialization}
@@ -557,10 +569,10 @@ export default function UserProfilePage() {
                       </div>
                     )}
 
-                    <p className="text-xs text-gray-400">{fullProfile.university}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500">{fullProfile.university}</p>
 
                     {fullProfile.bio && (
-                      <p className="text-xs sm:text-sm text-gray-600 max-w-xl pt-1 leading-relaxed wrap-break-words">
+                      <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 max-w-xl pt-1 leading-relaxed wrap-break-words">
                         {fullProfile.bio}
                       </p>
                     )}
@@ -582,7 +594,7 @@ export default function UserProfilePage() {
                       <button
                         type="button"
                         onClick={startEditing}
-                        className="flex items-center justify-center gap-1.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 text-xs font-bold px-4 py-2.5 rounded-xl transition-all cursor-pointer"
+                        className="flex items-center justify-center gap-1.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 dark:text-gray-600 text-xs font-bold px-4 py-2.5 rounded-xl transition-all cursor-pointer"
                       >
                         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -607,7 +619,7 @@ export default function UserProfilePage() {
                       const ok = await copyToClipboard(window.location.href);
                       alert(ok ? 'Profile URL copied to clipboard!' : 'Could not copy the link. Please copy the URL manually.');
                     }}
-                    className="flex-1 md:flex-initial bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 text-xs font-bold px-4 py-2.5 rounded-xl transition-all text-center cursor-pointer"
+                    className="flex-1 md:flex-initial bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 dark:text-gray-600 text-xs font-bold px-4 py-2.5 rounded-xl transition-all text-center cursor-pointer"
                   >
                     Share Profile
                   </button>
@@ -615,7 +627,7 @@ export default function UserProfilePage() {
                     <button
                       type="button"
                       onClick={() => setIsReportModalOpen(true)}
-                      className="flex items-center justify-center gap-1.5 bg-white border border-red-200 hover:bg-red-50 text-red-500 text-xs font-bold px-4 py-2.5 rounded-xl transition-all cursor-pointer"
+                      className="flex items-center justify-center gap-1.5 bg-white dark:bg-gray-900 border border-red-200 hover:bg-red-50 dark:hover:bg-red-900/20 dark:bg-red-900/20 text-red-500 dark:text-red-400 text-xs font-bold px-4 py-2.5 rounded-xl transition-all cursor-pointer"
                     >
                       <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
@@ -627,24 +639,24 @@ export default function UserProfilePage() {
               </div>
 
               {/* Info Cards Row */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mt-5 pt-4 border-t border-gray-100 text-center">
-                <div className="bg-[#FAFAFA] rounded-xl p-2.5 sm:p-3 border border-gray-100">
-                  <span className="text-base sm:text-lg font-bold text-gray-900 block leading-tight">{fullProfile.karma}</span>
-                  <span className="text-[10px] sm:text-[11px] text-gray-400 font-medium">Campus Karma</span>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mt-5 pt-4 border-t border-gray-100 dark:border-gray-800 text-center">
+                <div className="bg-[#FAFAFA] dark:bg-gray-800 rounded-xl p-2.5 sm:p-3 border border-gray-100 dark:border-gray-800">
+                  <span className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 block leading-tight">{fullProfile.karma}</span>
+                  <span className="text-[10px] sm:text-[11px] text-gray-400 dark:text-gray-500 font-medium">Campus Karma</span>
                 </div>
-                <div className="bg-[#FAFAFA] rounded-xl p-2.5 sm:p-3 border border-gray-100">
-                  <span className="text-base sm:text-lg font-bold text-gray-900 block leading-tight">{userPosts.length}</span>
-                  <span className="text-[10px] sm:text-[11px] text-gray-400 font-medium">Discussions</span>
+                <div className="bg-[#FAFAFA] dark:bg-gray-800 rounded-xl p-2.5 sm:p-3 border border-gray-100 dark:border-gray-800">
+                  <span className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 block leading-tight">{userPosts.length}</span>
+                  <span className="text-[10px] sm:text-[11px] text-gray-400 dark:text-gray-500 font-medium">Discussions</span>
                 </div>
-                <div className="bg-[#FAFAFA] rounded-xl p-2.5 sm:p-3 border border-gray-100">
-                  <span className="text-base sm:text-lg font-bold text-gray-900 block leading-tight">{fullProfile.sessionsConducted}</span>
-                  <span className="text-[10px] sm:text-[11px] text-gray-400 font-medium">Sessions</span>
+                <div className="bg-[#FAFAFA] dark:bg-gray-800 rounded-xl p-2.5 sm:p-3 border border-gray-100 dark:border-gray-800">
+                  <span className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 block leading-tight">{fullProfile.sessionsConducted}</span>
+                  <span className="text-[10px] sm:text-[11px] text-gray-400 dark:text-gray-500 font-medium">Sessions</span>
                 </div>
-                <div className="bg-[#FAFAFA] rounded-xl p-2.5 sm:p-3 border border-gray-100">
-                  <span className="text-base sm:text-lg font-bold text-gray-900 block leading-tight">
+                <div className="bg-[#FAFAFA] dark:bg-gray-800 rounded-xl p-2.5 sm:p-3 border border-gray-100 dark:border-gray-800">
+                  <span className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 block leading-tight">
                     {fullProfile.rating ? `★ ${fullProfile.rating}` : '—'}
                   </span>
-                  <span className="text-[10px] sm:text-[11px] text-gray-400 font-medium">Peer Rating</span>
+                  <span className="text-[10px] sm:text-[11px] text-gray-400 dark:text-gray-500 font-medium">Peer Rating</span>
                 </div>
               </div>
             </>
@@ -652,14 +664,14 @@ export default function UserProfilePage() {
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex items-center gap-3 border-b border-gray-200">
+        <div className="flex items-center gap-3 border-b border-gray-200 dark:border-gray-800">
           <button
             type="button"
             onClick={() => setActiveTab('posts')}
             className={`pb-2.5 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer ${
               activeTab === 'posts'
                 ? 'text-[#FF4F00] border-[#FF4F00]'
-                : 'text-gray-400 border-transparent hover:text-gray-700'
+                : 'text-gray-400 dark:text-gray-500 border-transparent hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300 dark:text-gray-600'
             }`}
           >
             Shared Posts ({userPosts.length})
@@ -670,7 +682,7 @@ export default function UserProfilePage() {
         {activeTab === 'posts' && (
           <div className="space-y-3 sm:space-y-4">
             {userPosts.length === 0 ? (
-              <div className="bg-white border border-gray-200 rounded-xl p-8 text-center text-gray-400 text-xs sm:text-sm">
+              <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-8 text-center text-gray-400 dark:text-gray-500 text-xs sm:text-sm">
                 No discussions published by this user.
               </div>
             ) : (

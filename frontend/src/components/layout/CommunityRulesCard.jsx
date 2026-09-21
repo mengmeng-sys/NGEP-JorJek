@@ -54,7 +54,11 @@ export function CommunityRulesCard() {
         {/* Mobile Accordion Chevron */}
         <button
           type="button"
+<<<<<<< HEAD
           className="lg:hidden p-1 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 transition-transform"
+=======
+          className="lg:hidden p-1 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 dark:text-gray-400 dark:text-gray-500 transition-transform"
+>>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
           aria-label="Toggle rules"
         >
           <svg
@@ -74,16 +78,27 @@ export function CommunityRulesCard() {
         {rules.map((rule) => (
           <div 
             key={rule.number} 
+<<<<<<< HEAD
             className="p-3 sm:p-4 flex items-start gap-2.5 sm:gap-3.5 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 transition-colors"
+=======
+            className="p-3 sm:p-4 flex items-start gap-2.5 sm:gap-3.5 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50/50 dark:bg-gray-800/50 dark:hover:bg-gray-800/50 transition-colors"
+>>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
           >
             <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-orange-50 dark:bg-orange-900/20 text-[#FF4F00] text-[10px] sm:text-[11px] font-bold flex items-center justify-center flex-shrink-0 mt-0.5 border border-orange-100 dark:border-orange-900/30">
               {rule.number}
             </span>
             <div className="min-w-0 flex-1">
+<<<<<<< HEAD
               <h4 className="text-xs font-bold text-gray-800 dark:text-gray-200 leading-snug break-words">
                 {rule.title}
               </h4>
               <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5 sm:mt-1 leading-relaxed break-words">
+=======
+              <h4 className="text-xs font-bold text-gray-800 dark:text-gray-200 dark:text-gray-300 dark:text-gray-200 dark:text-gray-300 leading-snug break-words">
+                {rule.title}
+              </h4>
+              <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-0.5 sm:mt-1 leading-relaxed break-words">
+>>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
                 {rule.description}
               </p>
             </div>
@@ -91,8 +106,13 @@ export function CommunityRulesCard() {
         ))}
 
         {/* Footer Notice */}
+<<<<<<< HEAD
         <div className="bg-gray-50 dark:bg-gray-800/50 p-3 sm:p-4 border-t border-gray-100 dark:border-gray-800 text-center">
           <p className="text-[10px] sm:text-[11px] text-gray-400 dark:text-gray-500 leading-relaxed font-medium">
+=======
+        <div className="bg-gray-50 dark:bg-gray-800/50/70 dark:bg-gray-800/50 p-3 sm:p-4 border-t border-gray-100 dark:border-gray-800 text-center">
+          <p className="text-[10px] sm:text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500 leading-relaxed font-medium">
+>>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
             Violations may result in post removal or account suspension.
           </p>
         </div>

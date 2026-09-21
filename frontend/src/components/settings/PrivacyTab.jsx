@@ -73,7 +73,11 @@ export function PrivacyTab() {
         <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 leading-tight">
           Privacy
         </h2>
+<<<<<<< HEAD
         <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 mt-0.5 leading-snug">
+=======
+        <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-0.5 leading-snug">
+>>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
           Control who can see your activity and contact you.
         </p>
       </div>
@@ -91,7 +95,11 @@ export function PrivacyTab() {
             >
               {/* Setting Description */}
               <div className="min-w-0 pr-1 sm:pr-2">
+<<<<<<< HEAD
                 <h3 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:hover:text-gray-300 transition-colors leading-snug">
+=======
+                <h3 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300 dark:text-gray-600 transition-colors leading-snug">
+>>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
                   {item.title}
                 </h3>
                 <p className="text-[11px] sm:text-xs text-gray-400 dark:text-gray-500 mt-0.5 sm:mt-1 leading-relaxed break-words">

@@ -19,7 +19,7 @@ export function VoteButtons({ postId, commentId }) {
     <span title="Vote">
       <button onClick={() => vote("UP")} aria-label="Upvote">▲</button>
       <button onClick={() => vote("DOWN")} aria-label="Downvote">▼</button>
-      {error && <span className="text-[10px] text-red-600">{error}</span>}
+      {error && <span className="text-[10px] text-red-600 dark:text-red-400">{error}</span>}
     </span>
   );
 }

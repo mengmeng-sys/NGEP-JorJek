@@ -4,6 +4,7 @@ const { requireAuth, optionalAuth } = require("../middleware/auth.middleware");
 const { requireVerifiedEmail } = require("../middleware/verifiedEmail.middleware");
 const { contentLimiter } = require("../middleware/rateLimit.middleware");
 const { getIO } = require("../lib/socket");
+const { recalculateKarma } = require("../services/karma.service");
 
 const postsRouter = Router();
 
@@ -469,12 +470,20 @@ postsRouter.delete("/:id", requireAuth, requireVerifiedEmail, async (req, res, n
       return res.status(403).json({ error: "You can only delete your own posts" });
     }
 
+    const authorId = existing.author_id;
+
     const { error } = await supabase.from("posts").delete().eq("id", req.params.id);
     if (error) throw error;
+
+    let newKarma = null;
+    if (authorId) newKarma = await recalculateKarma(authorId).catch(() => null);
 
     const io = getIO();
     if (io) {
       io.emit("post_deleted", { id: req.params.id });
+      if (authorId && newKarma !== null) {
+        io.emit("karma_updated", { userId: authorId, karma: newKarma });
+      }
     }
 
     res.status(204).send();
