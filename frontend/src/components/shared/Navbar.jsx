@@ -229,30 +229,30 @@ export default function Navbar() {
               </svg>
             </button>
 
-             {/* Theme Toggle */}
-             <button
-               type="button"
-               onClick={toggleTheme}
-               className={`p-2 rounded-xl border transition-all cursor-pointer ${
-                 theme === 'dark'
-                   ? 'bg-gray-800 border-gray-700 hover:bg-gray-700 text-amber-400'
-                   : 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 text-gray-600 dark:text-gray-400 dark:text-gray-500'
-               }`}
-               title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-               aria-label="Toggle theme"
-             >
-               {theme === 'dark' ? (
-                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                 </svg>
-               ) : (
-                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                   <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                 </svg>
-               )}
-             </button>
+              {/* Theme Toggle — hidden on very small screens, shown in sidebar drawer */}
+              <button
+                type="button"
+                onClick={toggleTheme}
+                className={`hidden sm:flex p-2 rounded-xl border transition-all cursor-pointer shrink-0 items-center justify-center ${
+                  theme === 'dark'
+                    ? 'bg-gray-800 border-gray-700 hover:bg-gray-700 text-amber-400'
+                    : 'bg-white border-gray-200 hover:bg-gray-50 text-gray-600'
+                }`}
+                title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+                aria-label="Toggle theme"
+              >
+                {theme === 'dark' ? (
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                ) : (
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                  </svg>
+                )}
+              </button>
 
-             {/* Create Post Button */}
+              {/* Create Post Button */}
              <button
                type="button"
                onClick={() => {
@@ -262,29 +262,29 @@ export default function Navbar() {
                    setIsPostModalOpen(true);
                  }
                }}
-               className="flex items-center gap-1 px-3 sm:px-4 py-2 bg-[#FF4F00] text-white text-xs font-bold rounded-xl hover:bg-[#E64700] transition-colors shadow-xs cursor-pointer active:scale-95"
+               className="flex items-center gap-1 px-2.5 sm:px-4 py-2 bg-[#FF4F00] text-white text-xs font-bold rounded-xl hover:bg-[#E64700] transition-colors shadow-xs cursor-pointer active:scale-95"
              >
                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
                </svg>
-               <span>Post</span>
+               <span className="hidden xs:inline">Post</span>
              </button>
 
-            {!user ? (
-              <div className="flex items-center gap-1 sm:gap-2">
-                <Link
-                  to="/auth/login"
-                  className="px-2.5 sm:px-3 py-2 text-xs font-bold text-gray-700 dark:text-gray-300 dark:text-gray-600 hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100 transition-colors"
-                >
-                  Log in
-                </Link>
-                <Link
-                  to="/auth/signup"
-                  className="px-3 sm:px-4 py-2 bg-white dark:bg-gray-900 text-[#FF4F00] border border-[#FF4F00] text-xs font-bold rounded-xl hover:bg-orange-50 dark:hover:bg-orange-900/20 dark:bg-orange-900/20 transition-colors"
-                >
-                  Sign up
-                </Link>
-              </div>
+             {!user ? (
+               <div className="flex items-center gap-1 shrink-0">
+                 <Link
+                   to="/auth/login"
+                   className="px-2 sm:px-3 py-2 text-xs font-bold text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+                 >
+                   Log in
+                 </Link>
+                 <Link
+                   to="/auth/signup"
+                   className="px-2.5 sm:px-4 py-2 bg-white dark:bg-gray-900 text-[#FF4F00] border border-[#FF4F00] text-xs font-bold rounded-xl hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors"
+                 >
+                   Sign up
+                 </Link>
+               </div>
             ) : (
               <div className="flex items-center gap-1.5 sm:gap-2.5">
                 
@@ -708,15 +708,39 @@ export default function Navbar() {
                 </div>
               </div>
 
-              <div className="pt-5 border-t border-gray-100 dark:border-gray-800 text-[11px] text-gray-400 dark:text-gray-500 space-y-2">
-                <div className="flex flex-wrap gap-x-3 gap-y-1 font-medium">
-                  <Link to="/about" onClick={() => setIsSidebarDrawerOpen(false)} className="hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300 dark:text-gray-600">About Us</Link>
-                  <Link to="/contact" onClick={() => setIsSidebarDrawerOpen(false)} className="hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300 dark:text-gray-600">Contact</Link>
-                  <Link to="/privacy" onClick={() => setIsSidebarDrawerOpen(false)} className="hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300 dark:text-gray-600">Privacy</Link>
-                  <Link to="/terms" onClick={() => setIsSidebarDrawerOpen(false)} className="hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300 dark:text-gray-600">Terms</Link>
-                </div>
-                <p className="text-[10px] text-gray-400 dark:text-gray-500">© 2026 JorJek Campus. All rights reserved.</p>
-              </div>
+              {/* Mobile-only theme toggle in drawer */}
+               <div className="sm:hidden pt-4 border-t border-gray-100 dark:border-gray-800">
+                 <button
+                   type="button"
+                   onClick={toggleTheme}
+                   className={`flex items-center gap-2 w-full px-3 py-2.5 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
+                     theme === 'dark'
+                       ? 'bg-gray-800 text-amber-400'
+                       : 'bg-gray-50 text-gray-700'
+                   }`}
+                 >
+                   {theme === 'dark' ? (
+                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                     </svg>
+                   ) : (
+                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                       <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                     </svg>
+                   )}
+                   {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+                 </button>
+               </div>
+
+               <div className="pt-4 border-t border-gray-100 dark:border-gray-800 text-[11px] text-gray-400 dark:text-gray-500 space-y-2">
+                 <div className="flex flex-wrap gap-x-3 gap-y-1 font-medium">
+                   <Link to="/about" onClick={() => setIsSidebarDrawerOpen(false)} className="hover:text-gray-700 dark:hover:text-gray-300">About Us</Link>
+                   <Link to="/contact" onClick={() => setIsSidebarDrawerOpen(false)} className="hover:text-gray-700 dark:hover:text-gray-300">Contact</Link>
+                   <Link to="/privacy" onClick={() => setIsSidebarDrawerOpen(false)} className="hover:text-gray-700 dark:hover:text-gray-300">Privacy</Link>
+                   <Link to="/terms" onClick={() => setIsSidebarDrawerOpen(false)} className="hover:text-gray-700 dark:hover:text-gray-300">Terms</Link>
+                 </div>
+                 <p className="text-[10px] text-gray-400 dark:text-gray-500">© 2026 JorJek Campus. All rights reserved.</p>
+               </div>
 
             </div>
           </div>
