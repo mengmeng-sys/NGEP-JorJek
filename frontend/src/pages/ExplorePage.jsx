@@ -89,11 +89,6 @@ export default function ExplorePage() {
     }, 300);
   };
 
-  const getInitials = (name) => {
-    if (!name) return '?';
-    return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
-  };
-
   return (
     <ThreeColumnLayout>
       <div className="space-y-6 sm:space-y-8">
@@ -190,13 +185,13 @@ export default function ExplorePage() {
                    <button
                      key={user.id}
                      type="button"
-                     onClick={() => navigate(`/user/${(user.display_name || '').toLowerCase().replace(/\s+/g, '')}`)}
+                     onClick={() => navigate(`/user/${user.handle}`)}
                      className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 transition-colors text-left cursor-pointer border-b border-gray-50 last:border-b-0"
                    >
-                      <UserAvatar initials={getInitials(user.display_name)} userId={user.id} size="md" />
+                      <UserAvatar initials={user.initials} userId={user.id} size="md" />
                      <div className="min-w-0 flex-1">
                        <div className="flex items-center gap-2">
-                         <span className="text-xs font-bold text-gray-900 truncate">{user.display_name}</span>
+                         <span className="text-xs font-bold text-gray-900 truncate">{user.displayName}</span>
                          <span className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded shrink-0 ${
                            user.role === 'PROFESSOR' ? 'bg-orange-50 text-[#FF4F00] border border-orange-100' : 'bg-gray-100 text-gray-600'
                          }`}>
