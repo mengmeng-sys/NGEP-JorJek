@@ -3,6 +3,7 @@ import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { SocketProvider } from "@/context/SocketContext";
 import { OnlineProvider } from "@/context/OnlineContext";
+import { ThemeProvider } from "@/context/ThemeContext";
 import Navbar from "@/components/shared/Navbar";
 
 // Core Pages
@@ -40,13 +41,15 @@ import TagsTopicsPage from "@/pages/admin/TagsTopicsPage";
 
 export default function App() {
   return (
-    <AuthProvider>
-      <SocketProvider>
-        <OnlineProvider>
-          <AppRoutes />
-        </OnlineProvider>
-      </SocketProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <SocketProvider>
+          <OnlineProvider>
+            <AppRoutes />
+          </OnlineProvider>
+        </SocketProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 
@@ -64,7 +67,7 @@ function AppRoutes() {
     || pathname.startsWith('/admin');
 
   return (
-    <div className="min-h-screen bg-[#FBFBFB]">
+    <div className="min-h-screen bg-[#FBFBFB] dark:bg-gray-950 transition-colors">
       {/* Global Responsive Header (hidden on auth pages) */}
       {!hideNavbar && <Navbar />}
 

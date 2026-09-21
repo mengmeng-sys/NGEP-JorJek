@@ -116,7 +116,7 @@ export default function SearchPage() {
                   onClick={() => navigate(`/user/${u.handle}`)}
                   className="flex items-center gap-3 p-2 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer"
                 >
-                  <UserAvatar initials={u.initials} userId={u.id} size="md" gradient className="ring-2 ring-white shadow-xs" />
+                   <UserAvatar initials={u.initials} userId={u.id} size="md" gradient className="ring-2 ring-white shadow-xs" avatarUrl={u.avatarUrl} />
                   <div className="flex-1 min-w-0">
                     <p className="text-[13px] font-semibold text-gray-900 truncate leading-tight">
                       {u.displayName}
