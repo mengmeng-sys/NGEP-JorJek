@@ -1418,7 +1418,7 @@ export default function PostDetailPage() {
             rows={3}
             value={commentText}
             onChange={(e) => setCommentText(e.target.value)}
-            className="w-full bg-[#FAFAFA] dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl p-3 text-xs sm:text-sm text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all min-h-20 sm:min-h-22.5 resize-none mb-3"
+            className="w-full bg-[#FAFAFA] dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl p-3 text-xs sm:text-sm text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:bg-white dark:focus:bg-gray-800 focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all min-h-20 sm:min-h-22.5 resize-none mb-3"
             placeholder="Share your knowledge or ask a follow-up..."
           />
           <div className="flex justify-end">

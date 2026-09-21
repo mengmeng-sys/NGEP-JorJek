@@ -273,7 +273,7 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
               value={title}
               onChange={handleTitleChange}
               placeholder="Ask a question or share coursework..."
-              className={`w-full border rounded-xl p-2.5 sm:p-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 outline-none transition-all bg-[#FAFAFA] dark:bg-gray-800 focus:bg-white shadow-2xs${
+              className={`w-full border rounded-xl p-2.5 sm:p-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 outline-none transition-all bg-[#FAFAFA] dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-800 shadow-2xs${
                 isTitleOverLimit
                   ? 'border-red-300 focus:border-red-500 focus:ring-1 focus:ring-red-500'
                   : 'border-gray-200 dark:border-gray-800 focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00]'
@@ -294,7 +294,7 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
               value={details}
               onChange={(e) => setDetails(e.target.value)}
               placeholder="Describe your question, query bottleneck, or resource..."
-              className="w-full border border-gray-200 dark:border-gray-800 rounded-xl p-2.5 sm:p-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all bg-[#FAFAFA] dark:bg-gray-800 focus:bg-white resize-none shadow-2xs leading-relaxed"
+              className="w-full border border-gray-200 dark:border-gray-800 rounded-xl p-2.5 sm:p-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all bg-[#FAFAFA] dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-800 resize-none shadow-2xs leading-relaxed"
             />
           </div>
 
