@@ -153,6 +153,9 @@ export function AuthProvider({ children }) {
     if (data.mfaRequired) {
       return { mfaRequired: true, mfaToken: data.mfaToken };
     }
+    if (data.mfaSetupRequired) {
+      return { mfaSetupRequired: true, mfaToken: data.mfaToken };
+    }
     storeSession(data);
     const nextUser = withUserMeta(normalizeUser(data.user));
     setUser(nextUser);
