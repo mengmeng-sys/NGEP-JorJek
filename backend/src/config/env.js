@@ -6,7 +6,10 @@ const env = {
   supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY ?? "",
   jwtSecret: process.env.JWT_SECRET ?? "",
   jwtRefreshSecret: process.env.JWT_REFRESH_SECRET ?? "",
-  cadtEmailDomain: process.env.CADT_EMAIL_DOMAIN ?? "@student.cadt.edu.kh",
+  cadtEmailDomains: (process.env.CADT_EMAIL_DOMAINS ?? "@student.cadt.edu.kh,@cadt.edu.kh")
+    .split(",")
+    .map((d) => d.trim().toLowerCase())
+    .filter(Boolean),
   notificationTransport: process.env.NOTIFICATION_TRANSPORT ?? "polling",
   smtpHost: process.env.SMTP_HOST ?? "smtp.gmail.com",
   smtpPort: Number(process.env.SMTP_PORT ?? 587),

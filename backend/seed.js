@@ -4,8 +4,13 @@ require("dotenv").config();
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 
-const SEED_PASSWORD = process.env.SEED_PASSWORD ?? "password123";
+const SEED_PASSWORD = process.env.SEED_PASSWORD;
 const ADMIN_EMAIL = process.env.SEED_ADMIN_EMAIL ?? "admin@cadt.edu.kh";
+
+if (!SEED_PASSWORD || SEED_PASSWORD.length < 12) {
+  console.error("ERROR: SEED_PASSWORD env variable must be set and at least 12 characters long.");
+  process.exit(1);
+}
 
 function slugify(name) {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -137,7 +142,7 @@ async function main() {
   }
 
   console.log("Seed complete.");
-  console.log(`Admin login: ${ADMIN_EMAIL} / ${SEED_PASSWORD}`);
+  console.log(`Admin login: ${ADMIN_EMAIL}`);
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });

@@ -8,7 +8,8 @@ const { signAccessToken, signRefreshToken, userSafe } = require("../lib/token");
 const router = Router();
 
 function isCadtEmail(email) {
-  return email.toLowerCase().endsWith(env.cadtEmailDomain.toLowerCase());
+  const normalized = email.toLowerCase();
+  return env.cadtEmailDomains.some((d) => normalized.endsWith(d));
 }
 
 router.post("/check", async (req, res, next) => {
@@ -51,7 +52,7 @@ router.post("/signup", async (req, res, next) => {
     }
 
     if (!isCadtEmail(ms.email)) {
-      return res.status(400).json({ error: `A ${env.cadtEmailDomain} email is required` });
+      return res.status(400).json({ error: `A valid CADT email (${env.cadtEmailDomains.join(" or ")}) is required` });
     }
 
     const { data: existing } = await supabase

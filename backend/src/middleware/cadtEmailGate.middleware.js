@@ -4,8 +4,11 @@ const { env } = require("../config/env");
 // Used on the signup, forgot-password, and reset-password routes.
 function requireCadtEmail(req, res, next) {
   const email = req.body && req.body.cadtEmail;
-  if (!email || !email.toLowerCase().endsWith(env.cadtEmailDomain.toLowerCase())) {
-    return res.status(400).json({ error: `A ${env.cadtEmailDomain} email is required` });
+  const normalized = email?.toLowerCase();
+  if (!normalized || !env.cadtEmailDomains.some((d) => normalized.endsWith(d))) {
+    return res.status(400).json({
+      error: `A valid CADT email (${env.cadtEmailDomains.join(" or ")}) is required`,
+    });
   }
   next();
 }
