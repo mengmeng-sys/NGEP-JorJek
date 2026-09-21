@@ -63,15 +63,6 @@ function AppRoutes() {
     || pathname.startsWith('/auth/mfa-setup')
     || pathname.startsWith('/admin');
 
-  // SUPER_ADMIN/MODERATOR accounts live in the admin dashboard only — bounce
-  // them out of every user-facing route (direct URL entry, back/forward,
-  // bookmarks, a stale link, not just the one redirect right after login).
-  // Wait for the auth check to finish first so a real user isn't bounced
-  // while `isAdmin` is still settling on page load.
-  if (!loading && isAdmin && !pathname.startsWith('/admin')) {
-    return <Navigate to="/admin" replace />;
-  }
-
   return (
     <div className="min-h-screen bg-[#FBFBFB]">
       {/* Global Responsive Header (hidden on auth pages) */}

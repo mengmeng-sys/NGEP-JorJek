@@ -62,12 +62,22 @@ function LogoutIcon() {
   );
 }
 
+function HomeIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+      <polyline points="9 22 9 12 15 12 15 22" />
+    </svg>
+  );
+}
+
 const NAV = [
   { to: "/admin", end: true, label: "Overview", icon: OverviewIcon },
   { to: "/admin/users", end: false, label: "User Directory", icon: UsersIcon },
   { to: "/admin/moderation", end: false, label: "Moderation Feed", icon: ShieldIcon },
   { to: "/admin/mentors", end: false, label: "Mentor Pipeline", icon: CapIcon },
   { to: "/admin/tags", end: false, label: "Tags & Topics", icon: TagIcon },
+  { to: "/", end: false, label: "Back to Home", icon: HomeIcon },
 ];
 
 function initialsOf(name) {
@@ -119,12 +129,7 @@ export default function AdminLayout() {
           ))}
         </nav>
 
-        {/*
-          Admin accounts never see the regular forum (App.jsx redirects them
-          straight back to /admin), and Navbar — the only other place a "Log
-          out" button exists — is hidden on every /admin route. So this is
-          the only way out of the dashboard.
-        */}
+        {/* Admin accounts can navigate back to the forum via the "Back to Home" sidebar link */}
         <div className="admin-account">
           <div className="admin-account-row">
             <span className="admin-avatar">{initialsOf(user?.displayName)}</span>
