@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { NavLink, Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { NavLink, Link, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { CreatePostModal } from '@/components/post/CreatePostModal';
 import { useAuth } from '@/context/AuthContext';
 import { useSocket } from '@/context/SocketContext';
@@ -7,6 +7,7 @@ import { useTheme } from '@/context/ThemeContext';
 import { notificationsApi, postsApi, tagsApi } from "@/lib/api";
 import { normalizeNotification } from "@/lib/adapters";
 import { getApiErrorMessage } from "@/lib/apiClient";
+import { UserAvatar } from "@/components/shared/UserAvatar";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -57,6 +58,18 @@ export default function Navbar() {
       cancelled = true;
     };
   }, []);
+
+  // Lock body scroll when mobile sidebar drawer is open
+  useEffect(() => {
+    if (isSidebarDrawerOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isSidebarDrawerOpen]);
 
   useEffect(() => {
     if (!user) {
@@ -374,14 +387,14 @@ export default function Navbar() {
                             >
                               {/* Avatar with type icon */}
                               <div className="relative shrink-0">
-                                <div className={`h-10 w-10 rounded-full flex items-center justify-center text-white text-xs font-bold ${
-                                  notif.type === 'vote'
-                                    ? 'bg-linear-to-br from-green-400 to-emerald-500'
-                                    : notif.isReply ? 'bg-linear-to-br from-violet-500 to-purple-600' : 'bg-linear-to-br from-orange-400 to-[#FF4F00]'
-                                }`}>
-                                  {notif.actorInitials || 'U'}
-                                </div>
-                                <div className={`absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full border-2 border-white flex items-center justify-center ${
+                                <UserAvatar
+                                  initials={notif.actorInitials}
+                                  userId={notif.payload?.actorId}
+                                  avatarUrl={notif.actorAvatar}
+                                  size="md"
+                                  className="ring-2 ring-white dark:ring-gray-900"
+                                />
+                                <div className={`absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full border-2 border-white dark:border-gray-900 flex items-center justify-center ${
                                   notif.type === 'vote' ? 'bg-green-100 dark:bg-green-900/30' : notif.isReply ? 'bg-violet-100 dark:bg-violet-900/30' : 'bg-orange-100 dark:bg-orange-900/30'
                                 }`}>
                                   {notif.type === 'vote' ? (

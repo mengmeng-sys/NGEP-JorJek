@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ThreeColumnLayout } from '@/components/layout/ThreeColumnLayout';
 import { CreatePostModal } from '@/components/post/CreatePostModal';
 import { DeletePostModal } from '@/components/post/DeletePostModal';
@@ -189,12 +189,17 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
     <div id={`comment-${comment.id}`} className="border-b border-gray-100 dark:border-gray-800 pb-5 sm:pb-6 last:border-b-0">
       <div className="flex items-center justify-between gap-2 mb-2">
         <div className="flex items-center gap-2 min-w-0 flex-wrap">
-          <UserAvatar
-            initials={comment.author?.initials || initialsFrom(comment.author?.displayName || 'U')}
-            userId={comment.author?.id || comment.authorId}
-            size="sm"
-          />
-          <span className="font-bold text-gray-900 dark:text-gray-100 text-xs sm:text-sm truncate">{comment.author?.displayName || 'Student'}</span>
+          <Link to={`/user/${comment.author?.handle || (comment.author?.displayName || '').toLowerCase().replace(/\s+/g, '')}`} className="shrink-0">
+            <UserAvatar
+              initials={comment.author?.initials || initialsFrom(comment.author?.displayName || 'U')}
+              userId={comment.author?.id || comment.authorId}
+              avatarUrl={comment.author?.avatarUrl}
+              size="sm"
+            />
+          </Link>
+          <Link to={`/user/${comment.author?.handle || (comment.author?.displayName || '').toLowerCase().replace(/\s+/g, '')}`} className="font-bold text-gray-900 dark:text-gray-100 text-xs sm:text-sm truncate hover:text-[#FF4F00] dark:hover:text-[#FF4F00] transition-colors">
+            {comment.author?.displayName || 'Student'}
+          </Link>
           <span
             className={`text-[8px] sm:text-[9px] uppercase font-bold px-1.5 py-0.5 rounded tracking-wide shrink-0 ${
               comment.author?.role === 'PROFESSOR'
@@ -534,12 +539,17 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
     <div id={`comment-${reply.id}`}>
       <div className="flex items-center justify-between gap-2 mb-1">
         <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-wrap">
-          <UserAvatar
-            initials={reply.author?.initials || initialsFrom(reply.author?.displayName || 'U')}
-            userId={reply.author?.id || reply.authorId}
-            size="xs"
-          />
-          <span className="font-bold text-gray-900 dark:text-gray-100 text-xs truncate">{reply.author?.displayName || 'Student'}</span>
+          <Link to={`/user/${reply.author?.handle || (reply.author?.displayName || '').toLowerCase().replace(/\s+/g, '')}`} className="shrink-0">
+            <UserAvatar
+              initials={reply.author?.initials || initialsFrom(reply.author?.displayName || 'U')}
+              userId={reply.author?.id || reply.authorId}
+              avatarUrl={reply.author?.avatarUrl}
+              size="xs"
+            />
+          </Link>
+          <Link to={`/user/${reply.author?.handle || (reply.author?.displayName || '').toLowerCase().replace(/\s+/g, '')}`} className="font-bold text-gray-900 dark:text-gray-100 text-xs truncate hover:text-[#FF4F00] dark:hover:text-[#FF4F00] transition-colors">
+            {reply.author?.displayName || 'Student'}
+          </Link>
           <span
             className={`text-[8px] uppercase font-bold px-1.5 py-0.5 rounded tracking-wide shrink-0 ${
               reply.author?.role === 'PROFESSOR'
@@ -723,6 +733,7 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
 export default function PostDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, markOnboardingComplete } = useAuth();
   const { joinPost, leavePost, on, off } = useSocket();
 
@@ -801,19 +812,19 @@ export default function PostDetailPage() {
 
   useEffect(() => {
     if (!id || comments.length === 0) return;
-    const hash = window.location.hash;
+    const hash = location.hash || window.location.hash;
     if (hash.startsWith("#comment-")) {
       const commentId = hash.replace("#comment-", "");
       setTimeout(() => {
         const el = document.getElementById(`comment-${commentId}`);
         if (el) {
           el.scrollIntoView({ behavior: "smooth", block: "start" });
-          el.classList.add("bg-amber-50 dark:bg-amber-900/20");
-          setTimeout(() => el.classList.remove("bg-amber-50 dark:bg-amber-900/20"), 2000);
+          el.classList.add("bg-amber-50", "dark:bg-amber-900/20");
+          setTimeout(() => el.classList.remove("bg-amber-50", "dark:bg-amber-900/20"), 2500);
         }
-      }, 300);
+      }, 400);
     }
-  }, [id, comments]);
+  }, [id, comments, location.hash]);
 
   useEffect(() => {
     if (!id) return;

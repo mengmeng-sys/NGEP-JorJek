@@ -156,6 +156,7 @@ export function normalizeComment(raw) {
       role: author.role || "STUDENT",
       initials: author.initials || initialsFrom(authorName),
       handle: author.handle || handleFrom(authorName),
+      avatarUrl: author.avatarUrl || author.avatar_url || null,
       karma: author.karma,
     },
     authorId: raw.author_id || author.id,
@@ -217,6 +218,7 @@ export function normalizeNotification(raw) {
     createdAt: raw.created_at,
     actorName,
     actorInitials: initials,
+    actorAvatar: payload.actorAvatar || null,
     link,
     payload,
   };

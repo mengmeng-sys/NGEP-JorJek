@@ -9,7 +9,7 @@ const { getIO } = require("../lib/socket");
 
 const commentsRouter = Router();
 
-const USER_SAFE = "id,email,display_name,role,bio,karma,created_at";
+const USER_SAFE = "id,email,display_name,role,bio,avatar_url,karma,created_at";
 
 // GET /posts/:postId/comments -- READ all comments for a post
 
@@ -193,10 +193,11 @@ commentsRouter.post("/posts/:postId/comments", requireAuth, requireVerifiedEmail
 
     const { data: actor } = await supabase
       .from("users")
-      .select("display_name")
+      .select("display_name, avatar_url")
       .eq("id", req.userId)
       .maybeSingle();
     const actorName = actor?.display_name || "Someone";
+    const actorAvatar = actor?.avatar_url || null;
     const snippet = body.length > 80 ? body.slice(0, 80) + "…" : body;
 
     if (parentId) {
@@ -212,6 +213,7 @@ commentsRouter.post("/posts/:postId/comments", requireAuth, requireVerifiedEmail
           parentId,
           actorId: req.userId,
           actorName,
+          actorAvatar,
           snippet,
           isReply: true,
         });
@@ -222,6 +224,7 @@ commentsRouter.post("/posts/:postId/comments", requireAuth, requireVerifiedEmail
         commentId: comment.id,
         actorId: req.userId,
         actorName,
+        actorAvatar,
         snippet,
         isReply: false,
       });

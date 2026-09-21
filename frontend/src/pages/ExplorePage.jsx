@@ -80,7 +80,8 @@ export default function ExplorePage() {
     searchTimeout.current = setTimeout(async () => {
       try {
         const results = await usersApi.search(value.trim());
-        setSearchResults(results);
+        const filtered = results.filter((u) => u.id !== user?.id);
+        setSearchResults(filtered);
       } catch {
         setSearchResults([]);
       } finally {
@@ -172,38 +173,38 @@ export default function ExplorePage() {
              )}
            </div>
 
-           {showResults && (
-             <div className="bg-white border border-gray-200 rounded-xl shadow-lg mb-4 max-h-72 overflow-y-auto">
-               {searchLoading ? (
-                 <div className="p-4 text-center">
-                   <div className="w-5 h-5 border-2 border-[#FF4F00] border-t-transparent rounded-full animate-spin mx-auto" />
-                 </div>
-               ) : searchResults.length === 0 ? (
-                 <div className="p-4 text-center text-xs text-gray-400">No users found</div>
-               ) : (
-                 searchResults.map((user) => (
-                   <button
-                     key={user.id}
-                     type="button"
-                     onClick={() => navigate(`/user/${user.handle}`)}
-                     className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 transition-colors text-left cursor-pointer border-b border-gray-50 last:border-b-0"
-                   >
-                      <UserAvatar initials={user.initials} userId={user.id} size="md" />
-                     <div className="min-w-0 flex-1">
-                       <div className="flex items-center gap-2">
-                         <span className="text-xs font-bold text-gray-900 truncate">{user.displayName}</span>
-                         <span className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded shrink-0 ${
-                           user.role === 'PROFESSOR' ? 'bg-orange-50 text-[#FF4F00] border border-orange-100' : 'bg-gray-100 text-gray-600'
-                         }`}>
-                           {user.role}
-                         </span>
-                       </div>
-                     </div>
-                   </button>
-                 ))
-               )}
-             </div>
-           )}
+            {showResults && (
+              <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg mb-4 max-h-72 overflow-y-auto">
+                {searchLoading ? (
+                  <div className="p-4 text-center">
+                    <div className="w-5 h-5 border-2 border-[#FF4F00] border-t-transparent rounded-full animate-spin mx-auto" />
+                  </div>
+                ) : searchResults.length === 0 ? (
+                  <div className="p-4 text-center text-xs text-gray-400 dark:text-gray-500">No users found</div>
+                ) : (
+                  searchResults.map((user) => (
+                    <button
+                      key={user.id}
+                      type="button"
+                      onClick={() => navigate(`/user/${user.handle}`)}
+                      className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left cursor-pointer border-b border-gray-50 dark:border-gray-800 last:border-b-0"
+                    >
+                       <UserAvatar initials={user.initials} userId={user.id} size="md" />
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-gray-900 dark:text-gray-100 truncate">{user.displayName}</span>
+                          <span className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded shrink-0 ${
+                            user.role === 'PROFESSOR' ? 'bg-orange-50 text-[#FF4F00] border border-orange-100' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'
+                          }`}>
+                            {user.role}
+                          </span>
+                        </div>
+                      </div>
+                    </button>
+                  ))
+                )}
+              </div>
+            )}
 
            <div className="flex items-center justify-between mb-3 sm:mb-4">
             <h2 className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
