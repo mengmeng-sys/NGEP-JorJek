@@ -41,7 +41,11 @@ export default function PrivacyPage() {
         </div>
 
         {/* Policy Sections */}
+<<<<<<< Updated upstream
         <div className="space-y-4 sm:space-y-5 text-xs sm:text-sm text-gray-600 leading-relaxed">
+=======
+        <div className="space-y-4 sm:space-y-5 text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+>>>>>>> Stashed changes
           {sections.map((sec) => (
             <section
               key={sec.number}
@@ -51,7 +55,11 @@ export default function PrivacyPage() {
                 <span className="text-[#FF4F00] font-black">{sec.number}.</span>
                 <span>{sec.title}</span>
               </h2>
+<<<<<<< Updated upstream
               <p className="leading-relaxed text-gray-600 wrap-break-words">
+=======
+              <p className="leading-relaxed text-gray-600 dark:text-gray-400 wrap-break-words">
+>>>>>>> Stashed changes
                 {sec.content}
               </p>
             </section>

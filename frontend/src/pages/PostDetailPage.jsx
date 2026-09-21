@@ -198,8 +198,13 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
           <span
             className={`text-[8px] sm:text-[9px] uppercase font-bold px-1.5 py-0.5 rounded tracking-wide shrink-0 ${
               comment.author?.role === 'PROFESSOR'
+<<<<<<< Updated upstream
                 ? 'bg-orange-50 text-[#FF4F00] border border-orange-100'
                 : 'bg-gray-100 text-gray-500'
+=======
+                ? 'bg-orange-50 dark:bg-orange-900/20 text-[#FF4F00] border border-orange-100 dark:border-orange-900/30'
+                : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400'
+>>>>>>> Stashed changes
             }`}
           >
             {comment.author?.role || 'STUDENT'}
@@ -217,7 +222,11 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
                 type="button"
                 onClick={() => { setIsEditing(true); setEditText(comment.body); }}
                 title="Edit comment"
+<<<<<<< Updated upstream
                 className="p-1 rounded text-gray-300 hover:text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer"
+=======
+                className="p-1 rounded text-gray-300 dark:text-gray-600 hover:text-gray-600 dark:hover:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 transition-colors cursor-pointer"
+>>>>>>> Stashed changes
               >
                 <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -227,7 +236,11 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
                 type="button"
                 onClick={() => setIsDeleteModalOpen(true)}
                 title="Delete comment"
+<<<<<<< Updated upstream
                 className="p-1 rounded text-gray-300 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+=======
+                className="p-1 rounded text-gray-300 dark:text-gray-600 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 dark:bg-red-900/20 transition-colors cursor-pointer"
+>>>>>>> Stashed changes
               >
                 <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -240,7 +253,11 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
             onClick={handleReport}
             title="Report comment"
             className={`p-1 rounded transition-colors group shrink-0 cursor-pointer ${
+<<<<<<< Updated upstream
               isReported ? 'text-red-600 bg-red-50' : 'text-gray-300 hover:text-red-600 hover:bg-red-50'
+=======
+              isReported ? 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20' : 'text-gray-300 dark:text-gray-600 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 dark:bg-red-900/20'
+>>>>>>> Stashed changes
             }`}
           >
             <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform group-hover:scale-110" fill="currentColor" viewBox="0 0 20 20">
@@ -257,13 +274,21 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
               autoFocus
               value={editText}
               onChange={(e) => setEditText(e.target.value)}
+<<<<<<< Updated upstream
               className="w-full bg-white border border-gray-200 rounded-xl p-2.5 sm:p-3 text-xs sm:text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all min-h-20 resize-none"
+=======
+              className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-2.5 sm:p-3 text-xs sm:text-sm text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all min-h-20 resize-none"
+>>>>>>> Stashed changes
             />
             <div className="flex justify-end gap-2 mt-2">
               <button
                 type="button"
                 onClick={() => setIsEditing(false)}
+<<<<<<< Updated upstream
                 className="px-3 py-1.5 text-xs font-semibold text-gray-500 hover:text-gray-800 transition-colors cursor-pointer"
+=======
+                className="px-3 py-1.5 text-xs font-semibold text-gray-500 dark:text-gray-400 hover:text-gray-800 transition-colors cursor-pointer"
+>>>>>>> Stashed changes
               >
                 Cancel
               </button>
@@ -282,7 +307,11 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
           </form>
         </div>
       ) : (
+<<<<<<< Updated upstream
       <div className="pl-7 sm:pl-9 text-xs sm:text-sm text-gray-700">
+=======
+      <div className="pl-7 sm:pl-9 text-xs sm:text-sm text-gray-700 dark:text-gray-300">
+>>>>>>> Stashed changes
         <div className={`space-y-2 sm:space-y-3 leading-relaxed wrap-break-words ${!isExpanded ? 'line-clamp-3 overflow-hidden' : ''}`}>
           {comment.body}
         </div>
@@ -306,27 +335,44 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
           </button>
         )}
 
+<<<<<<< Updated upstream
         <div className="flex items-center gap-3 sm:gap-4 pt-2 text-gray-500 font-medium">
           <div className="flex items-center gap-1 bg-gray-50 px-1.5 sm:px-2 py-0.5 rounded-lg border border-gray-100">
+=======
+        <div className="flex items-center gap-3 sm:gap-4 pt-2 text-gray-500 dark:text-gray-400 font-medium">
+          <div className="flex items-center gap-1 bg-gray-50 dark:bg-gray-800/50 px-1.5 sm:px-2 py-0.5 rounded-lg border border-gray-100 dark:border-gray-800">
+>>>>>>> Stashed changes
             <button
               type="button"
               onClick={() => handleVote(1)}
               className={`p-0.5 rounded transition-colors cursor-pointer ${
+<<<<<<< Updated upstream
                 voteState === 1 ? 'text-blue-500' : 'text-gray-400 hover:text-gray-600'
+=======
+                voteState === 1 ? 'text-blue-500' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400'
+>>>>>>> Stashed changes
               }`}
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
               </svg>
             </button>
+<<<<<<< Updated upstream
             <span className={`text-[11px] sm:text-xs font-bold px-0.5 ${voteState === 1 ? 'text-blue-500' : voteState === -1 ? 'text-[#FF4F00]' : 'text-gray-700'}`}>
+=======
+            <span className={`text-[11px] sm:text-xs font-bold px-0.5 ${voteState === 1 ? 'text-blue-500' : voteState === -1 ? 'text-[#FF4F00]' : 'text-gray-700 dark:text-gray-300'}`}>
+>>>>>>> Stashed changes
               {voteCount}
             </span>
             <button
               type="button"
               onClick={() => handleVote(-1)}
               className={`p-0.5 rounded transition-colors cursor-pointer ${
+<<<<<<< Updated upstream
                 voteState === -1 ? 'text-[#FF4F00]' : 'text-gray-400 hover:text-gray-600'
+=======
+                voteState === -1 ? 'text-[#FF4F00]' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400'
+>>>>>>> Stashed changes
               }`}
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
@@ -353,7 +399,11 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
       )}
 
       {replies.length > 0 && (
+<<<<<<< Updated upstream
         <div className="mt-3 sm:mt-4 ml-4 sm:ml-9 pl-3 sm:pl-4 border-l-2 border-gray-100 space-y-3.5 sm:space-y-4">
+=======
+        <div className="mt-3 sm:mt-4 ml-4 sm:ml-9 pl-3 sm:pl-4 border-l-2 dark:border-gray-800 space-y-3.5 sm:space-y-4">
+>>>>>>> Stashed changes
           {replies.map((reply) => (
             <NestedReply
               key={reply.id}
@@ -370,13 +420,21 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
       {replyingToUser && (
         <form onSubmit={handleSendReply} className="mt-3 sm:mt-4 ml-4 sm:ml-9 bg-gray-50 border border-gray-200 rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-2xs animate-in fade-in duration-150">
           <div className="flex items-center justify-between mb-2">
+<<<<<<< Updated upstream
             <span className="text-[11px] sm:text-xs font-semibold text-gray-500 truncate">
+=======
+            <span className="text-[11px] sm:text-xs font-semibold text-gray-500 dark:text-gray-400 truncate">
+>>>>>>> Stashed changes
               Replying to <strong className="text-[#FF4F00]">@{replyingToUser.name}</strong>
             </span>
             <button
               type="button"
               onClick={() => setReplyingToUser(null)}
+<<<<<<< Updated upstream
               className="text-[11px] sm:text-xs text-gray-400 hover:text-gray-600 shrink-0 ml-2 cursor-pointer"
+=======
+              className="text-[11px] sm:text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 shrink-0 ml-2 cursor-pointer"
+>>>>>>> Stashed changes
             >
               Cancel
             </button>
@@ -387,14 +445,22 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
             value={replyText}
             onChange={(e) => setReplyText(e.target.value)}
             placeholder={`Write your reply to ${replyingToUser.name}...`}
+<<<<<<< Updated upstream
             className="w-full bg-white border border-gray-200 rounded-xl p-2.5 sm:p-3 text-xs text-gray-800 placeholder-gray-400 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all min-h-16.25 resize-none"
+=======
+            className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-2.5 sm:p-3 text-xs text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all min-h-16.25 resize-none"
+>>>>>>> Stashed changes
           />
 
           <div className="flex justify-end gap-2 mt-2">
             <button
               type="button"
               onClick={() => setReplyingToUser(null)}
+<<<<<<< Updated upstream
               className="px-3 py-1.5 text-xs font-semibold text-gray-500 hover:text-gray-800 transition-colors cursor-pointer"
+=======
+              className="px-3 py-1.5 text-xs font-semibold text-gray-500 dark:text-gray-400 hover:text-gray-800 transition-colors cursor-pointer"
+>>>>>>> Stashed changes
             >
               Cancel
             </button>
@@ -543,8 +609,13 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
           <span
             className={`text-[8px] uppercase font-bold px-1.5 py-0.5 rounded tracking-wide shrink-0 ${
               reply.author?.role === 'PROFESSOR'
+<<<<<<< Updated upstream
                 ? 'bg-orange-50 text-[#FF4F00] border border-orange-100'
                 : 'bg-gray-100 text-gray-500'
+=======
+                ? 'bg-orange-50 dark:bg-orange-900/20 text-[#FF4F00] border border-orange-100 dark:border-orange-900/30'
+                : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400'
+>>>>>>> Stashed changes
             }`}
           >
             {reply.author?.role || 'STUDENT'}
@@ -562,7 +633,11 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
                 type="button"
                 onClick={() => { setIsEditing(true); setEditText(reply.body); }}
                 title="Edit reply"
+<<<<<<< Updated upstream
                 className="p-0.5 rounded text-gray-300 hover:text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer"
+=======
+                className="p-0.5 rounded text-gray-300 dark:text-gray-600 hover:text-gray-600 dark:hover:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 transition-colors cursor-pointer"
+>>>>>>> Stashed changes
               >
                 <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -572,7 +647,11 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
                 type="button"
                 onClick={() => setIsDeleteModalOpen(true)}
                 title="Delete reply"
+<<<<<<< Updated upstream
                 className="p-0.5 rounded text-gray-300 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+=======
+                className="p-0.5 rounded text-gray-300 dark:text-gray-600 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 dark:bg-red-900/20 transition-colors cursor-pointer"
+>>>>>>> Stashed changes
               >
                 <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -585,7 +664,11 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
             onClick={handleReport}
             title="Report reply"
             className={`p-0.5 rounded transition-colors group shrink-0 cursor-pointer ${
+<<<<<<< Updated upstream
               isReported ? 'text-red-600 bg-red-50' : 'text-gray-300 hover:text-red-600 hover:bg-red-50'
+=======
+              isReported ? 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20' : 'text-gray-300 dark:text-gray-600 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 dark:bg-red-900/20'
+>>>>>>> Stashed changes
             }`}
           >
             <svg className="w-3.5 h-3.5 transition-transform group-hover:scale-110" fill="currentColor" viewBox="0 0 20 20">
@@ -602,13 +685,21 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
               autoFocus
               value={editText}
               onChange={(e) => setEditText(e.target.value)}
+<<<<<<< Updated upstream
               className="w-full bg-white border border-gray-200 rounded-lg p-2 text-xs text-gray-800 placeholder-gray-400 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all min-h-15 resize-none"
+=======
+              className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg p-2 text-xs text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all min-h-15 resize-none"
+>>>>>>> Stashed changes
             />
             <div className="flex justify-end gap-2 mt-1.5">
               <button
                 type="button"
                 onClick={() => setIsEditing(false)}
+<<<<<<< Updated upstream
                 className="px-2.5 py-1 text-[11px] font-semibold text-gray-500 hover:text-gray-800 transition-colors cursor-pointer"
+=======
+                className="px-2.5 py-1 text-[11px] font-semibold text-gray-500 dark:text-gray-400 hover:text-gray-800 transition-colors cursor-pointer"
+>>>>>>> Stashed changes
               >
                 Cancel
               </button>
@@ -627,7 +718,11 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
           </form>
         </div>
       ) : (
+<<<<<<< Updated upstream
       <div className="pl-6 sm:pl-8 text-xs text-gray-700 leading-relaxed wrap-break-words">
+=======
+      <div className="pl-6 sm:pl-8 text-xs text-gray-700 dark:text-gray-300 leading-relaxed wrap-break-words">
+>>>>>>> Stashed changes
         <p>
           {reply.replyingTo && (
             <span className="text-[#FF4F00] font-bold mr-1.5">@{reply.replyingTo}</span>
@@ -644,27 +739,44 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
           </span>
         )}
 
+<<<<<<< Updated upstream
         <div className="flex items-center gap-2.5 sm:gap-3 pt-1.5 text-gray-500 font-medium">
           <div className="flex items-center gap-0.5 sm:gap-1 bg-gray-50 px-1.5 py-0.5 rounded-md border border-gray-100">
+=======
+        <div className="flex items-center gap-2.5 sm:gap-3 pt-1.5 text-gray-500 dark:text-gray-400 font-medium">
+          <div className="flex items-center gap-0.5 sm:gap-1 bg-gray-50 dark:bg-gray-800/50 px-1.5 py-0.5 rounded-md border border-gray-100 dark:border-gray-800">
+>>>>>>> Stashed changes
             <button
               type="button"
               onClick={() => handleVote(1)}
               className={`p-0.5 transition-colors cursor-pointer ${
+<<<<<<< Updated upstream
                 voteState === 1 ? 'text-blue-500' : 'text-gray-400 hover:text-gray-600'
+=======
+                voteState === 1 ? 'text-blue-500' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400'
+>>>>>>> Stashed changes
               }`}
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
               </svg>
             </button>
+<<<<<<< Updated upstream
             <span className={`text-[10px] sm:text-[11px] font-bold px-0.5 ${voteState === 1 ? 'text-blue-500' : voteState === -1 ? 'text-[#FF4F00]' : 'text-gray-700'}`}>
+=======
+            <span className={`text-[10px] sm:text-[11px] font-bold px-0.5 ${voteState === 1 ? 'text-blue-500' : voteState === -1 ? 'text-[#FF4F00]' : 'text-gray-700 dark:text-gray-300'}`}>
+>>>>>>> Stashed changes
               {voteCount}
             </span>
             <button
               type="button"
               onClick={() => handleVote(-1)}
               className={`p-0.5 transition-colors cursor-pointer ${
+<<<<<<< Updated upstream
                 voteState === -1 ? 'text-[#FF4F00]' : 'text-gray-400 hover:text-gray-600'
+=======
+                voteState === -1 ? 'text-[#FF4F00]' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400'
+>>>>>>> Stashed changes
               }`}
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
@@ -689,7 +801,11 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
       )}
 
       {reply.replies?.length > 0 && (
+<<<<<<< Updated upstream
         <div className="mt-2 ml-4 sm:ml-8 pl-2 sm:pl-3 border-l-2 border-gray-100 space-y-3">
+=======
+        <div className="mt-2 ml-4 sm:ml-8 pl-2 sm:pl-3 border-l-2 dark:border-gray-800 space-y-3">
+>>>>>>> Stashed changes
           {reply.replies.map((sub) => (
             <NestedReply
               key={sub.id}
@@ -1094,9 +1210,15 @@ export default function PostDetailPage() {
   if (notFound || !post) {
     return (
       <ThreeColumnLayout>
+<<<<<<< Updated upstream
         <div className="bg-white border border-gray-200 rounded-2xl p-10 text-center shadow-xs">
           <h2 className="text-sm font-bold text-gray-900">Post not found</h2>
           <p className="text-xs text-gray-500 mt-1">This post may have been removed.</p>
+=======
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-10 text-center shadow-xs">
+          <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100">Post not found</h2>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">This post may have been removed.</p>
+>>>>>>> Stashed changes
           <Link to="/" className="inline-block mt-4 text-xs font-bold text-[#FF4F00] hover:underline">
             Back to feed
           </Link>
@@ -1111,7 +1233,11 @@ export default function PostDetailPage() {
         {/* Breadcrumb Back Link */}
         <Link
           to="/"
+<<<<<<< Updated upstream
           className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-gray-500 hover:text-gray-900 font-semibold transition-colors"
+=======
+          className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 font-semibold transition-colors"
+>>>>>>> Stashed changes
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -1128,7 +1254,7 @@ export default function PostDetailPage() {
               <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
                 <Link
                   to={`/user/${authorProfileSlug}`}
-                  className="hover:ring-2 hover:ring-offset-2 hover:ring-gray-800 transition-all rounded-full"
+                  className="hover:ring-2 hover:ring-offset-2 transition-all rounded-full"
                 >
                   <UserAvatar initials={post.initials} userId={post.userId} size="md" />
                 </Link>
@@ -1158,7 +1284,11 @@ export default function PostDetailPage() {
                   <button
                     type="button"
                     onClick={() => navigate(`/request-session/${post.userId || ''}`)}
+<<<<<<< Updated upstream
                     className="text-[#FF4F00] border border-[#FF4F00] rounded-xl px-3 sm:px-4 py-1.5 text-xs font-bold hover:bg-orange-50 active:bg-orange-100 transition-colors cursor-pointer"
+=======
+                    className="text-[#FF4F00] border border-[#FF4F00] rounded-xl px-3 sm:px-4 py-1.5 text-xs font-bold hover:bg-orange-50 dark:hover:bg-orange-900/20 dark:bg-orange-900/20 active:bg-orange-100 transition-colors cursor-pointer"
+>>>>>>> Stashed changes
                   >
                     Request Session
                   </button>
@@ -1169,7 +1299,11 @@ export default function PostDetailPage() {
                   <button
                     type="button"
                     onClick={() => setIsMenuOpen(!isMenuOpen)}
+<<<<<<< Updated upstream
                     className="p-1.5 text-gray-400 hover:text-gray-700 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+=======
+                    className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-800 transition-colors cursor-pointer"
+>>>>>>> Stashed changes
                     title="More options"
                     aria-label="More post options"
                   >
@@ -1188,7 +1322,11 @@ export default function PostDetailPage() {
                               setIsMenuOpen(false);
                               setIsEditModalOpen(true);
                             }}
+<<<<<<< Updated upstream
                             className="w-full flex items-center gap-2 px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer text-left"
+=======
+                            className="w-full flex items-center gap-2 px-4 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 transition-colors cursor-pointer text-left"
+>>>>>>> Stashed changes
                           >
                             <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -1215,7 +1353,11 @@ export default function PostDetailPage() {
                           <button
                             type="button"
                             onClick={handleCopyLink}
+<<<<<<< Updated upstream
                             className="w-full flex items-center gap-2 px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer text-left"
+=======
+                            className="w-full flex items-center gap-2 px-4 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 transition-colors cursor-pointer text-left"
+>>>>>>> Stashed changes
                           >
                             <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
@@ -1248,7 +1390,11 @@ export default function PostDetailPage() {
                   <Link
                     key={t}
                     to={`/?tag=${encodeURIComponent(String(t).replace(/^#/, ''))}`}
+<<<<<<< Updated upstream
                     className="bg-orange-50 border border-orange-100 text-[#FF4F00] text-[10px] sm:text-[11px] font-bold px-2 sm:px-2.5 py-0.5 rounded-md hover:bg-orange-100 transition-colors"
+=======
+                    className="bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-900/30 text-[#FF4F00] text-[10px] sm:text-[11px] font-bold px-2 sm:px-2.5 py-0.5 rounded-md hover:bg-orange-100 transition-colors"
+>>>>>>> Stashed changes
                   >
                     #{String(t).replace(/^#/, '')}
                   </Link>
@@ -1262,7 +1408,11 @@ export default function PostDetailPage() {
             </h1>
 
             {post.content ? (
+<<<<<<< Updated upstream
               <div className="relative text-xs sm:text-sm text-gray-700 leading-relaxed wrap-break-words">
+=======
+              <div className="relative text-xs sm:text-sm text-gray-700 dark:text-gray-300 leading-relaxed wrap-break-words">
+>>>>>>> Stashed changes
                 <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isLongPost && !isBodyExpanded ? 'max-h-24' : 'max-h-[2000px]'}`}>
                   <p>{post.content}</p>
                 </div>
@@ -1309,7 +1459,11 @@ export default function PostDetailPage() {
           </div>
 
           {/* Post Bottom Controls */}
+<<<<<<< Updated upstream
           <div className="flex flex-wrap items-center justify-between gap-2.5 px-4 sm:px-6 py-2.5 sm:py-3 border-t border-gray-100 bg-white text-gray-500 text-xs sm:text-sm font-medium">
+=======
+          <div className="flex flex-wrap items-center justify-between gap-2.5 px-4 sm:px-6 py-2.5 sm:py-3 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 text-xs sm:text-sm font-medium">
+>>>>>>> Stashed changes
             <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
               {/* Voting Capsule */}
               <div className="flex items-center gap-1 bg-gray-50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-lg border border-gray-100">
@@ -1327,7 +1481,11 @@ export default function PostDetailPage() {
                   </button>
 
                   <span className={`text-[11px] sm:text-xs font-bold px-0.5 ${
+<<<<<<< Updated upstream
                     postVoteState === 1 ? 'text-blue-500' : postVoteState === -1 ? 'text-[#FF4F00]' : 'text-gray-700'
+=======
+                    postVoteState === 1 ? 'text-blue-500' : postVoteState === -1 ? 'text-[#FF4F00]' : 'text-gray-700 dark:text-gray-300'
+>>>>>>> Stashed changes
                   }`}>
                     {postVoteCount}
                   </span>
@@ -1350,7 +1508,11 @@ export default function PostDetailPage() {
               <button
                 type="button"
                 onClick={scrollToComments}
+<<<<<<< Updated upstream
                 className="flex items-center gap-1 sm:gap-1.5 text-xs text-gray-500 font-semibold cursor-pointer hover:text-gray-800 transition-colors"
+=======
+                className="flex items-center gap-1 sm:gap-1.5 text-xs text-gray-500 dark:text-gray-400 font-semibold cursor-pointer hover:text-gray-800 transition-colors"
+>>>>>>> Stashed changes
               >
                 <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
@@ -1359,8 +1521,13 @@ export default function PostDetailPage() {
               </button>
 
               {/* Total Votes */}
+<<<<<<< Updated upstream
               <div className="flex items-center gap-1 sm:gap-1.5 text-xs text-gray-500 font-semibold">
                 <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+=======
+              <div className="flex items-center gap-1 sm:gap-1.5 text-xs text-gray-500 dark:text-gray-400 font-semibold">
+                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+>>>>>>> Stashed changes
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                 </svg>
                 <span>{postVoteTotal} {postVoteTotal === 1 ? 'vote' : 'votes'}</span>
@@ -1370,7 +1537,11 @@ export default function PostDetailPage() {
               <button
                 type="button"
                 onClick={handleCopyLink}
+<<<<<<< Updated upstream
                 className="flex items-center gap-1 sm:gap-1.5 text-xs font-semibold hover:text-gray-800 transition-colors cursor-pointer"
+=======
+                className="flex items-center gap-1 sm:gap-1.5 text-xs font-semibold hover:text-gray-800 dark:text-gray-200 transition-colors cursor-pointer"
+>>>>>>> Stashed changes
               >
                 <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
@@ -1383,7 +1554,11 @@ export default function PostDetailPage() {
                 type="button"
                 onClick={handleSaveToggle}
                 className={`flex items-center gap-1 sm:gap-1.5 text-xs font-semibold transition-colors cursor-pointer ${
+<<<<<<< Updated upstream
                   isSaved ? 'text-[#FF4F00] font-bold' : 'hover:text-gray-800'
+=======
+                  isSaved ? 'text-[#FF4F00] font-bold' : 'hover:text-gray-800 dark:text-gray-200'
+>>>>>>> Stashed changes
                 }`}
               >
                 <svg
@@ -1407,7 +1582,11 @@ export default function PostDetailPage() {
             rows={3}
             value={commentText}
             onChange={(e) => setCommentText(e.target.value)}
+<<<<<<< Updated upstream
             className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl p-3 text-xs sm:text-sm text-gray-800 placeholder-gray-400 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all min-h-20 sm:min-h-22.5 resize-none mb-3"
+=======
+            className="w-full bg-[#FAFAFA] dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl p-3 text-xs sm:text-sm text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all min-h-20 sm:min-h-22.5 resize-none mb-3"
+>>>>>>> Stashed changes
             placeholder="Share your knowledge or ask a follow-up..."
           />
           <div className="flex justify-end">
@@ -1434,7 +1613,11 @@ export default function PostDetailPage() {
                 className={`capitalize px-2.5 sm:px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                   sortBy === tab
                     ? 'bg-[#FF4F00] text-white shadow-2xs'
+<<<<<<< Updated upstream
                     : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100/70'
+=======
+                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-800/70'
+>>>>>>> Stashed changes
                 }`}
               >
                 {tab}
@@ -1447,8 +1630,13 @@ export default function PostDetailPage() {
         <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-xs space-y-5 sm:space-y-6">
           {sortedComments.length === 0 ? (
             <div className="text-center py-10">
+<<<<<<< Updated upstream
               <h3 className="text-sm font-bold text-gray-900">No comments yet</h3>
               <p className="text-xs text-gray-500 mt-1">Be the first to share your knowledge.</p>
+=======
+              <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">No comments yet</h3>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Be the first to share your knowledge.</p>
+>>>>>>> Stashed changes
             </div>
           ) : (
             sortedComments.map((comment) => (

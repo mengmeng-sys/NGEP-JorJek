@@ -22,7 +22,11 @@ export function DeleteCommentModal({ isOpen, onClose, onConfirm, isReply = false
           Delete {isReply ? 'Reply' : 'Comment'}?
         </h3>
 
+<<<<<<< Updated upstream
         <p className="text-xs text-gray-500 mt-1.5 leading-relaxed px-2">
+=======
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5 leading-relaxed px-2">
+>>>>>>> Stashed changes
           Are you sure you want to permanently delete this {isReply ? 'reply' : 'comment'}?
           {isReply ? '' : ' All replies linked to it will also be removed.'}
         </p>
@@ -31,7 +35,11 @@ export function DeleteCommentModal({ isOpen, onClose, onConfirm, isReply = false
           <button
             type="button"
             onClick={onClose}
+<<<<<<< Updated upstream
             className="w-full xs:flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors cursor-pointer text-center"
+=======
+            className="w-full xs:flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 transition-colors cursor-pointer text-center"
+>>>>>>> Stashed changes
           >
             Cancel
           </button>

@@ -23,10 +23,17 @@ export function DeletePostModal({ isOpen, onClose, onConfirm, postTitle = '' }) 
           Delete Discussion?
         </h3>
 
+<<<<<<< Updated upstream
         <p className="text-xs text-gray-500 mt-1.5 leading-relaxed break-words px-2">
           Are you sure you want to permanently delete{' '}
           {postTitle ? (
             <strong className="text-gray-800 font-semibold">"{postTitle}"</strong>
+=======
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5 leading-relaxed break-words px-2">
+          Are you sure you want to permanently delete{' '}
+          {postTitle ? (
+            <strong className="text-gray-800 dark:text-gray-200 font-semibold">"{postTitle}"</strong>
+>>>>>>> Stashed changes
           ) : (
             'this post'
           )}
@@ -38,7 +45,11 @@ export function DeletePostModal({ isOpen, onClose, onConfirm, postTitle = '' }) 
           <button
             type="button"
             onClick={onClose}
+<<<<<<< Updated upstream
             className="w-full xs:flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors cursor-pointer text-center"
+=======
+            className="w-full xs:flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 transition-colors cursor-pointer text-center"
+>>>>>>> Stashed changes
           >
             Cancel
           </button>

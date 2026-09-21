@@ -15,14 +15,23 @@ export function SecurityTab() {
   }, []);
 
   if (loading) {
+<<<<<<< Updated upstream
     return <p className="text-xs text-gray-500">Loading...</p>;
+=======
+    return <p className="text-xs text-gray-500 dark:text-gray-400">Loading...</p>;
+>>>>>>> Stashed changes
   }
 
   return (
     <div className="space-y-6">
       <div>
+<<<<<<< Updated upstream
         <h2 className="text-base font-bold text-gray-900">Two-Factor Authentication</h2>
         <p className="text-xs text-gray-500 mt-1">
+=======
+        <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">Two-Factor Authentication</h2>
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+>>>>>>> Stashed changes
           Add an extra layer of security using Microsoft Authenticator
         </p>
       </div>
@@ -44,7 +53,11 @@ export function SecurityTab() {
             <p className="text-xs font-bold text-gray-900">
               {enabled ? "Authenticator is enabled" : "Authenticator is disabled"}
             </p>
+<<<<<<< Updated upstream
             <p className="text-[11px] text-gray-500">
+=======
+            <p className="text-[11px] text-gray-500 dark:text-gray-400">
+>>>>>>> Stashed changes
               {enabled
                 ? "Your account is protected with 2FA"
                 : "Sign in with password + authenticator code"}
@@ -57,7 +70,11 @@ export function SecurityTab() {
           onClick={() => navigate("/auth/mfa-setup")}
           className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
             enabled
+<<<<<<< Updated upstream
               ? "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"
+=======
+              ? "bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
+>>>>>>> Stashed changes
               : "bg-[#FF4F00] text-white hover:bg-[#E64700]"
           }`}
         >
@@ -65,9 +82,15 @@ export function SecurityTab() {
         </button>
       </div>
 
+<<<<<<< Updated upstream
       <div className="border-t border-gray-100 pt-4">
         <h3 className="text-xs font-bold text-gray-700 mb-2">How it works</h3>
         <ol className="text-[11px] text-gray-500 space-y-1.5 list-decimal list-inside">
+=======
+      <div className="border-t border-gray-100 dark:border-gray-800 pt-4">
+        <h3 className="text-xs font-bold text-gray-700 dark:text-gray-300 mb-2">How it works</h3>
+        <ol className="text-[11px] text-gray-500 dark:text-gray-400 space-y-1.5 list-decimal list-inside">
+>>>>>>> Stashed changes
           <li>Install Microsoft Authenticator on your phone</li>
           <li>Scan the QR code during setup</li>
           <li>Enter the 6-digit code from the app when signing in</li>

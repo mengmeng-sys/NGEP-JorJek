@@ -40,12 +40,20 @@ export function GettingStartedCard({ onOpenAuth }) {
         <h3 className="text-xs font-bold text-gray-900 uppercase tracking-wider">
           Getting Started
         </h3>
+<<<<<<< Updated upstream
         <span className={`text-xs font-bold ${completedCount > 0 ? 'text-[#FF4F00]' : 'text-gray-400'}`}>
+=======
+        <span className={`text-xs font-bold ${completedCount > 0 ? 'text-[#FF4F00]' : 'text-gray-400 dark:text-gray-500'}`}>
+>>>>>>> Stashed changes
           {completedCount}/{tasks.length} Completed
         </span>
       </div>
 
+<<<<<<< Updated upstream
       <p className="text-xs text-gray-500 mb-4 leading-relaxed">
+=======
+      <p className="text-xs text-gray-500 dark:text-gray-400 mb-4 leading-relaxed">
+>>>>>>> Stashed changes
         Complete your setup to unlock the Top Mentors leaderboard.
       </p>
 
@@ -76,8 +84,13 @@ export function GettingStartedCard({ onOpenAuth }) {
             <span
               className={`text-xs font-medium ${
                 task.completed
+<<<<<<< Updated upstream
                   ? 'text-gray-400 line-through'
                   : 'text-gray-700'
+=======
+                  ? 'text-gray-400 dark:text-gray-500 line-through'
+                  : 'text-gray-700 dark:text-gray-300'
+>>>>>>> Stashed changes
               }`}
             >
               {task.label}

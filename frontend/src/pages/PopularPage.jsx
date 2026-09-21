@@ -101,7 +101,11 @@ export default function PopularPage() {
                     className={`flex-1 sm:flex-none px-3 py-1.5 text-xs font-bold rounded-lg transition-all text-center cursor-pointer ${
                       isActive
                         ? 'bg-[#FF4F00] text-white shadow-xs'
+<<<<<<< Updated upstream
                         : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100/70'
+=======
+                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-800/70'
+>>>>>>> Stashed changes
                     }`}
                   >
                     {opt.label}
@@ -126,8 +130,13 @@ export default function PopularPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
             </div>
+<<<<<<< Updated upstream
             <h3 className="text-sm font-bold text-gray-900">No discussions found</h3>
             <p className="text-xs text-gray-500 mt-1 max-w-sm mx-auto">
+=======
+            <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">No discussions found</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 max-w-sm mx-auto">
+>>>>>>> Stashed changes
               No top-voted posts match this period ({timeframeOptions.find(t => t.id === timeframe)?.label}).
             </p>
           </div>

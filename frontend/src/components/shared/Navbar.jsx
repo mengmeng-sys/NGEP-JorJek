@@ -161,8 +161,13 @@ export default function Navbar() {
   const getNavLinkClass = ({ isActive }) =>
     `flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-colors ${
       isActive && !activeTag
+<<<<<<< Updated upstream
         ? 'bg-[#FFF4F0] text-[#FF4F00]'
         : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium'
+=======
+        ? 'bg-[#FFF4F0] dark:bg-orange-900/20 text-[#FF4F00]'
+        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-100 font-medium'
+>>>>>>> Stashed changes
     }`;
 
   return (
@@ -175,7 +180,11 @@ export default function Navbar() {
             <button
               type="button"
               onClick={() => setIsSidebarDrawerOpen(true)}
+<<<<<<< Updated upstream
               className="lg:hidden p-2 rounded-xl text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors border border-transparent hover:border-gray-200 cursor-pointer"
+=======
+              className="lg:hidden p-2 rounded-xl text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-800 transition-colors border border-transparent hover:border-gray-200 dark:border-gray-800 cursor-pointer"
+>>>>>>> Stashed changes
               title="Open Navigation Menu"
               aria-label="Open sidebar navigation"
             >
@@ -219,7 +228,11 @@ export default function Navbar() {
             <button
               type="button"
               onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
+<<<<<<< Updated upstream
               className="md:hidden p-2 rounded-xl text-gray-500 hover:bg-gray-100 transition-colors cursor-pointer"
+=======
+              className="md:hidden p-2 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-800 transition-colors cursor-pointer"
+>>>>>>> Stashed changes
               aria-label="Open search input"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -227,6 +240,7 @@ export default function Navbar() {
               </svg>
             </button>
 
+<<<<<<< Updated upstream
             {/* Create Post Button */}
             <button
               type="button"
@@ -244,18 +258,68 @@ export default function Navbar() {
               </svg>
               <span>Post</span>
             </button>
+=======
+             {/* Theme Toggle */}
+             <button
+               type="button"
+               onClick={toggleTheme}
+               className={`p-2 rounded-xl border transition-all cursor-pointer ${
+                 theme === 'dark'
+                   ? 'bg-gray-800 border-gray-700 hover:bg-gray-700 text-amber-400'
+                   : 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400'
+               }`}
+               title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+               aria-label="Toggle theme"
+             >
+               {theme === 'dark' ? (
+                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                 </svg>
+               ) : (
+                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                   <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                 </svg>
+               )}
+             </button>
+
+             {/* Create Post Button */}
+             <button
+               type="button"
+               onClick={() => {
+                 if (!user) {
+                   navigate('/auth/login');
+                 } else {
+                   setIsPostModalOpen(true);
+                 }
+               }}
+               className="flex items-center gap-1 px-3 sm:px-4 py-2 bg-[#FF4F00] text-white text-xs font-bold rounded-xl hover:bg-[#E64700] transition-colors shadow-xs cursor-pointer active:scale-95"
+             >
+               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+               </svg>
+               <span>Post</span>
+             </button>
+>>>>>>> Stashed changes
 
             {!user ? (
               <div className="flex items-center gap-1 sm:gap-2">
                 <Link
                   to="/auth/login"
+<<<<<<< Updated upstream
                   className="px-2.5 sm:px-3 py-2 text-xs font-bold text-gray-700 hover:text-gray-900 transition-colors"
+=======
+                  className="px-2.5 sm:px-3 py-2 text-xs font-bold text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+>>>>>>> Stashed changes
                 >
                   Log in
                 </Link>
                 <Link
                   to="/auth/signup"
+<<<<<<< Updated upstream
                   className="px-3 sm:px-4 py-2 bg-white text-[#FF4F00] border border-[#FF4F00] text-xs font-bold rounded-xl hover:bg-orange-50 transition-colors"
+=======
+                  className="px-3 sm:px-4 py-2 bg-white dark:bg-gray-900 text-[#FF4F00] border border-[#FF4F00] text-xs font-bold rounded-xl hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors"
+>>>>>>> Stashed changes
                 >
                   Sign up
                 </Link>
@@ -273,8 +337,13 @@ export default function Navbar() {
                     }}
                     className={`relative p-2 rounded-xl border transition-all cursor-pointer ${
                       isNotificationsOpen
+<<<<<<< Updated upstream
                         ? 'bg-orange-50 border-orange-200 text-[#FF4F00]'
                         : 'bg-[#FAFAFA] hover:bg-gray-100 border-gray-200 text-gray-600'
+=======
+                        ? 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-900/30 text-[#FF4F00]'
+                        : 'bg-[#FAFAFA] dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400'
+>>>>>>> Stashed changes
                     }`}
                     aria-label="Notifications"
                   >
@@ -297,7 +366,11 @@ export default function Navbar() {
                   {isNotificationsOpen && (
                     <div className="fixed sm:absolute top-16 sm:top-auto sm:right-0 inset-x-4 sm:inset-x-auto sm:w-105 bg-white border border-gray-200 rounded-2xl shadow-2xl z-50 overflow-hidden">
                       {/* Header */}
+<<<<<<< Updated upstream
                       <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100 bg-gray-50/50">
+=======
+                      <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
+>>>>>>> Stashed changes
                         <div className="flex items-center gap-2.5">
                           <h3 className="text-sm font-bold text-gray-900">Notifications</h3>
                           {unreadCount > 0 && (
@@ -311,7 +384,11 @@ export default function Navbar() {
                             <button
                               type="button"
                               onClick={handleClearRead}
+<<<<<<< Updated upstream
                               className="text-[11px] font-medium text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
+=======
+                              className="text-[11px] font-medium text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 transition-colors cursor-pointer"
+>>>>>>> Stashed changes
                             >
                               Clear read
                             </button>
@@ -343,8 +420,13 @@ export default function Navbar() {
                             <div
                               key={notif.id}
                               onClick={() => handleNotificationClick(notif)}
+<<<<<<< Updated upstream
                               className={`group flex items-start gap-3.5 px-5 py-3.5 hover:bg-gray-50 transition-colors cursor-pointer border-b border-gray-50 last:border-b-0 ${
                                 !notif.read ? 'bg-orange-50/40' : ''
+=======
+                              className={`group flex items-start gap-3.5 px-5 py-3.5 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 transition-colors cursor-pointer border-b border-gray-50 dark:border-gray-800 last:border-b-0 ${
+                                !notif.read ? 'bg-orange-50 dark:bg-orange-900/20' : ''
+>>>>>>> Stashed changes
                               }`}
                             >
                               {/* Avatar with type icon */}
@@ -380,12 +462,20 @@ export default function Navbar() {
                                 <p className="text-[13px] text-gray-900 leading-snug">
                                   <span className="font-semibold">{notif.actorName}</span>
                                   {' '}
+<<<<<<< Updated upstream
                                   <span className="text-gray-600">
+=======
+                                  <span className="text-gray-600 dark:text-gray-400">
+>>>>>>> Stashed changes
                                     {notif.type === 'vote' ? 'upvoted your post' : notif.type === 'reply' && notif.isReply ? 'replied to your comment' : notif.type === 'reply' ? 'commented on your post' : notif.title}
                                   </span>
                                 </p>
                                 {notif.message && (
+<<<<<<< Updated upstream
                                   <p className="text-xs text-gray-500 mt-1 line-clamp-2 leading-relaxed">
+=======
+                                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2 leading-relaxed">
+>>>>>>> Stashed changes
                                     "{notif.message}"
                                   </p>
                                 )}
@@ -415,7 +505,11 @@ export default function Navbar() {
                                     e.stopPropagation();
                                     handleDeleteNotification(notif.id);
                                   }}
+<<<<<<< Updated upstream
                                   className="opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-500 p-1 -m-1 transition-all cursor-pointer"
+=======
+                                  className="opacity-0 group-hover:opacity-100 text-gray-300 dark:text-gray-600 hover:text-red-500 dark:hover:text-red-400 p-1 -m-1 transition-all cursor-pointer"
+>>>>>>> Stashed changes
                                   title="Remove notification"
                                   aria-label="Remove notification"
                                 >
@@ -431,7 +525,11 @@ export default function Navbar() {
 
                       {/* Footer */}
                       {notifications.length > 0 && (
+<<<<<<< Updated upstream
                         <div className="border-t border-gray-100 px-5 py-2.5 bg-gray-50/50 text-center">
+=======
+                        <div className="border-t border-gray-100 dark:border-gray-800 px-5 py-2.5 bg-gray-50 dark:bg-gray-800/50 text-center">
+>>>>>>> Stashed changes
                           <Link
                             to="/notifications"
                             onClick={() => setIsNotificationsOpen(false)}
@@ -456,7 +554,7 @@ export default function Navbar() {
                       setIsMenuOpen(!isMenuOpen);
                       setIsNotificationsOpen(false);
                     }}
-                    className="flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 bg-[#111827] text-white text-xs font-bold rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-gray-800 transition-all cursor-pointer shadow-xs overflow-hidden"
+                    className="flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 bg-[#111827] text-white text-xs font-bold rounded-full hover:ring-2 hover:ring-offset-2 transition-all cursor-pointer shadow-xs overflow-hidden"
                     aria-label="Open profile settings menu"
                   >
                     {user.avatarUrl ? (
@@ -480,7 +578,11 @@ export default function Navbar() {
                       <Link
                         to={`/user/${user.handle || 'me'}`}
                         onClick={() => setIsMenuOpen(false)}
+<<<<<<< Updated upstream
                         className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+=======
+                        className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+>>>>>>> Stashed changes
                       >
                         <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -491,7 +593,11 @@ export default function Navbar() {
                       <Link
                         to="/settings"
                         onClick={() => setIsMenuOpen(false)}
+<<<<<<< Updated upstream
                         className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+=======
+                        className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+>>>>>>> Stashed changes
                       >
                         <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -536,8 +642,13 @@ export default function Navbar() {
 
         {/* Mobile Full-Width Search Input Row */}
         {isMobileSearchOpen && (
+<<<<<<< Updated upstream
           <div className="md:hidden px-4 pb-3 pt-1 border-t border-gray-100 animate-in fade-in duration-150">
             <div className="relative flex items-center w-full h-10 rounded-xl border border-gray-200 bg-[#FAFAFA] focus-within:bg-white focus-within:border-[#FF4F00] transition-all">
+=======
+          <div className="md:hidden px-4 pb-3 pt-1 border-t border-gray-100 dark:border-gray-800 animate-in fade-in duration-150">
+            <div className="relative flex items-center w-full h-10 rounded-xl border border-gray-200 dark:border-gray-800 bg-[#FAFAFA] dark:bg-gray-800 focus-within:bg-white dark:focus-within:bg-gray-800 focus-within:border-[#FF4F00] transition-all">
+>>>>>>> Stashed changes
               <input
                 autoFocus
                 type="text"
@@ -545,12 +656,20 @@ export default function Navbar() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleSearchSubmit}
                 placeholder="Search topics, skills, or mentors..."
+<<<<<<< Updated upstream
                 className="w-full h-full pl-3 pr-8 outline-none text-xs text-gray-800 placeholder-gray-400 bg-transparent font-medium"
+=======
+                className="w-full h-full pl-3 pr-8 outline-none text-xs text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 bg-transparent font-medium"
+>>>>>>> Stashed changes
               />
               <button
                 type="button"
                 onClick={() => setIsMobileSearchOpen(false)}
+<<<<<<< Updated upstream
                 className="absolute right-2.5 text-gray-400 hover:text-gray-600 text-xs font-bold cursor-pointer"
+=======
+                className="absolute right-2.5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 text-xs font-bold cursor-pointer"
+>>>>>>> Stashed changes
               >
                 ✕
               </button>
@@ -588,7 +707,11 @@ export default function Navbar() {
                   <button
                     type="button"
                     onClick={() => setIsSidebarDrawerOpen(false)}
+<<<<<<< Updated upstream
                     className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer"
+=======
+                    className="p-1.5 rounded-lg text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-800 transition-colors cursor-pointer"
+>>>>>>> Stashed changes
                   >
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -671,8 +794,13 @@ export default function Navbar() {
                           onClick={() => handleTagClick(tag)}
                           className={`text-left px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                             isSelected
+<<<<<<< Updated upstream
                               ? 'bg-[#FFF4F0] text-[#FF4F00] font-bold'
                               : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+=======
+                              ? 'bg-[#FFF4F0] dark:bg-orange-900/20 text-[#FF4F00] font-bold'
+                              : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50'
+>>>>>>> Stashed changes
                           }`}
                         >
                           #{tag}
@@ -685,10 +813,17 @@ export default function Navbar() {
 
               <div className="pt-5 border-t border-gray-100 text-[11px] text-gray-400 space-y-2">
                 <div className="flex flex-wrap gap-x-3 gap-y-1 font-medium">
+<<<<<<< Updated upstream
                   <Link to="/about" onClick={() => setIsSidebarDrawerOpen(false)} className="hover:text-gray-700">About Us</Link>
                   <Link to="/contact" onClick={() => setIsSidebarDrawerOpen(false)} className="hover:text-gray-700">Contact</Link>
                   <Link to="/privacy" onClick={() => setIsSidebarDrawerOpen(false)} className="hover:text-gray-700">Privacy</Link>
                   <Link to="/terms" onClick={() => setIsSidebarDrawerOpen(false)} className="hover:text-gray-700">Terms</Link>
+=======
+                  <Link to="/about" onClick={() => setIsSidebarDrawerOpen(false)} className="hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300">About Us</Link>
+                  <Link to="/contact" onClick={() => setIsSidebarDrawerOpen(false)} className="hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300">Contact</Link>
+                  <Link to="/privacy" onClick={() => setIsSidebarDrawerOpen(false)} className="hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300">Privacy</Link>
+                  <Link to="/terms" onClick={() => setIsSidebarDrawerOpen(false)} className="hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300">Terms</Link>
+>>>>>>> Stashed changes
                 </div>
                 <p className="text-[10px] text-gray-400">© 2026 JorJek Campus. All rights reserved.</p>
               </div>

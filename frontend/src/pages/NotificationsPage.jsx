@@ -85,10 +85,17 @@ export default function NotificationsPage() {
     <ThreeColumnLayout>
       <div className="bg-white border border-gray-200 rounded-2xl shadow-xs overflow-hidden">
         {/* Header */}
+<<<<<<< Updated upstream
         <div className="flex items-center justify-between gap-4 px-6 sm:px-8 py-5 border-b border-gray-100 bg-gray-50/30">
           <div>
             <h1 className="text-xl font-bold text-gray-900">Notifications</h1>
             <p className="text-xs text-gray-500 mt-0.5">
+=======
+        <div className="flex items-center justify-between gap-4 px-6 sm:px-8 py-5 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
+          <div>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Notifications</h1>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+>>>>>>> Stashed changes
               {unreadCount > 0
                 ? `You have ${unreadCount} unread notification${unreadCount > 1 ? 's' : ''}`
                 : 'All caught up!'}
@@ -99,7 +106,11 @@ export default function NotificationsPage() {
               <button
                 type="button"
                 onClick={clearRead}
+<<<<<<< Updated upstream
                 className="px-3 py-1.5 text-xs font-semibold text-gray-400 hover:text-red-500 border border-gray-200 hover:border-red-200 rounded-lg transition-colors cursor-pointer"
+=======
+                className="px-3 py-1.5 text-xs font-semibold text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 border border-gray-200 dark:border-gray-800 hover:border-red-200 rounded-lg transition-colors cursor-pointer"
+>>>>>>> Stashed changes
               >
                 Clear read
               </button>
@@ -130,8 +141,13 @@ export default function NotificationsPage() {
               </svg>
             </div>
             <div className="text-center">
+<<<<<<< Updated upstream
               <p className="text-sm font-semibold text-gray-700">No notifications yet</p>
               <p className="text-xs text-gray-400 mt-1">When someone comments on your post or replies to you, it'll appear here.</p>
+=======
+              <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">No notifications yet</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">When someone comments on your post or replies to you, it'll appear here.</p>
+>>>>>>> Stashed changes
             </div>
           </div>
         ) : (
@@ -144,7 +160,11 @@ export default function NotificationsPage() {
                   if (n.link) navigate(n.link);
                 }}
                 className={`group flex items-start gap-4 px-6 sm:px-8 py-4 transition-colors ${
+<<<<<<< Updated upstream
                   !n.read ? 'bg-orange-50/30 hover:bg-orange-50/50 cursor-pointer' : 'hover:bg-gray-50/50 cursor-pointer'
+=======
+                  !n.read ? 'bg-orange-50 dark:bg-orange-900/20 hover:bg-orange-50 dark:hover:bg-orange-900/20 cursor-pointer' : 'hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 cursor-pointer'
+>>>>>>> Stashed changes
                 }`}
               >
                 {/* Avatar with type badge */}
@@ -182,13 +202,22 @@ export default function NotificationsPage() {
                   <p className="text-sm text-gray-900 leading-relaxed">
                     <span className="font-semibold">{n.actorName || 'Someone'}</span>
                     {' '}
+<<<<<<< Updated upstream
                     <span className="text-gray-600">
+=======
+                    <span className="text-gray-600 dark:text-gray-400">
+>>>>>>> Stashed changes
                       {n.type === 'vote' ? 'upvoted your post' : n.type === 'reply' && n.isReply ? 'replied to your comment' : n.type === 'reply' ? 'commented on your post' : n.title}
                     </span>
                   </p>
                   {n.message && (
+<<<<<<< Updated upstream
                     <div className="mt-2 px-3 py-2 bg-gray-50 border-l-3 border-gray-200 rounded-r-lg">
                       <p className="text-xs text-gray-600 line-clamp-2 leading-relaxed italic">
+=======
+                    <div className="mt-2 px-3 py-2 bg-gray-50 dark:bg-gray-800/50 border-l-3 dark:border-gray-800 rounded-r-lg">
+                      <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 leading-relaxed italic">
+>>>>>>> Stashed changes
                         "{n.message}"
                       </p>
                     </div>
@@ -221,7 +250,11 @@ export default function NotificationsPage() {
                       e.stopPropagation();
                       removeNotification(n.id);
                     }}
+<<<<<<< Updated upstream
                     className="opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-500 p-1.5 -m-1.5 rounded-lg hover:bg-red-50 transition-all cursor-pointer"
+=======
+                    className="opacity-0 group-hover:opacity-100 text-gray-300 dark:text-gray-600 hover:text-red-500 dark:hover:text-red-400 p-1.5 -m-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 dark:bg-red-900/20 transition-all cursor-pointer"
+>>>>>>> Stashed changes
                     title="Remove notification"
                     aria-label="Remove notification"
                   >

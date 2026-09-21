@@ -279,7 +279,7 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
             <Link
               to={`/user/${userProfileSlug}`}
               onClick={(e) => e.stopPropagation()}
-              className="h-9 w-9 sm:h-10 sm:w-10 bg-[#111827] text-white font-black flex items-center justify-center rounded-full text-xs hover:ring-2 hover:ring-offset-2 hover:ring-gray-800 transition-all shrink-0 overflow-hidden"
+              className="h-9 w-9 sm:h-10 sm:w-10 bg-[#111827] text-white font-black flex items-center justify-center rounded-full text-xs hover:ring-2 hover:ring-offset-2 transition-all shrink-0 overflow-hidden"
             >
               {post.authorAvatarUrl ? (
                 <img src={post.authorAvatarUrl} alt={post.author || 'Author'} className="h-full w-full object-cover" />
@@ -340,7 +340,7 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
                     <button
                       type="button"
                       onClick={handleEdit}
-                      className="w-full flex items-center gap-2 px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer text-left"
+                      className="w-full flex items-center gap-2 px-4 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 transition-colors cursor-pointer text-left"
                     >
                       <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -364,7 +364,7 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
                     <button
                       type="button"
                       onClick={handleCopyLink}
-                      className="w-full flex items-center gap-2 px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer text-left"
+                      className="w-full flex items-center gap-2 px-4 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 transition-colors cursor-pointer text-left"
                     >
                       <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
@@ -395,7 +395,7 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
         </h2>
         {post.content ? (
           <div className="relative mb-3">
-            <p className={`text-xs sm:text-sm text-gray-500 leading-relaxed wrap-break-words ${isLongContent && !isContentExpanded ? 'line-clamp-3' : ''}`}>
+            <p className={`text-xs sm:text-sm text-gray-500 dark:text-gray-400 leading-relaxed wrap-break-words ${isLongContent && !isContentExpanded ? 'line-clamp-3' : ''}`}>
               {post.content}
             </p>
             {isLongContent && (
@@ -449,7 +449,7 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
                   e.stopPropagation();
                   navigate(`/?tag=${encodeURIComponent(t.replace(/^#/, ''))}`);
                 }}
-                className="bg-orange-50 border border-orange-100 text-[#FF4F00] text-[10px] sm:text-[11px] font-bold px-2 sm:px-2.5 py-0.5 rounded-md hover:bg-orange-100 transition-colors cursor-pointer"
+                className="bg-orange-50 dark:bg-orange-900/30 border border-orange-100 dark:border-orange-900/30 text-[#FF4F00] text-[10px] sm:text-[11px] font-bold px-2 sm:px-2.5 py-0.5 rounded-md hover:bg-orange-100 transition-colors cursor-pointer"
               >
                 #{t.replace(/^#/, '')}
               </span>
@@ -459,8 +459,8 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
       </div>
 
       {/* Footer Controls */}
-      <div className="flex flex-wrap items-center justify-between gap-2 px-4 sm:px-5 py-2.5 sm:py-3 border-t border-gray-100 bg-white">
-        <div className="flex items-center gap-2 sm:gap-3.5 text-gray-500 font-medium text-xs sm:text-sm">
+      <div className="flex flex-wrap items-center justify-between gap-2 px-4 sm:px-5 py-2.5 sm:py-3 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900">
+        <div className="flex items-center gap-2 sm:gap-3.5 text-gray-500 dark:text-gray-400 font-medium text-xs sm:text-sm">
           {/* Voting Box */}
           <div
             className="flex items-center gap-1 bg-gray-50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-lg border border-gray-100"
@@ -480,7 +480,7 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
               </button>
 
               <span className={`text-[11px] sm:text-xs font-bold px-0.5 ${
-                voteState === 1 ? 'text-blue-500' : voteState === -1 ? 'text-[#FF4F00]' : 'text-gray-700'
+                voteState === 1 ? 'text-blue-500' : voteState === -1 ? 'text-[#FF4F00]' : 'text-gray-700 dark:text-gray-300'
               }`}>
                 {voteCount}
               </span>
@@ -500,7 +500,7 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
           </div>
 
           {/* Comments Link */}
-          <div className="flex items-center gap-1 sm:gap-1.5 hover:text-gray-700 transition-colors">
+          <div className="flex items-center gap-1 sm:gap-1.5 hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300 transition-colors">
             <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
               <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
             </svg>
@@ -512,7 +512,7 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
             <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
               <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
             </svg>
-            <span className="text-[11px] sm:text-xs text-gray-500">
+            <span className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400">
               {voteTotal} {voteTotal === 1 ? 'vote' : 'votes'}
             </span>
           </div>
@@ -521,7 +521,7 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
           <button
             type="button"
             onClick={handleCopyLink}
-            className="flex items-center gap-1 sm:gap-1.5 hover:text-gray-700 transition-colors cursor-pointer"
+            className="flex items-center gap-1 sm:gap-1.5 hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300 transition-colors cursor-pointer"
           >
             <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
@@ -534,7 +534,7 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
             type="button"
             onClick={handleSaveToggle}
             className={`flex items-center gap-1 sm:gap-1.5 transition-colors cursor-pointer ${
-              isSaved ? 'text-[#FF4F00] font-bold' : 'text-gray-500 hover:text-gray-700'
+              isSaved ? 'text-[#FF4F00] font-bold' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
             }`}
           >
             <svg
@@ -558,7 +558,7 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
               e.stopPropagation();
               navigate(`/request-session/${post.userId || ''}`);
             }}
-            className="text-[#FF4F00] bg-white border border-[#FF4F00] rounded-xl px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-[11px] sm:text-xs font-bold hover:bg-orange-50 transition-colors whitespace-nowrap ml-auto sm:ml-0 cursor-pointer active:scale-95"
+            className="text-[#FF4F00] bg-white dark:bg-gray-900 border border-[#FF4F00] rounded-xl px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-[11px] sm:text-xs font-bold hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors whitespace-nowrap ml-auto sm:ml-0 cursor-pointer active:scale-95"
           >
             Request Mentoring
           </button>

@@ -77,7 +77,11 @@ export default function SavedPage() {
               <h1 className="text-base sm:text-lg font-bold text-gray-900 leading-tight truncate">
                 Your Saved Resources
               </h1>
+<<<<<<< Updated upstream
               <p className="text-[11px] sm:text-xs text-gray-500 mt-0.5 leading-snug truncate">
+=======
+              <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 mt-0.5 leading-snug truncate">
+>>>>>>> Stashed changes
                 {savedPosts.length === 0
                   ? 'Posts you save will appear here for quick access'
                   : `${savedPosts.length} ${savedPosts.length === 1 ? 'post' : 'posts'} saved to your bookmarks`}
@@ -105,8 +109,13 @@ export default function SavedPage() {
             </button>
           </div>
         ) : savedPosts.length === 0 ? (
+<<<<<<< Updated upstream
           <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-8 sm:p-14 flex flex-col items-center justify-center text-center shadow-xs min-h-90 sm:min-h-100">
             <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-orange-50/70 border border-orange-100 text-[#FF4F00] flex items-center justify-center mb-4">
+=======
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl sm:rounded-2xl p-8 sm:p-14 flex flex-col items-center justify-center text-center shadow-xs min-h-90 sm:min-h-100">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-900/30 text-[#FF4F00] flex items-center justify-center mb-4">
+>>>>>>> Stashed changes
               <svg
                 className="w-7 h-7 sm:w-8 sm:h-8"
                 fill="none"
@@ -125,8 +134,13 @@ export default function SavedPage() {
             <h2 className="text-sm sm:text-base font-bold text-gray-900 mb-1.5">
               Nothing saved yet!
             </h2>
+<<<<<<< Updated upstream
             <p className="text-xs text-gray-400 max-w-xs mb-5 sm:mb-6 leading-relaxed">
               Click the <strong className="font-semibold text-gray-700">Save</strong> bookmark button on questions or study guides to collect them here.
+=======
+            <p className="text-xs text-gray-400 dark:text-gray-500 max-w-xs mb-5 sm:mb-6 leading-relaxed">
+              Click the <strong className="font-semibold text-gray-700 dark:text-gray-300">Save</strong> bookmark button on questions or study guides to collect them here.
+>>>>>>> Stashed changes
             </p>
 
             <Link

@@ -54,7 +54,11 @@ export function CommunityRulesCard() {
         {/* Mobile Accordion Chevron */}
         <button
           type="button"
+<<<<<<< Updated upstream
           className="lg:hidden p-1 text-gray-400 hover:text-gray-600 transition-transform"
+=======
+          className="lg:hidden p-1 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 transition-transform"
+>>>>>>> Stashed changes
           aria-label="Toggle rules"
         >
           <svg
@@ -74,16 +78,27 @@ export function CommunityRulesCard() {
         {rules.map((rule) => (
           <div 
             key={rule.number} 
+<<<<<<< Updated upstream
             className="p-3 sm:p-4 flex items-start gap-2.5 sm:gap-3.5 hover:bg-gray-50/50 transition-colors"
+=======
+            className="p-3 sm:p-4 flex items-start gap-2.5 sm:gap-3.5 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 transition-colors"
+>>>>>>> Stashed changes
           >
             <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-orange-50 text-[#FF4F00] text-[10px] sm:text-[11px] font-bold flex items-center justify-center flex-shrink-0 mt-0.5 border border-orange-100">
               {rule.number}
             </span>
             <div className="min-w-0 flex-1">
+<<<<<<< Updated upstream
               <h4 className="text-xs font-bold text-gray-800 leading-snug break-words">
                 {rule.title}
               </h4>
               <p className="text-[11px] text-gray-500 mt-0.5 sm:mt-1 leading-relaxed break-words">
+=======
+              <h4 className="text-xs font-bold text-gray-800 dark:text-gray-200 leading-snug break-words">
+                {rule.title}
+              </h4>
+              <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5 sm:mt-1 leading-relaxed break-words">
+>>>>>>> Stashed changes
                 {rule.description}
               </p>
             </div>
@@ -91,8 +106,13 @@ export function CommunityRulesCard() {
         ))}
 
         {/* Footer Notice */}
+<<<<<<< Updated upstream
         <div className="bg-gray-50/70 p-3 sm:p-4 border-t border-gray-100 text-center">
           <p className="text-[10px] sm:text-[11px] text-gray-400 leading-relaxed font-medium">
+=======
+        <div className="bg-gray-50 dark:bg-gray-800/50 p-3 sm:p-4 border-t border-gray-100 dark:border-gray-800 text-center">
+          <p className="text-[10px] sm:text-[11px] text-gray-400 dark:text-gray-500 leading-relaxed font-medium">
+>>>>>>> Stashed changes
             Violations may result in post removal or account suspension.
           </p>
         </div>

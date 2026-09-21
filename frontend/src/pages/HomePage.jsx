@@ -133,15 +133,24 @@ export default function HomePage() {
         {selectedTag && (
           <div className="flex items-center justify-between gap-2 bg-[#FFF4F0] border border-orange-200 rounded-xl px-3.5 sm:px-4 py-2 sm:py-2.5">
             <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+<<<<<<< Updated upstream
               <span className="text-[11px] sm:text-xs text-gray-600 font-medium truncate">Filter:</span>
               <span className="text-[11px] sm:text-xs font-bold text-[#FF4F00] bg-white px-2 py-0.5 rounded-md border border-orange-200 truncate">
+=======
+              <span className="text-[11px] sm:text-xs text-gray-600 dark:text-gray-400 font-medium truncate">Filter:</span>
+              <span className="text-[11px] sm:text-xs font-bold text-[#FF4F00] bg-white dark:bg-gray-900 px-2 py-0.5 rounded-md border border-orange-200 dark:border-orange-900/30 truncate">
+>>>>>>> Stashed changes
                 #{selectedTag}
               </span>
             </div>
             <button
               type="button"
               onClick={() => navigate('/')}
+<<<<<<< Updated upstream
               className="text-[11px] sm:text-xs font-bold text-gray-500 hover:text-gray-900 transition-colors shrink-0 cursor-pointer"
+=======
+              className="text-[11px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors shrink-0 cursor-pointer"
+>>>>>>> Stashed changes
             >
               Clear ×
             </button>
@@ -167,7 +176,11 @@ export default function HomePage() {
                   className={`px-3 py-1.5 rounded-lg sm:rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
                     isActive
                       ? 'bg-[#FF4F00] text-white shadow-2xs'
+<<<<<<< Updated upstream
                       : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
+=======
+                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50'
+>>>>>>> Stashed changes
                   }`}
                 >
                   {option.label}
@@ -190,8 +203,13 @@ export default function HomePage() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
               </svg>
             </div>
+<<<<<<< Updated upstream
             <h3 className="text-sm font-bold text-gray-900">No posts found</h3>
             <p className="text-xs text-gray-500 mt-1 max-w-sm mx-auto">
+=======
+            <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">No posts found</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 max-w-sm mx-auto">
+>>>>>>> Stashed changes
               {selectedTag 
                 ? `There are no questions or discussions tagged with #${selectedTag} yet.`
                 : 'No posts have been published on the campus feed yet.'}
