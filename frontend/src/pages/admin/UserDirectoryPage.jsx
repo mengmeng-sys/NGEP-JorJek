@@ -195,9 +195,16 @@ export default function UserDirectoryPage() {
             {selected.status === "BANNED" || selected.status === "SUSPENDED" ? (
               <>
                 <p>This account is currently {selected.status.toLowerCase()}. You can restore it to ACTIVE.</p>
+                <label>Moderator note</label>
+                <textarea
+                  rows={2}
+                  placeholder="Reason for restoration (required)"
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                />
                 <div style={{ display: "flex", gap: 8 }}>
-                  <button className="jd-btn jd-btn-primary" onClick={() => submitEnforcement("restore")}>
-                    Restore account
+                  <button className="jd-btn jd-btn-primary" disabled={saving} onClick={() => submitEnforcement("restore")}>
+                    {saving ? "Restoring…" : "Restore account"}
                   </button>
                 </div>
               </>
