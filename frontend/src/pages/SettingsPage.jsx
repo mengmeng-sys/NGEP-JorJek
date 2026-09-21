@@ -104,7 +104,7 @@ export default function SettingsPage() {
     <div className="min-h-screen bg-[#FBFBFB] dark:bg-gray-950 py-8">
       <div className="max-w-6xl mx-auto px-6">
         {/* Back Link */}
-        <Link to="/" className="inline-flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100 mb-6 font-medium transition-colors">
+        <Link to="/" className="inline-flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 mb-6 font-medium transition-colors">
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
           </svg>
@@ -123,10 +123,10 @@ export default function SettingsPage() {
             </div>
             <div>
               <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 leading-tight">{user?.displayName || 'Student'}</h1>
-              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-0.5">{user?.email || ''}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{user?.email || ''}</p>
               <div className="flex items-center gap-2 mt-2">
                 <span className="w-2 h-2 rounded-full bg-emerald-50 dark:bg-emerald-900/200" />
-                <span className="text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-500">Available for Sessions</span>
+                <span className="text-xs font-semibold text-gray-600 dark:text-gray-400">Available for Sessions</span>
               </div>
             </div>
           </div>
@@ -165,7 +165,7 @@ export default function SettingsPage() {
                         className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-left ${
                           isActive
                             ? 'bg-[#FFF4F0] dark:bg-orange-900/20 text-[#FF4F00] border-l-4 border-[#FF4F00] rounded-l-none'
-                            : 'text-gray-600 dark:text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100 font-medium'
+                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-100 font-medium'
                         }`}
                       >
                         <span className={isActive ? 'text-[#FF4F00]' : 'text-gray-400 dark:text-gray-500'}>{item.icon}</span>

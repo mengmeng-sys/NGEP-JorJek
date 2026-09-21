@@ -56,7 +56,7 @@ export function ReportModal({ targetType, targetName, isOpen, onClose, onSubmit 
               </svg>
             </div>
             <h3 className="text-base font-bold text-gray-900 dark:text-gray-100 mb-1">Report Submitted</h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-5">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-5">
               Thank you. Our moderation team will review this shortly.
             </p>
             <button
@@ -83,7 +83,7 @@ export function ReportModal({ targetType, targetName, isOpen, onClose, onSubmit 
           <button
             type="button"
             onClick={handleClose}
-            className="p-1.5 rounded-lg text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 dark:text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 transition-colors cursor-pointer"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -92,7 +92,7 @@ export function ReportModal({ targetType, targetName, isOpen, onClose, onSubmit 
         </div>
 
         <form onSubmit={handleSubmit} className="p-4 sm:p-5 space-y-3">
-          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Why are you reporting {targetLabel}?</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">Why are you reporting {targetLabel}?</p>
 
           <div className="space-y-2 max-h-56 overflow-y-auto">
             {REPORT_REASONS.map((reason) => (
@@ -123,7 +123,7 @@ export function ReportModal({ targetType, targetName, isOpen, onClose, onSubmit 
                     <div className="w-1.5 h-1.5 rounded-full bg-white dark:bg-gray-900" />
                   )}
                 </div>
-                <span className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 dark:text-gray-600 font-medium">{reason.label}</span>
+                <span className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 font-medium">{reason.label}</span>
               </label>
             ))}
           </div>
@@ -135,7 +135,7 @@ export function ReportModal({ targetType, targetName, isOpen, onClose, onSubmit 
               onChange={(e) => setCustomReason(e.target.value)}
               placeholder="Describe the issue..."
               rows={3}
-              className="w-full bg-[#FAFAFA] dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl p-3 text-xs sm:text-sm text-gray-800 dark:text-gray-200 dark:text-gray-300 placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:bg-white dark:bg-gray-900 focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all resize-none"
+              className="w-full bg-[#FAFAFA] dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl p-3 text-xs sm:text-sm text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all resize-none"
             />
           )}
 
@@ -143,7 +143,7 @@ export function ReportModal({ targetType, targetName, isOpen, onClose, onSubmit 
             <button
               type="button"
               onClick={handleClose}
-              className="flex-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 dark:text-gray-600 text-xs font-bold py-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 transition-colors cursor-pointer"
+              className="flex-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 text-xs font-bold py-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer"
             >
               Cancel
             </button>

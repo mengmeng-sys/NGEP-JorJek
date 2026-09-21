@@ -90,7 +90,7 @@ export default function SearchPage() {
         {/* Search input lives in the navbar now (kept in sync with ?q= via
             Navbar.jsx) — this page used to render its own second, unsynced
             search box directly below it, which is the "2 search bars" bug. */}
-        <h1 className="text-sm font-bold text-gray-800 dark:text-gray-200 dark:text-gray-300">
+        <h1 className="text-sm font-bold text-gray-800 dark:text-gray-200">
           {loading
             ? "Searching..."
             : q.trim()
@@ -133,7 +133,7 @@ export default function SearchPage() {
           {results.length === 0 && users.length === 0 && !loading && q.trim() ? (
             <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl sm:rounded-2xl p-8 sm:p-12 text-center shadow-xs">
               <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">No results found</h3>
-              <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1 max-w-sm mx-auto">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 max-w-sm mx-auto">
                 Try different keywords or browse the campus feed instead.
               </p>
             </div>

@@ -323,7 +323,7 @@ export default function UserProfilePage() {
       <ThreeColumnLayout>
         <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-10 text-center shadow-xs">
           <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100">User not found</h2>
-          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">This profile does not exist.</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">This profile does not exist.</p>
           <Link to="/" className="inline-block mt-4 text-xs font-bold text-[#FF4F00] hover:underline">
             Back to feed
           </Link>
@@ -339,7 +339,7 @@ export default function UserProfilePage() {
         {/* Back Link */}
         <Link
           to="/"
-          className="inline-flex items-center gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100 font-semibold transition-colors"
+          className="inline-flex items-center gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 font-semibold transition-colors"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -394,12 +394,12 @@ export default function UserProfilePage() {
                     />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 leading-relaxed">JPEG, PNG, or WebP. Max 5MB.</p>
+                    <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed">JPEG, PNG, or WebP. Max 5MB.</p>
                     {editForm.avatarUrl && !avatarUploading && (
                       <button
                         type="button"
                         onClick={handleRemoveAvatar}
-                        className="text-[10px] font-bold text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 dark:text-red-400 transition-colors mt-1 cursor-pointer"
+                        className="text-[10px] font-bold text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 transition-colors mt-1 cursor-pointer"
                       >
                         Remove photo
                       </button>
@@ -414,7 +414,7 @@ export default function UserProfilePage() {
                   type="text"
                   value={editForm.displayName}
                   onChange={(e) => setEditForm((p) => ({ ...p, displayName: e.target.value }))}
-                  className="w-full bg-[#FAFAFA] dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 dark:text-gray-100 outline-none focus:bg-white dark:bg-gray-900 focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all"
+                  className="w-full bg-[#FAFAFA] dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 dark:text-gray-100 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all"
                 />
               </div>
 
@@ -425,7 +425,7 @@ export default function UserProfilePage() {
                   onChange={(e) => setEditForm((p) => ({ ...p, bio: e.target.value }))}
                   rows={3}
                   placeholder="Tell others about yourself..."
-                  className="w-full bg-[#FAFAFA] dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 dark:text-gray-100 outline-none focus:bg-white dark:bg-gray-900 focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all resize-none"
+                  className="w-full bg-[#FAFAFA] dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 dark:text-gray-100 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all resize-none"
                 />
               </div>
 
@@ -443,7 +443,7 @@ export default function UserProfilePage() {
                     }
                   }}
                   placeholder={`1 - ${maxGen}`}
-                  className="w-full bg-[#FAFAFA] dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 dark:text-gray-100 outline-none focus:bg-white dark:bg-gray-900 focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs"
+                  className="w-full bg-[#FAFAFA] dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 dark:text-gray-100 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs"
                 />
                 <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">CADT started in 2014. Max: Gen {maxGen}</p>
               </div>
@@ -459,7 +459,7 @@ export default function UserProfilePage() {
                       className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                         editForm.department === dept.name
                           ? 'bg-[#FF4F00] border-[#FF4F00] text-white'
-                          : 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 dark:text-gray-500 hover:border-[#FF4F00] hover:text-[#FF4F00]'
+                          : 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:border-[#FF4F00] hover:text-[#FF4F00]'
                       }`}
                     >
                       {dept.name}
@@ -480,7 +480,7 @@ export default function UserProfilePage() {
                         className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                           editForm.specialization === spec
                             ? 'bg-[#FF4F00] border-[#FF4F00] text-white'
-                            : 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 dark:text-gray-500 hover:border-[#FF4F00] hover:text-[#FF4F00]'
+                            : 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:border-[#FF4F00] hover:text-[#FF4F00]'
                         }`}
                       >
                         {spec}
@@ -495,7 +495,7 @@ export default function UserProfilePage() {
                   type="button"
                   onClick={cancelEditing}
                   disabled={saving}
-                  className="flex-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 dark:text-gray-600 text-xs font-bold py-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 transition-colors cursor-pointer"
+                  className="flex-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 text-xs font-bold py-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -544,14 +544,14 @@ export default function UserProfilePage() {
                       )}
                     </div>
 
-                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 font-medium">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                       @{fullProfile.handle}
                     </p>
 
                     {(fullProfile.department || fullProfile.specialization) && (
                       <div className="flex flex-wrap items-center gap-2 justify-center sm:justify-start">
                         {fullProfile.department && (
-                          <span className="inline-flex items-center gap-1 text-[11px] text-gray-600 dark:text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-lg">
+                          <span className="inline-flex items-center gap-1 text-[11px] text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-lg">
                             <svg className="w-3 h-3 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                             </svg>
@@ -559,7 +559,7 @@ export default function UserProfilePage() {
                           </span>
                         )}
                         {fullProfile.specialization && (
-                          <span className="inline-flex items-center gap-1 text-[11px] text-gray-600 dark:text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-lg">
+                          <span className="inline-flex items-center gap-1 text-[11px] text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-lg">
                             <svg className="w-3 h-3 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                             </svg>
@@ -572,7 +572,7 @@ export default function UserProfilePage() {
                     <p className="text-xs text-gray-400 dark:text-gray-500">{fullProfile.university}</p>
 
                     {fullProfile.bio && (
-                      <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 max-w-xl pt-1 leading-relaxed wrap-break-words">
+                      <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 max-w-xl pt-1 leading-relaxed wrap-break-words">
                         {fullProfile.bio}
                       </p>
                     )}
@@ -594,7 +594,7 @@ export default function UserProfilePage() {
                       <button
                         type="button"
                         onClick={startEditing}
-                        className="flex items-center justify-center gap-1.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 dark:text-gray-600 text-xs font-bold px-4 py-2.5 rounded-xl transition-all cursor-pointer"
+                        className="flex items-center justify-center gap-1.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs font-bold px-4 py-2.5 rounded-xl transition-all cursor-pointer"
                       >
                         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -619,7 +619,7 @@ export default function UserProfilePage() {
                       const ok = await copyToClipboard(window.location.href);
                       alert(ok ? 'Profile URL copied to clipboard!' : 'Could not copy the link. Please copy the URL manually.');
                     }}
-                    className="flex-1 md:flex-initial bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 dark:text-gray-600 text-xs font-bold px-4 py-2.5 rounded-xl transition-all text-center cursor-pointer"
+                    className="flex-1 md:flex-initial bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs font-bold px-4 py-2.5 rounded-xl transition-all text-center cursor-pointer"
                   >
                     Share Profile
                   </button>
@@ -627,7 +627,7 @@ export default function UserProfilePage() {
                     <button
                       type="button"
                       onClick={() => setIsReportModalOpen(true)}
-                      className="flex items-center justify-center gap-1.5 bg-white dark:bg-gray-900 border border-red-200 hover:bg-red-50 dark:hover:bg-red-900/20 dark:bg-red-900/20 text-red-500 dark:text-red-400 text-xs font-bold px-4 py-2.5 rounded-xl transition-all cursor-pointer"
+                      className="flex items-center justify-center gap-1.5 bg-white dark:bg-gray-900 border border-red-200 hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500 dark:text-red-400 text-xs font-bold px-4 py-2.5 rounded-xl transition-all cursor-pointer"
                     >
                       <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
@@ -671,7 +671,7 @@ export default function UserProfilePage() {
             className={`pb-2.5 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer ${
               activeTab === 'posts'
                 ? 'text-[#FF4F00] border-[#FF4F00]'
-                : 'text-gray-400 dark:text-gray-500 border-transparent hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300 dark:text-gray-600'
+                : 'text-gray-400 dark:text-gray-500 border-transparent hover:text-gray-700 dark:hover:text-gray-300'
             }`}
           >
             Shared Posts ({userPosts.length})

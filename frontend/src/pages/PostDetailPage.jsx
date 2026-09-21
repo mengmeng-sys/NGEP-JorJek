@@ -1096,7 +1096,7 @@ export default function PostDetailPage() {
       <ThreeColumnLayout>
         <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-10 text-center shadow-xs">
           <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100">Post not found</h2>
-          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">This post may have been removed.</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">This post may have been removed.</p>
           <Link to="/" className="inline-block mt-4 text-xs font-bold text-[#FF4F00] hover:underline">
             Back to feed
           </Link>
@@ -1111,7 +1111,7 @@ export default function PostDetailPage() {
         {/* Breadcrumb Back Link */}
         <Link
           to="/"
-          className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100 font-semibold transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 font-semibold transition-colors"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -1158,7 +1158,7 @@ export default function PostDetailPage() {
                   <button
                     type="button"
                     onClick={() => navigate(`/request-session/${post.userId || ''}`)}
-                    className="text-[#FF4F00] border border-[#FF4F00] rounded-xl px-3 sm:px-4 py-1.5 text-xs font-bold hover:bg-orange-50 dark:hover:bg-orange-900/20 dark:bg-orange-900/20 active:bg-orange-100 dark:bg-orange-900/30 transition-colors cursor-pointer"
+                    className="text-[#FF4F00] border border-[#FF4F00] rounded-xl px-3 sm:px-4 py-1.5 text-xs font-bold hover:bg-orange-50 dark:hover:bg-orange-900/20 dark:bg-orange-900/20 active:bg-orange-100 transition-colors cursor-pointer"
                   >
                     Request Session
                   </button>
@@ -1169,7 +1169,7 @@ export default function PostDetailPage() {
                   <button
                     type="button"
                     onClick={() => setIsMenuOpen(!isMenuOpen)}
-                    className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300 dark:text-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-800 transition-colors cursor-pointer"
+                    className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-800 transition-colors cursor-pointer"
                     title="More options"
                     aria-label="More post options"
                   >
@@ -1188,7 +1188,7 @@ export default function PostDetailPage() {
                               setIsMenuOpen(false);
                               setIsEditModalOpen(true);
                             }}
-                            className="w-full flex items-center gap-2 px-4 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 dark:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 transition-colors cursor-pointer text-left"
+                            className="w-full flex items-center gap-2 px-4 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 transition-colors cursor-pointer text-left"
                           >
                             <svg className="w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -1215,7 +1215,7 @@ export default function PostDetailPage() {
                           <button
                             type="button"
                             onClick={handleCopyLink}
-                            className="w-full flex items-center gap-2 px-4 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 dark:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 transition-colors cursor-pointer text-left"
+                            className="w-full flex items-center gap-2 px-4 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 transition-colors cursor-pointer text-left"
                           >
                             <svg className="w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
@@ -1262,12 +1262,12 @@ export default function PostDetailPage() {
             </h1>
 
             {post.content ? (
-              <div className="relative text-xs sm:text-sm text-gray-700 dark:text-gray-300 dark:text-gray-600 leading-relaxed wrap-break-words">
+              <div className="relative text-xs sm:text-sm text-gray-700 dark:text-gray-300 leading-relaxed wrap-break-words">
                 <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isLongPost && !isBodyExpanded ? 'max-h-24' : 'max-h-[2000px]'}`}>
                   <p>{post.content}</p>
                 </div>
                 {isLongPost && !isBodyExpanded && (
-                  <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white to-transparent pointer-events-none" />
+                  <div className="absolute bottom-0 left-0 right-0 h-12 bg-linear-to-t from-white to-transparent pointer-events-none" />
                 )}
                 {isLongPost && (
                   <button
@@ -1301,7 +1301,7 @@ export default function PostDetailPage() {
             <img
               src={post.image_url}
               alt={post.title}
-              className="w-full h-auto max-h-[600px] object-contain"
+              className="w-full h-auto max-h-150 object-contain"
               loading="lazy"
             />
           </div>

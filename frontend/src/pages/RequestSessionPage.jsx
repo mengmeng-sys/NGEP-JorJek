@@ -42,7 +42,7 @@ export default function RequestSessionPage() {
         <button
           type="button"
           onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-[#FF4F00] transition-colors cursor-pointer bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl px-3 py-1.5 shadow-2xs mb-4"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-500 dark:text-gray-400 hover:text-[#FF4F00] transition-colors cursor-pointer bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl px-3 py-1.5 shadow-2xs mb-4"
         >
           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -91,9 +91,9 @@ export default function RequestSessionPage() {
                       </div>
                     </div>
                   </div>
-                  <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-3 leading-relaxed">
+                  <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 mt-3 leading-relaxed">
                     You're requesting an in-person or online study session with{' '}
-                    <span className="font-bold text-gray-700 dark:text-gray-300 dark:text-gray-600">{safeName}</span>. Propose a
+                    <span className="font-bold text-gray-700 dark:text-gray-300">{safeName}</span>. Propose a
                     time below and the mentor will confirm or suggest an alternative.
                   </p>
                 </div>
@@ -112,7 +112,7 @@ export default function RequestSessionPage() {
                           className={`text-[11px] sm:text-xs px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer select-none ${
                             type === 'Coursework Help'
                               ? 'bg-[#FFF4F0] dark:bg-orange-900/20 text-[#FF4F00] border border-orange-200 dark:border-orange-900/30'
-                              : 'bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-800'
+                              : 'bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
                           }`}
                         >
                           {type}
@@ -128,7 +128,7 @@ export default function RequestSessionPage() {
                     <input
                       type="text"
                       placeholder="e.g. Understanding B+ trees for DB exam..."
-                      className="w-full border border-gray-200 dark:border-gray-800 rounded-xl p-2.5 sm:p-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all bg-[#FAFAFA] dark:bg-gray-800 focus:bg-white dark:bg-gray-900 shadow-2xs"
+                      className="w-full border border-gray-200 dark:border-gray-800 rounded-xl p-2.5 sm:p-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all bg-[#FAFAFA] dark:bg-gray-800 focus:bg-white shadow-2xs"
                     />
                   </div>
 
@@ -139,7 +139,7 @@ export default function RequestSessionPage() {
                       </label>
                       <input
                         type="date"
-                        className="w-full border border-gray-200 dark:border-gray-800 rounded-xl p-2.5 text-xs text-gray-700 dark:text-gray-300 dark:text-gray-600 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] bg-[#FAFAFA] dark:bg-gray-800 shadow-2xs"
+                        className="w-full border border-gray-200 dark:border-gray-800 rounded-xl p-2.5 text-xs text-gray-700 dark:text-gray-300 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] bg-[#FAFAFA] dark:bg-gray-800 shadow-2xs"
                       />
                     </div>
                     <div>
@@ -148,14 +148,14 @@ export default function RequestSessionPage() {
                       </label>
                       <input
                         type="time"
-                        className="w-full border border-gray-200 dark:border-gray-800 rounded-xl p-2.5 text-xs text-gray-700 dark:text-gray-300 dark:text-gray-600 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] bg-[#FAFAFA] dark:bg-gray-800 shadow-2xs"
+                        className="w-full border border-gray-200 dark:border-gray-800 rounded-xl p-2.5 text-xs text-gray-700 dark:text-gray-300 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] bg-[#FAFAFA] dark:bg-gray-800 shadow-2xs"
                       />
                     </div>
                     <div>
                       <label className="block text-[11px] font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider mb-1.5">
                         Duration
                       </label>
-                      <select className="w-full border border-gray-200 dark:border-gray-800 rounded-xl p-2.5 text-xs text-gray-700 dark:text-gray-300 dark:text-gray-600 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] bg-[#FAFAFA] dark:bg-gray-800 shadow-2xs cursor-pointer">
+                      <select className="w-full border border-gray-200 dark:border-gray-800 rounded-xl p-2.5 text-xs text-gray-700 dark:text-gray-300 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] bg-[#FAFAFA] dark:bg-gray-800 shadow-2xs cursor-pointer">
                         <option>30 min</option>
                         <option>45 min</option>
                         <option>60 min</option>
@@ -170,7 +170,7 @@ export default function RequestSessionPage() {
                     <textarea
                       rows={3}
                       placeholder="Share your syllabus level, what you've tried, and anything specific you want to cover..."
-                      className="w-full border border-gray-200 dark:border-gray-800 rounded-xl p-2.5 sm:p-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all bg-[#FAFAFA] dark:bg-gray-800 focus:bg-white dark:bg-gray-900 resize-none shadow-2xs leading-relaxed"
+                      className="w-full border border-gray-200 dark:border-gray-800 rounded-xl p-2.5 sm:p-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all bg-[#FAFAFA] dark:bg-gray-800 focus:bg-white resize-none shadow-2xs leading-relaxed"
                     />
                   </div>
 

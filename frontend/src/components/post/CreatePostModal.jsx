@@ -246,7 +246,7 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
             <button
               type="button"
               onClick={handleAttemptClose}
-              className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300 dark:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-800 rounded-xl transition-colors cursor-pointer"
+              className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-800 rounded-xl transition-colors cursor-pointer"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -273,7 +273,7 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
               value={title}
               onChange={handleTitleChange}
               placeholder="Ask a question or share coursework..."
-              className={`w-full border rounded-xl p-2.5 sm:p-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 outline-none transition-all bg-[#FAFAFA] dark:bg-gray-800 focus:bg-white dark:bg-gray-900 shadow-2xs ${
+              className={`w-full border rounded-xl p-2.5 sm:p-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 outline-none transition-all bg-[#FAFAFA] dark:bg-gray-800 focus:bg-white shadow-2xs${
                 isTitleOverLimit
                   ? 'border-red-300 focus:border-red-500 focus:ring-1 focus:ring-red-500'
                   : 'border-gray-200 dark:border-gray-800 focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00]'
@@ -294,7 +294,7 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
               value={details}
               onChange={(e) => setDetails(e.target.value)}
               placeholder="Describe your question, query bottleneck, or resource..."
-              className="w-full border border-gray-200 dark:border-gray-800 rounded-xl p-2.5 sm:p-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all bg-[#FAFAFA] dark:bg-gray-800 focus:bg-white dark:bg-gray-900 resize-none shadow-2xs leading-relaxed"
+              className="w-full border border-gray-200 dark:border-gray-800 rounded-xl p-2.5 sm:p-3 text-xs sm:text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all bg-[#FAFAFA] dark:bg-gray-800 focus:bg-white resize-none shadow-2xs leading-relaxed"
             />
           </div>
 
@@ -315,7 +315,7 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
                     className={`text-[11px] sm:text-xs px-2.5 py-1 rounded-lg font-medium transition-all cursor-pointer select-none active:scale-95 ${
                       isSelected
                         ? 'bg-[#FFF4F0] dark:bg-orange-900/20 text-[#FF4F00] border border-orange-200 dark:border-orange-900/30 font-bold shadow-2xs'
-                        : 'bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-800'
+                        : 'bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
                     }`}
                   >
                     {tag}
@@ -348,7 +348,7 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
                 onKeyDown={handleKeyDown}
                 onBlur={commitTagInput}
                 placeholder={selectedTags.length > 0 ? 'add more...' : 'type tag & enter...'}
-                className="flex-1 min-w-[110px] text-xs text-gray-700 dark:text-gray-300 dark:text-gray-600 outline-none placeholder-gray-400 dark:placeholder-gray-500 ml-1 py-1 bg-transparent"
+                className="flex-1 min-w-[110px] text-xs text-gray-700 dark:text-gray-300 outline-none placeholder-gray-400 dark:placeholder-gray-500 ml-1 py-1 bg-transparent"
               />
             </div>
           </div>
@@ -384,7 +384,7 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
                 className={`border-2 border-dashed rounded-xl p-4 sm:p-5 text-center cursor-pointer transition-all flex flex-col items-center justify-center gap-1.5 ${
                   isDragging
                     ? 'border-[#FF4F00] bg-orange-50 dark:bg-orange-900/20/50 scale-[0.99]'
-                    : 'border-gray-200 dark:border-gray-800 hover:border-[#FF4F00]/50 bg-[#FAFAFA] dark:bg-gray-800 hover:bg-orange-50 dark:hover:bg-orange-900/20 dark:bg-orange-900/20/20'
+                    : 'border-gray-200 dark:border-gray-800 hover:border-[#FF4F00]/50 bg-[#FAFAFA] dark:bg-gray-800 hover:bg-orange-50 dark:hover:bg-orange-900/20'
                 }`}
               >
                 <div className="w-10 h-10 rounded-xl bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-900/30 text-[#FF4F00] flex items-center justify-center">
@@ -392,7 +392,7 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                 </div>
-                <p className="text-xs font-bold text-gray-800 dark:text-gray-200 dark:text-gray-300">
+                <p className="text-xs font-bold text-gray-800 dark:text-gray-200">
                   Click to browse <span className="text-gray-400 dark:text-gray-500 font-normal">or drop image here</span>
                 </p>
                 <p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium">
@@ -446,7 +446,7 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
             </button>
             <div className="flex-1">
               <h3 className="text-xs font-bold text-gray-900 dark:text-gray-100 leading-tight">Allow mentoring requests for this post</h3>
-              <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-0.5">
+              <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
                 {isMentoringEnabled
                   ? 'A "Request Mentoring" button will appear on this post.'
                   : 'Post will appear as a standard discussion question.'}
@@ -463,7 +463,7 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
               <button
                 type="button"
                 onClick={handleAttemptClose}
-                className="flex-1 sm:flex-none px-4 py-2.5 text-xs font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100 transition-colors text-center cursor-pointer"
+                className="flex-1 sm:flex-none px-4 py-2.5 text-xs font-semibold text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors text-center cursor-pointer"
               >
                 Cancel
               </button>
@@ -493,14 +493,14 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
               </svg>
             </div>
             <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">Ready to publish?</h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1.5 leading-relaxed">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5 leading-relaxed">
               Your post will be visible to all CADT students. Make sure everything looks good before publishing.
             </p>
             <div className="flex items-center gap-2.5 mt-5">
               <button
                 type="button"
                 onClick={() => setShowPublishConfirm(false)}
-                className="flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 dark:text-gray-600 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:bg-gray-700 transition-colors cursor-pointer"
+                className="flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 transition-colors cursor-pointer"
               >
                 Go Back
               </button>
@@ -526,14 +526,14 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
               </svg>
             </div>
             <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">Discard post?</h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1.5 leading-relaxed">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5 leading-relaxed">
               You have unsaved changes. Are you sure you want to close this? Your work will be lost.
             </p>
             <div className="flex items-center gap-2.5 mt-5">
               <button
                 type="button"
                 onClick={() => setShowDiscardConfirm(false)}
-                className="flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 dark:text-gray-600 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:bg-gray-700 transition-colors cursor-pointer"
+                className="flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 transition-colors cursor-pointer"
               >
                 Keep Editing
               </button>
@@ -559,7 +559,7 @@ export function CreatePostModal({ isOpen, onClose, onPublish, initialData = null
               </svg>
             </div>
             <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">Publishing your post...</h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1.5 leading-relaxed">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5 leading-relaxed">
               Please wait while we upload your image and publish your post.
             </p>
             <div className="mt-4 flex items-center justify-center gap-1.5">

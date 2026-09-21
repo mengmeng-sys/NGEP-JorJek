@@ -133,7 +133,7 @@ export default function HomePage() {
         {selectedTag && (
           <div className="flex items-center justify-between gap-2 bg-[#FFF4F0] dark:bg-orange-900/20 border border-orange-200 dark:border-orange-900/30 rounded-xl px-3.5 sm:px-4 py-2 sm:py-2.5">
             <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
-              <span className="text-[11px] sm:text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 font-medium truncate">Filter:</span>
+              <span className="text-[11px] sm:text-xs text-gray-600 dark:text-gray-400 font-medium truncate">Filter:</span>
               <span className="text-[11px] sm:text-xs font-bold text-[#FF4F00] bg-white dark:bg-gray-900 px-2 py-0.5 rounded-md border border-orange-200 dark:border-orange-900/30 truncate">
                 #{selectedTag}
               </span>
@@ -141,7 +141,7 @@ export default function HomePage() {
             <button
               type="button"
               onClick={() => navigate('/')}
-              className="text-[11px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100 transition-colors shrink-0 cursor-pointer"
+              className="text-[11px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors shrink-0 cursor-pointer"
             >
               Clear ×
             </button>
@@ -167,7 +167,7 @@ export default function HomePage() {
                   className={`px-3 py-1.5 rounded-lg sm:rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
                     isActive
                       ? 'bg-[#FF4F00] text-white shadow-2xs'
-                      : 'text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50'
+                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50'
                   }`}
                 >
                   {option.label}
@@ -191,7 +191,7 @@ export default function HomePage() {
               </svg>
             </div>
             <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">No posts found</h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1 max-w-sm mx-auto">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 max-w-sm mx-auto">
               {selectedTag 
                 ? `There are no questions or discussions tagged with #${selectedTag} yet.`
                 : 'No posts have been published on the campus feed yet.'}

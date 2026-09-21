@@ -110,14 +110,14 @@ export default function ExplorePage() {
          {/* 1. Trending Tags Section */}
         <section>
           <div className="flex items-center justify-between mb-3 sm:mb-4">
-            <h2 className="text-[11px] font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+            <h2 className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
               Trending Tags
             </h2>
-            <span className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500 font-medium sm:hidden">Tap to filter</span>
+            <span className="text-[10px] text-gray-400 font-medium sm:hidden">Tap to filter</span>
           </div>
 
           {loading ? (
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-8 text-center text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500">
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-8 text-center text-xs text-gray-400">
               Loading campus tags...
             </div>
           ) : (
@@ -131,7 +131,7 @@ export default function ExplorePage() {
                   <span className="text-sm sm:text-base font-bold text-[#FF4F00] group-hover:text-[#E64700] leading-tight truncate">
                     {tag.name}
                   </span>
-                  <span className="text-[11px] sm:text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500 font-medium">
+                  <span className="text-[11px] sm:text-xs text-gray-400 font-medium">
                     {tag.posts}
                   </span>
                 </Link>
@@ -143,7 +143,7 @@ export default function ExplorePage() {
          {/* 2. User Search & Suggested Mentors */}
          <section>
            <div className="flex items-center justify-between mb-3 sm:mb-4">
-             <h2 className="text-[11px] font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+             <h2 className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
                Find Users
              </h2>
            </div>
@@ -157,13 +157,13 @@ export default function ExplorePage() {
                value={searchQuery}
                onChange={(e) => handleSearch(e.target.value)}
                placeholder="Search users by name..."
-                className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 dark:border-gray-700 rounded-xl pl-9 pr-4 py-2.5 text-xs sm:text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all"
+                className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl pl-9 pr-4 py-2.5 text-xs sm:text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all"
              />
              {searchQuery && (
                <button
                  type="button"
                  onClick={() => { setSearchQuery(''); setSearchResults([]); setShowResults(false); }}
-                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 dark:text-gray-400 dark:text-gray-500 cursor-pointer"
+                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-400 cursor-pointer"
                >
                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -206,23 +206,23 @@ export default function ExplorePage() {
            )}
 
            <div className="flex items-center justify-between mb-3 sm:mb-4">
-            <h2 className="text-[11px] font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+            <h2 className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
               Suggested Users
             </h2>
-            <span className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500 font-medium">Swipe to browse →</span>
+            <span className="text-[10px] text-gray-400 font-medium">Swipe to browse →</span>
           </div>
 
           {/* Horizontal scroll container with native touch momentum & snap alignment */}
            <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-4 pt-1 -mx-3 px-3 sm:-mx-4 sm:px-4 lg:mx-0 lg:px-0 scroll-smooth snap-x snap-mandatory">
              {suggestedMentors.length === 0 && !loading ? (
-               <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-8 text-center text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500 w-full">
+               <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-8 text-center text-xs text-gray-400 w-full">
                  No peer mentors found yet.
                </div>
              ) : (
               suggestedMentors.map((mentor) => (
                  <div
                   key={mentor.id || mentor.displayName}
-                  className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl sm:rounded-2xl p-4 sm:p-5 w-41.25 sm:w-48.75 shrink-0 flex flex-col items-center text-center shadow-xs snap-start hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-700 transition-all justify-between"
+                  className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl sm:rounded-2xl p-4 sm:p-5 w-41.25 sm:w-48.75 shrink-0 flex flex-col items-center text-center shadow-xs snap-start hover:border-gray-300 dark:hover:border-gray-700 transition-all justify-between"
                 >
                   <div className="flex flex-col items-center w-full">
                     {/* Avatar */}
@@ -238,14 +238,14 @@ export default function ExplorePage() {
                        className={`mt-1.5 text-[9px] font-extrabold px-2 py-0.5 rounded tracking-wide ${
                          mentor.role === 'PROFESSOR'
                            ? 'bg-orange-50 dark:bg-orange-900/20 text-[#FF4F00] border border-orange-100 dark:border-orange-900/30'
-                           : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300 dark:text-gray-600'
+                           : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
                        }`}
                      >
                        {mentor.role}
                      </span>
 
                      {/* Specialty */}
-                     <p className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-2 font-medium line-clamp-1 w-full" title={mentor.specialty}>
+                     <p className="text-[11px] text-gray-400 mt-2 font-medium line-clamp-1 w-full" title={mentor.specialty}>
                        {mentor.specialty}
                      </p>
                   </div>
@@ -254,7 +254,7 @@ export default function ExplorePage() {
                   <button
                     type="button"
                     onClick={() => navigate(`/user/${mentor.handle}`)}
-                    className="mt-3.5 w-full border border-[#FF4F00] text-[#FF4F00] hover:bg-orange-50 dark:hover:bg-orange-900/20 dark:bg-orange-900/20 active:bg-orange-100 dark:bg-orange-900/30 text-xs font-bold py-1.5 sm:py-2 rounded-lg transition-colors cursor-pointer"
+                    className="mt-3.5 w-full border border-[#FF4F00] text-[#FF4F00] hover:bg-orange-50 dark:hover:bg-orange-900/20 dark:bg-orange-900/20 active:bg-orange-100 text-xs font-bold py-1.5 sm:py-2 rounded-lg transition-colors cursor-pointer"
                   >
                     View Profile
                   </button>

@@ -130,7 +130,7 @@ export function LeftSidebar({ savedCount, skillTags: externalTags = [] }) {
           {skillTags.map((tag) => {
             const isSelected = activeTag != null && activeTag.toLowerCase() === tag.toLowerCase();
             return (
-              <button key={tag} type="button" onClick={() => handleTagClick(tag)} className={`text-left px-4 py-2 rounded-xl text-sm font-semibold transition-all ${isSelected ? 'bg-[#FFF4F0] dark:bg-orange-900/20 text-[#FF4F00] font-bold' : 'text-gray-600 dark:text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50'}`}>
+              <button key={tag} type="button" onClick={() => handleTagClick(tag)} className={`text-left px-4 py-2 rounded-xl text-sm font-semibold transition-all ${isSelected ? 'bg-[#FFF4F0] dark:bg-orange-900/20 text-[#FF4F00] font-bold' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50'}`}>
                 #{tag}
               </button>
             );
@@ -140,10 +140,10 @@ export function LeftSidebar({ savedCount, skillTags: externalTags = [] }) {
 
       <div className="pt-6 border-t border-gray-200 dark:border-gray-800 px-3 text-[11px] text-gray-400 dark:text-gray-500 space-y-2">
         <div className="flex flex-wrap gap-x-3 gap-y-1 font-medium">
-          <Link to="/about" className="hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300 dark:text-gray-600 transition-colors">About Us</Link>
-          <Link to="/contact" className="hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300 dark:text-gray-600 transition-colors">Contact</Link>
-          <Link to="/privacy" className="hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300 dark:text-gray-600 transition-colors">Privacy</Link>
-          <Link to="/terms" className="hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300 dark:text-gray-600 transition-colors">Terms</Link>
+          <Link to="/about" className="hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300 transition-colors">About Us</Link>
+          <Link to="/contact" className="hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300 transition-colors">Contact</Link>
+          <Link to="/privacy" className="hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300 transition-colors">Privacy</Link>
+          <Link to="/terms" className="hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300 transition-colors">Terms</Link>
         </div>
         <p className="text-[10px] text-gray-400 dark:text-gray-500">© 2026 JorJek Campus. All rights reserved.</p>
       </div>

@@ -153,7 +153,7 @@ export default function TechInterestsPage() {
           <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100 mt-2 leading-tight">
             Select Your Technical Interests
           </h1>
-          <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1 max-w-md mx-auto leading-relaxed">
+          <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 mt-1 max-w-md mx-auto leading-relaxed">
             Choose subjects you want to explore. We tailor your campus discussion feed and peer mentor recommendations to these areas.
           </p>
         </div>
@@ -170,7 +170,7 @@ export default function TechInterestsPage() {
                 className={`w-full text-left p-3 sm:p-3.5 rounded-xl border flex items-center justify-between cursor-pointer transition-all active:scale-[0.99] select-none ${
                   isSelected
                     ? 'border-[#FF4F00] bg-orange-50 dark:bg-orange-900/20/50 text-gray-900 dark:text-gray-100 shadow-2xs'
-                    : 'border-gray-200 dark:border-gray-800 bg-[#FAFAFA] dark:bg-gray-800 hover:bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 dark:text-gray-600 hover:border-gray-300 dark:border-gray-700'
+                    : 'border-gray-200 dark:border-gray-800 bg-[#FAFAFA] dark:bg-gray-800 hover:bg-white text-gray-700 dark:text-gray-300 hover:border-gray-300'
                 }`}
               >
                 <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
@@ -179,7 +179,7 @@ export default function TechInterestsPage() {
                     className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors ${
                       isSelected
                         ? 'bg-[#FF4F00] text-white shadow-2xs'
-                        : 'bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 dark:text-gray-500'
+                        : 'bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400'
                     }`}
                   >
                     {cat.icon}
@@ -224,7 +224,7 @@ export default function TechInterestsPage() {
           <button
             type="button"
             onClick={() => navigate('/')}
-            className="w-full xs:w-auto text-center py-2 text-xs font-semibold text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300 dark:text-gray-600 transition-colors cursor-pointer"
+            className="w-full xs:w-auto text-center py-2 text-xs font-semibold text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors cursor-pointer"
           >
             Skip for now
           </button>
