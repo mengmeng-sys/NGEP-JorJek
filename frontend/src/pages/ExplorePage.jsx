@@ -80,7 +80,8 @@ export default function ExplorePage() {
     searchTimeout.current = setTimeout(async () => {
       try {
         const results = await usersApi.search(value.trim());
-        setSearchResults(results);
+        const filtered = results.filter((u) => u.id !== user?.id);
+        setSearchResults(filtered);
       } catch {
         setSearchResults([]);
       } finally {
