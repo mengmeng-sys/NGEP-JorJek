@@ -95,13 +95,16 @@ authRouter.post("/login", async (req, res, next) => {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    const mfaToken = signMfaTempToken(user.id);
-
     if (user.totp_enabled) {
+      const mfaToken = signMfaTempToken(user.id);
       return res.json({ mfaRequired: true, mfaToken });
     }
 
-    return res.json({ mfaSetupRequired: true, mfaToken });
+    const token = signAccessToken(user.id, user.token_version);
+    const refreshToken = signRefreshToken(user.id, user.token_version);
+    await storeRefreshToken(user.id, refreshToken);
+
+    res.json({ token, refreshToken, user: userSafe(user) });
   } catch (err) {
     next(err);
   }
@@ -207,6 +210,86 @@ authRouter.get("/me", requireAuth, async (req, res, next) => {
       receiveEmailNotifications: user.receive_email_notifications,
       createdAt: user.created_at,
     });
+  } catch (err) {
+    next(err);
+  }
+});
+
+authRouter.post("/forgot-password", async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: "Email is required" });
+
+    const { data: user, error } = await supabase
+      .from("users")
+      .select("id, email")
+      .eq("email", email)
+      .maybeSingle();
+    if (error) throw error;
+    if (!user) {
+      return res.json({ message: "If an account exists with this email, a reset code has been sent." });
+    }
+
+    const otp = generateOtp();
+    await supabase
+      .from("users")
+      .update({ otp_code: otp, otp_expires_at: otpExpiry() })
+      .eq("id", user.id);
+
+    await sendMail({
+      to: email,
+      subject: "JorJek — Reset your password",
+      html: otpEmailHtml(otp, "reset"),
+    }).catch((e) => console.error("Failed to send reset OTP:", e.message));
+
+    const devPayload = process.env.NODE_ENV !== "production" ? { devOtp: otp } : {};
+    res.json({ message: "If an account exists with this email, a reset code has been sent.", ...devPayload });
+  } catch (err) {
+    next(err);
+  }
+});
+
+authRouter.post("/reset-password", async (req, res, next) => {
+  try {
+    const { email, otpCode, newPassword } = req.body;
+    if (!email || !otpCode || !newPassword) {
+      return res.status(400).json({ error: "Email, OTP code, and new password are required" });
+    }
+    if (newPassword.length < 6) {
+      return res.status(400).json({ error: "Password must be at least 6 characters" });
+    }
+
+    const { data: user, error } = await supabase
+      .from("users")
+      .select("id, otp_code, otp_expires_at, token_version")
+      .eq("email", email)
+      .maybeSingle();
+    if (error) throw error;
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    if (!user.otp_code || user.otp_code !== otpCode) {
+      return res.status(400).json({ error: "Invalid or expired reset code" });
+    }
+
+    const now = new Date();
+    const expiresAt = new Date(user.otp_expires_at);
+    if (now > expiresAt) {
+      return res.status(400).json({ error: "Reset code has expired. Please request a new one." });
+    }
+
+    const passwordHash = await bcrypt.hash(newPassword, 12);
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({
+        password_hash: passwordHash,
+        otp_code: null,
+        otp_expires_at: null,
+        token_version: (user.token_version ?? 0) + 1,
+      })
+      .eq("id", user.id);
+    if (updateError) throw updateError;
+
+    res.json({ message: "Password reset successfully — please log in" });
   } catch (err) {
     next(err);
   }

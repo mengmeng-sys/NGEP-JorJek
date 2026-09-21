@@ -160,6 +160,11 @@ export function AuthProvider({ children }) {
     return nextUser;
   };
 
+  const forgotPassword = (email) => authApi.forgotPassword(email);
+
+  const resetPassword = (email, otpCode, newPassword) =>
+    authApi.resetPassword(email, otpCode, newPassword);
+
   const verifyMfa = async (mfaToken, totpCode) => {
     const data = await authApi.mfaValidate(mfaToken, totpCode);
     storeSession(data);
@@ -259,6 +264,8 @@ export function AuthProvider({ children }) {
         signupMicrosoft,
         loginMicrosoft,
         resetPasswordMicrosoft,
+        forgotPassword,
+        resetPassword,
         verifyMfa,
         storeSession,
         completeMfaSetup,
