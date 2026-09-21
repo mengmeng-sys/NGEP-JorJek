@@ -449,7 +449,7 @@ export function PostCard({ post, onToggleSave, onDelete, onEdit }) {
                   e.stopPropagation();
                   navigate(`/?tag=${encodeURIComponent(t.replace(/^#/, ''))}`);
                 }}
-                className="bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-900/30 text-[#FF4F00] text-[10px] sm:text-[11px] font-bold px-2 sm:px-2.5 py-0.5 rounded-md hover:bg-orange-100 dark:bg-orange-900/30 transition-colors cursor-pointer"
+                className="bg-orange-50 dark:bg-orange-900/30 border border-orange-100 dark:border-orange-900/30 text-[#FF4F00] text-[10px] sm:text-[11px] font-bold px-2 sm:px-2.5 py-0.5 rounded-md hover:bg-orange-100 dark:bg-orange-900/30 transition-colors cursor-pointer"
               >
                 #{t.replace(/^#/, '')}
               </span>

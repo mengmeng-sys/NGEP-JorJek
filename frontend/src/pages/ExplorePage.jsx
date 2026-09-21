@@ -172,63 +172,38 @@ export default function ExplorePage() {
              )}
            </div>
 
-            {showResults && (
-              <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-lg mb-4 p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-[11px] font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">
-                    Search Results ({searchResults.length})
-                  </h3>
-                </div>
-                {searchLoading ? (
-                  <div className="py-8 text-center">
-                    <div className="w-5 h-5 border-2 border-[#FF4F00] border-t-transparent rounded-full animate-spin mx-auto" />
-                  </div>
-                ) : searchResults.length === 0 ? (
-                  <div className="py-8 text-center">
-                    <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-2">
-                      <svg className="w-5 h-5 text-gray-300 dark:text-gray-600 dark:text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                      </svg>
-                    </div>
-                    <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500 font-medium">No users found</p>
-                    <p className="text-[10px] text-gray-300 dark:text-gray-600 dark:text-gray-400 dark:text-gray-500 mt-0.5">Try a different name</p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                    {searchResults.map((searchUser) => (
-                      <div
-                        key={searchUser.id}
-                        className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4 flex flex-col items-center text-center shadow-xs hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-700 transition-all justify-between"
-                      >
-                        <div className="flex flex-col items-center w-full">
-                          <UserAvatar initials={searchUser.initials} userId={searchUser.id} size="lg" className="mb-2.5 shadow-2xs" avatarUrl={searchUser.avatarUrl} />
-                          <h3 className="font-bold text-xs text-gray-900 dark:text-gray-100 leading-snug truncate w-full" title={searchUser.displayName || searchUser.name}>
-                            {searchUser.displayName || searchUser.name}
-                          </h3>
-                          <span className={`mt-1.5 text-[9px] font-extrabold px-2 py-0.5 rounded tracking-wide ${
-                            searchUser.role === 'PROFESSOR'
-                              ? 'bg-orange-50 dark:bg-orange-900/20 text-[#FF4F00] border border-orange-100 dark:border-orange-900/30'
-                              : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300 dark:text-gray-600'
-                          }`}>
-                            {searchUser.role}
-                          </span>
-                          <p className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-2 font-medium line-clamp-1 w-full" title={searchUser.specialty}>
-                            {searchUser.specialty}
-                          </p>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => navigate(`/user/${searchUser.handle}`)}
-                          className="mt-3 w-full border border-[#FF4F00] text-[#FF4F00] hover:bg-orange-50 dark:hover:bg-orange-900/20 dark:bg-orange-900/20 active:bg-orange-100 dark:bg-orange-900/30 text-[11px] font-bold py-1.5 rounded-lg transition-colors cursor-pointer"
-                        >
-                          View Profile
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
+           {showResults && (
+             <div className="bg-white border border-gray-200 rounded-xl shadow-lg mb-4 max-h-72 overflow-y-auto">
+               {searchLoading ? (
+                 <div className="p-4 text-center">
+                   <div className="w-5 h-5 border-2 border-[#FF4F00] border-t-transparent rounded-full animate-spin mx-auto" />
+                 </div>
+               ) : searchResults.length === 0 ? (
+                 <div className="p-4 text-center text-xs text-gray-400">No users found</div>
+               ) : (
+                 searchResults.map((user) => (
+                   <button
+                     key={user.id}
+                     type="button"
+                     onClick={() => navigate(`/user/${user.handle}`)}
+                     className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 transition-colors text-left cursor-pointer border-b border-gray-50 last:border-b-0"
+                   >
+                      <UserAvatar initials={user.initials} userId={user.id} size="md" />
+                     <div className="min-w-0 flex-1">
+                       <div className="flex items-center gap-2">
+                         <span className="text-xs font-bold text-gray-900 truncate">{user.displayName}</span>
+                         <span className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded shrink-0 ${
+                           user.role === 'PROFESSOR' ? 'bg-orange-50 text-[#FF4F00] border border-orange-100' : 'bg-gray-100 text-gray-600'
+                         }`}>
+                           {user.role}
+                         </span>
+                       </div>
+                     </div>
+                   </button>
+                 ))
+               )}
+             </div>
+           )}
 
            <div className="flex items-center justify-between mb-3 sm:mb-4">
             <h2 className="text-[11px] font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">
