@@ -148,11 +148,7 @@ export default function MfaSetupPage() {
     return (
       <div className="min-h-screen w-full bg-[#FBFBFB] dark:bg-gray-950 flex flex-col justify-center items-center px-4">
         <div className="w-full max-w-sm bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-xs p-6 text-center">
-<<<<<<< HEAD
-          <p className="text-xs text-gray-500 dark:text-gray-400">Loading...</p>
-=======
           <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Loading...</p>
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
         </div>
       </div>
     );
@@ -168,20 +164,12 @@ export default function MfaSetupPage() {
             </svg>
           </div>
           <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Authenticator Enabled</h1>
-<<<<<<< HEAD
-          <p className="text-xs text-gray-500 dark:text-gray-400">Your account is protected with two-factor authentication.</p>
-=======
           <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Your account is protected with two-factor authentication.</p>
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
 
           <div className="space-y-2">
             <button
               onClick={() => setStep("disable")}
-<<<<<<< HEAD
-              className="w-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 text-gray-700 dark:text-gray-300 text-xs font-bold py-2.5 rounded-xl transition-all cursor-pointer"
-=======
               className="w-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 dark:text-gray-600 text-xs font-bold py-2.5 rounded-xl transition-all cursor-pointer"
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
             >
               Disable Authenticator
             </button>
@@ -202,11 +190,7 @@ export default function MfaSetupPage() {
       <div className="min-h-screen w-full bg-[#FBFBFB] dark:bg-gray-950 flex flex-col justify-center items-center px-4">
         <div className="w-full max-w-sm bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-xs p-6 space-y-4">
           <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100 text-center">Disable Authenticator</h1>
-<<<<<<< HEAD
-          <p className="text-xs text-gray-500 dark:text-gray-400 text-center">Enter a verification code to disable 2FA.</p>
-=======
           <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 text-center">Enter a verification code to disable 2FA.</p>
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
 
           <form onSubmit={(e) => { e.preventDefault(); handleDisable(); }} className="space-y-3">
             <input
@@ -220,11 +204,7 @@ export default function MfaSetupPage() {
             <button
               type="submit"
               disabled={loading || code.length !== 6}
-<<<<<<< HEAD
-              className="w-full bg-red-50 dark:bg-red-900/20 hover:bg-red-600 text-white text-xs font-bold py-2.5 rounded-xl transition-all cursor-pointer disabled:opacity-50"
-=======
               className="w-full bg-red-50 dark:bg-red-900/200 hover:bg-red-600 text-white text-xs font-bold py-2.5 rounded-xl transition-all cursor-pointer disabled:opacity-50"
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
             >
               {loading ? "Disabling..." : "Disable 2FA"}
             </button>
@@ -247,11 +227,7 @@ export default function MfaSetupPage() {
             <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">
               {isMandatory ? "Secure Your Account" : "Set Up Authenticator"}
             </h1>
-<<<<<<< HEAD
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-=======
             <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
               {isMandatory
                 ? "You must set up two-factor authentication to continue"
                 : "Scan the QR code with Microsoft Authenticator"}
@@ -264,11 +240,7 @@ export default function MfaSetupPage() {
             </div>
 
             <div className="w-full bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3 text-center">
-<<<<<<< HEAD
-              <p className="text-[10px] text-gray-500 dark:text-gray-400 mb-1">Can't scan? Enter this code manually:</p>
-=======
               <p className="text-[10px] text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-1">Can't scan? Enter this code manually:</p>
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
               <p className="text-xs font-mono font-bold text-gray-900 dark:text-gray-100 tracking-wider break-all">{secret}</p>
             </div>
           </div>
@@ -313,11 +285,7 @@ export default function MfaSetupPage() {
               </svg>
             </div>
             <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Authenticator Enabled!</h1>
-<<<<<<< HEAD
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Save these backup codes in a safe place</p>
-=======
             <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">Save these backup codes in a safe place</p>
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
           </div>
 
           <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 rounded-lg p-3">
@@ -326,11 +294,7 @@ export default function MfaSetupPage() {
             </p>
             <div className="grid grid-cols-2 gap-1.5">
               {backupCodes.map((bc, i) => (
-<<<<<<< HEAD
-                <code key={i} className="text-[11px] font-mono text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-900 px-2 py-1 rounded border border-gray-100 dark:border-gray-800">
-=======
                 <code key={i} className="text-[11px] font-mono text-gray-700 dark:text-gray-300 dark:text-gray-600 bg-white dark:bg-gray-900 px-2 py-1 rounded border border-gray-100 dark:border-gray-800">
->>>>>>> 9489f93e3d75a63466e6f645e63fc574909f890b
                   {bc}
                 </code>
               ))}
