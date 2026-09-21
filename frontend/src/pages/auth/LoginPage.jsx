@@ -114,16 +114,12 @@ export default function LoginPage() {
   const account = accounts[0];
 
   return (
-    <div className="min-h-screen w-full grid grid-cols-1 lg:grid-cols-2 bg-[#FBFBFB]">
+    <div className="min-h-screen w-full grid grid-cols-1 lg:grid-cols-2 bg-[#FBFBFB] dark:bg-gray-950">
 
       {/* Left Column: Academic Branding Hero (Desktop Only) */}
       <div className="hidden lg:flex flex-col justify-between bg-linear-to-br from-[#111827] via-[#161F30] to-[#1F2937] p-10 xl:p-14 text-white relative overflow-hidden">
         <div className="absolute -top-24 -left-24 w-96 h-96 bg-[#FF4F00]/15 rounded-full blur-3xl pointer-events-none" />
-<<<<<<< Updated upstream
-        <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
-=======
         <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-blue-50 dark:bg-blue-900/20 rounded-full blur-3xl pointer-events-none" />
->>>>>>> Stashed changes
         <div className="relative z-10">
           <Link to="/" className="inline-block group">
             <img
@@ -132,27 +128,27 @@ export default function LoginPage() {
               className="h-10 w-auto object-contain rounded-lg transition-transform group-hover:scale-105"
             />
           </Link>
-          <p className="text-[11px] text-gray-400 mt-2 uppercase tracking-widest font-bold">CADT Academic Knowledge Network</p>
+          <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-2 uppercase tracking-widest font-bold">CADT Academic Knowledge Network</p>
         </div>
         <div className="relative z-10 max-w-lg space-y-4 my-auto py-10">
-          <span className="inline-block px-2.5 py-1 bg-white/10 text-orange-400 border border-white/10 rounded-lg text-[10px] font-black uppercase tracking-wider">Campus Hub</span>
+          <span className="inline-block px-2.5 py-1 bg-white dark:bg-gray-900/10 text-orange-400 border border-white/10 rounded-lg text-[10px] font-black uppercase tracking-wider">Campus Hub</span>
           <h2 className="text-2xl xl:text-3xl font-black leading-snug tracking-tight">Connect with campus mentors and verified coursework solutions.</h2>
-          <p className="text-xs xl:text-sm text-gray-300 leading-relaxed font-normal">Ask targeted questions, join peer study sessions, and review code with CADT faculty and students.</p>
+          <p className="text-xs xl:text-sm text-gray-300 dark:text-gray-600 leading-relaxed font-normal">Ask targeted questions, join peer study sessions, and review code with CADT faculty and students.</p>
           <div className="flex flex-wrap gap-2 pt-2">
-            <span className="bg-white/10 px-2.5 py-1 rounded-lg text-xs font-semibold text-orange-300">#C++</span>
-            <span className="bg-white/10 px-2.5 py-1 rounded-lg text-xs font-semibold text-orange-300">#SQL</span>
-            <span className="bg-white/10 px-2.5 py-1 rounded-lg text-xs font-semibold text-orange-300">#MachineLearning</span>
-            <span className="bg-white/10 px-2.5 py-1 rounded-lg text-xs font-semibold text-orange-300">#Figma</span>
+            <span className="bg-white dark:bg-gray-900/10 px-2.5 py-1 rounded-lg text-xs font-semibold text-orange-300">#C++</span>
+            <span className="bg-white dark:bg-gray-900/10 px-2.5 py-1 rounded-lg text-xs font-semibold text-orange-300">#SQL</span>
+            <span className="bg-white dark:bg-gray-900/10 px-2.5 py-1 rounded-lg text-xs font-semibold text-orange-300">#MachineLearning</span>
+            <span className="bg-white dark:bg-gray-900/10 px-2.5 py-1 rounded-lg text-xs font-semibold text-orange-300">#Figma</span>
           </div>
         </div>
-        <div className="relative z-10 text-[11px] text-gray-400 font-medium">© 2026 JorJek Campus. Verified for @cadt.edu.kh</div>
+        <div className="relative z-10 text-[11px] text-gray-400 dark:text-gray-500 font-medium">© 2026 JorJek Campus. Verified for @cadt.edu.kh</div>
       </div>
 
       <div className="flex flex-col justify-center items-center px-4 py-8 sm:p-12 min-h-screen lg:min-h-0 relative">
         <div className="absolute top-4 sm:top-6 left-4 sm:left-6">
           <BackHomeArrow />
         </div>
-        <div className="w-full max-w-sm sm:max-w-md bg-white sm:bg-transparent border sm:border-0 border-gray-200 rounded-2xl p-6 sm:p-0 shadow-xs sm:shadow-none space-y-5 sm:space-y-6">
+        <div className="w-full max-w-sm sm:max-w-md bg-white dark:bg-gray-900 sm:bg-transparent border sm:border-0 border-gray-200 dark:border-gray-800 rounded-2xl p-6 sm:p-0 shadow-xs sm:shadow-none space-y-5 sm:space-y-6">
 
           {/* Mobile Header Brand */}
           <div className="lg:hidden text-center mb-4">
@@ -166,14 +162,10 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-gray-100 tracking-tight">
               {mfaRequired ? 'Two-Factor Authentication' : 'Welcome Back'}
             </h1>
-<<<<<<< Updated upstream
-            <p className="text-xs text-gray-500 mt-1">
-=======
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
->>>>>>> Stashed changes
               {mfaRequired
                 ? 'Enter the 6-digit code from your authenticator app'
                 : 'Sign in with your CADT university credentials'}
@@ -183,7 +175,7 @@ export default function LoginPage() {
           {mfaRequired ? (
             <form onSubmit={handleMfaVerify} className="space-y-4">
               <div>
-                <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">Verification Code</label>
+                <label className="block text-[11px] font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider mb-1.5">Verification Code</label>
                 <input
                   type="text"
                   inputMode="numeric"
@@ -192,57 +184,39 @@ export default function LoginPage() {
                   value={totpCode}
                   onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                   placeholder="000000"
-<<<<<<< Updated upstream
-                  className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl px-3.5 sm:px-4 py-3 sm:py-3.5 text-xs text-center tracking-[0.4em] text-gray-900 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs"
-=======
                   className="w-full bg-[#FAFAFA] dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl px-3.5 sm:px-4 py-3 sm:py-3.5 text-xs text-center tracking-[0.4em] text-gray-900 dark:text-gray-100 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs"
->>>>>>> Stashed changes
                 />
               </div>
               {error && (
-                <p className="text-[11px] sm:text-xs text-red-600 font-semibold bg-red-50 border border-red-100 rounded-lg px-3 py-2">{error}</p>
+                <p className="text-[11px] sm:text-xs text-red-600 dark:text-red-400 font-semibold bg-red-50 dark:bg-red-900/20 border border-red-100 rounded-lg px-3 py-2">{error}</p>
               )}
               <button type="submit" disabled={submitting || totpCode.length < 6} className="w-full bg-[#FF4F00] hover:bg-[#E64700] text-white text-xs font-bold py-3 sm:py-3.5 rounded-xl transition-all shadow-xs cursor-pointer active:scale-98 disabled:opacity-60 disabled:cursor-not-allowed">
                 {submitting ? 'Verifying…' : 'Verify'}
               </button>
-<<<<<<< Updated upstream
-              <button type="button" onClick={handleMfaBack} className="w-full text-center text-xs text-gray-500 hover:text-gray-700 font-semibold cursor-pointer">
-=======
               <button type="button" onClick={handleMfaBack} className="w-full text-center text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 font-semibold cursor-pointer">
->>>>>>> Stashed changes
                 Back to sign in
               </button>
             </form>
           ) : (
             <form onSubmit={handleLogin} className="space-y-4">
               <div>
-<<<<<<< Updated upstream
-                <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">CADT Email Address</label>
-                <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="e.g. srun.vireak@student.cadt.edu.kh" className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs text-gray-900 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs" />
-=======
                 <label className="block text-[11px] font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider mb-1.5">CADT Email Address</label>
                 <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="e.g. srun.vireak@student.cadt.edu.kh" className="w-full bg-[#FAFAFA] dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs text-gray-900 dark:text-gray-100 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs" />
->>>>>>> Stashed changes
               </div>
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-[11px] font-bold text-gray-900 uppercase tracking-wider">Password</label>
+                  <label className="text-[11px] font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider">Password</label>
                   <Link to="/auth/forgot-password" className="text-[11px] sm:text-xs font-semibold text-[#FF4F00] hover:underline">Forgot password?</Link>
                 </div>
                 <div className="relative">
-<<<<<<< Updated upstream
-                  <input type={showPassword ? 'text' : 'password'} required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter your password" className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs text-gray-900 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs pr-14" />
-                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 text-xs font-bold p-1 cursor-pointer">
-=======
                   <input type={showPassword ? 'text' : 'password'} required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter your password" className="w-full bg-[#FAFAFA] dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs text-gray-900 dark:text-gray-100 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs pr-14" />
                   <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-xs font-bold p-1 cursor-pointer">
->>>>>>> Stashed changes
                     {showPassword ? 'Hide' : 'Show'}
                   </button>
                 </div>
               </div>
               {error && (
-                <p className="text-[11px] sm:text-xs text-red-600 font-semibold bg-red-50 border border-red-100 rounded-lg px-3 py-2">{error}</p>
+                <p className="text-[11px] sm:text-xs text-red-600 dark:text-red-400 font-semibold bg-red-50 dark:bg-red-900/20 border border-red-100 rounded-lg px-3 py-2">{error}</p>
               )}
               <button type="submit" disabled={submitting} className="w-full bg-[#FF4F00] hover:bg-[#E64700] text-white text-xs font-bold py-3 sm:py-3.5 rounded-xl transition-all shadow-xs cursor-pointer active:scale-98 disabled:opacity-60 disabled:cursor-not-allowed">
                 {submitting ? 'Signing in…' : 'Sign In'}
@@ -251,20 +225,16 @@ export default function LoginPage() {
           )}
 
           <div className="flex items-center gap-3 my-2">
-            <div className="flex-1 h-px bg-gray-200"></div>
-            <span className="text-[11px] text-gray-400 font-semibold">OR</span>
-            <div className="flex-1 h-px bg-gray-200"></div>
+            <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700"></div>
+            <span className="text-[11px] text-gray-400 dark:text-gray-500 font-semibold">OR</span>
+            <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700"></div>
           </div>
 
           <button
             type="button"
             onClick={handleMicrosoftLogin}
             disabled={inProgress !== 'none'}
-<<<<<<< Updated upstream
-            className="w-full flex items-center justify-center gap-2 bg-white border border-gray-300 rounded-xl px-4 py-2.5 sm:py-3 text-xs font-bold text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all shadow-xs cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
-=======
             className="w-full flex items-center justify-center gap-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 sm:py-3 text-xs font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-gray-400 transition-all shadow-xs cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
->>>>>>> Stashed changes
           >
             <svg width="18" height="18" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M1 1h10v10H1z" fill="#F25022"/>
@@ -275,13 +245,8 @@ export default function LoginPage() {
             {inProgress !== 'none' ? 'Redirecting…' : 'Sign in with Microsoft'}
           </button>
 
-<<<<<<< Updated upstream
-          <div className="text-center pt-3 border-t border-gray-100">
-            <p className="text-xs text-gray-500">
-=======
           <div className="text-center pt-3 border-t border-gray-100 dark:border-gray-800">
             <p className="text-xs text-gray-500 dark:text-gray-400">
->>>>>>> Stashed changes
               New to the platform?{' '}
               <Link to="/auth/signup" className="text-[#FF4F00] font-bold hover:underline">Create student account</Link>
             </p>

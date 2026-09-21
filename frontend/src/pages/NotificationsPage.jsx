@@ -83,19 +83,12 @@ export default function NotificationsPage() {
 
   return (
     <ThreeColumnLayout>
-      <div className="bg-white border border-gray-200 rounded-2xl shadow-xs overflow-hidden">
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-xs overflow-hidden">
         {/* Header */}
-<<<<<<< Updated upstream
-        <div className="flex items-center justify-between gap-4 px-6 sm:px-8 py-5 border-b border-gray-100 bg-gray-50/30">
-          <div>
-            <h1 className="text-xl font-bold text-gray-900">Notifications</h1>
-            <p className="text-xs text-gray-500 mt-0.5">
-=======
         <div className="flex items-center justify-between gap-4 px-6 sm:px-8 py-5 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
           <div>
             <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Notifications</h1>
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
->>>>>>> Stashed changes
               {unreadCount > 0
                 ? `You have ${unreadCount} unread notification${unreadCount > 1 ? 's' : ''}`
                 : 'All caught up!'}
@@ -106,11 +99,7 @@ export default function NotificationsPage() {
               <button
                 type="button"
                 onClick={clearRead}
-<<<<<<< Updated upstream
-                className="px-3 py-1.5 text-xs font-semibold text-gray-400 hover:text-red-500 border border-gray-200 hover:border-red-200 rounded-lg transition-colors cursor-pointer"
-=======
                 className="px-3 py-1.5 text-xs font-semibold text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 border border-gray-200 dark:border-gray-800 hover:border-red-200 rounded-lg transition-colors cursor-pointer"
->>>>>>> Stashed changes
               >
                 Clear read
               </button>
@@ -130,28 +119,23 @@ export default function NotificationsPage() {
         {/* Content */}
         {loading ? (
           <div className="py-20 flex flex-col items-center gap-3">
-            <div className="w-8 h-8 border-3 border-gray-200 border-t-[#FF4F00] rounded-full animate-spin" />
-            <p className="text-sm text-gray-400 font-medium">Loading notifications…</p>
+            <div className="w-8 h-8 border-3 border-gray-200 dark:border-gray-800 border-t-[#FF4F00] rounded-full animate-spin" />
+            <p className="text-sm text-gray-400 dark:text-gray-500 font-medium">Loading notifications…</p>
           </div>
         ) : notifications.length === 0 ? (
           <div className="py-20 flex flex-col items-center gap-3 px-4">
-            <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center">
-              <svg className="w-8 h-8 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+            <div className="w-16 h-16 rounded-full bg-gray-50 dark:bg-gray-800/50 flex items-center justify-center">
+              <svg className="w-8 h-8 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
               </svg>
             </div>
             <div className="text-center">
-<<<<<<< Updated upstream
-              <p className="text-sm font-semibold text-gray-700">No notifications yet</p>
-              <p className="text-xs text-gray-400 mt-1">When someone comments on your post or replies to you, it'll appear here.</p>
-=======
               <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">No notifications yet</p>
               <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">When someone comments on your post or replies to you, it'll appear here.</p>
->>>>>>> Stashed changes
             </div>
           </div>
         ) : (
-          <div className="divide-y divide-gray-50">
+          <div className="divide-y divide-gray-50 dark:divide-gray-800">
             {notifications.map((n) => (
               <div
                 key={n.id}
@@ -160,11 +144,7 @@ export default function NotificationsPage() {
                   if (n.link) navigate(n.link);
                 }}
                 className={`group flex items-start gap-4 px-6 sm:px-8 py-4 transition-colors ${
-<<<<<<< Updated upstream
-                  !n.read ? 'bg-orange-50/30 hover:bg-orange-50/50 cursor-pointer' : 'hover:bg-gray-50/50 cursor-pointer'
-=======
                   !n.read ? 'bg-orange-50 dark:bg-orange-900/20 hover:bg-orange-50 dark:hover:bg-orange-900/20 cursor-pointer' : 'hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 cursor-pointer'
->>>>>>> Stashed changes
                 }`}
               >
                 {/* Avatar with type badge */}
@@ -179,18 +159,18 @@ export default function NotificationsPage() {
                     {n.actorInitials || 'U'}
                   </div>
                   <div className={`absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full border-2 border-white flex items-center justify-center ${
-                    n.type === 'vote' ? 'bg-green-100' : n.isReply ? 'bg-violet-100' : 'bg-orange-100'
+                    n.type === 'vote' ? 'bg-green-100 dark:bg-green-900/30' : n.isReply ? 'bg-violet-100 dark:bg-violet-900/30' : 'bg-orange-100 dark:bg-orange-900/30'
                   }`}>
                     {n.type === 'vote' ? (
-                      <svg className="w-3 h-3 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                      <svg className="w-3 h-3 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
                       </svg>
                     ) : n.isReply ? (
-                      <svg className="w-3 h-3 text-violet-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                      <svg className="w-3 h-3 text-violet-600 dark:text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
                       </svg>
                     ) : (
-                      <svg className="w-3 h-3 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                      <svg className="w-3 h-3 text-orange-500 dark:text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                       </svg>
                     )}
@@ -199,44 +179,35 @@ export default function NotificationsPage() {
 
                 {/* Body */}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-gray-900 leading-relaxed">
+                  <p className="text-sm text-gray-900 dark:text-gray-100 leading-relaxed">
                     <span className="font-semibold">{n.actorName || 'Someone'}</span>
                     {' '}
-<<<<<<< Updated upstream
-                    <span className="text-gray-600">
-=======
                     <span className="text-gray-600 dark:text-gray-400">
->>>>>>> Stashed changes
                       {n.type === 'vote' ? 'upvoted your post' : n.type === 'reply' && n.isReply ? 'replied to your comment' : n.type === 'reply' ? 'commented on your post' : n.title}
                     </span>
                   </p>
                   {n.message && (
-<<<<<<< Updated upstream
-                    <div className="mt-2 px-3 py-2 bg-gray-50 border-l-3 border-gray-200 rounded-r-lg">
-                      <p className="text-xs text-gray-600 line-clamp-2 leading-relaxed italic">
-=======
                     <div className="mt-2 px-3 py-2 bg-gray-50 dark:bg-gray-800/50 border-l-3 dark:border-gray-800 rounded-r-lg">
                       <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 leading-relaxed italic">
->>>>>>> Stashed changes
                         "{n.message}"
                       </p>
                     </div>
                   )}
                   <div className="flex items-center gap-2 mt-2">
                     {n.type === 'vote' ? (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full uppercase tracking-wide">
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-green-600 dark:text-green-400 bg-green-50 px-2 py-0.5 rounded-full uppercase tracking-wide">
                         Upvote
                       </span>
                     ) : n.isReply ? (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-violet-600 bg-violet-50 px-2 py-0.5 rounded-full uppercase tracking-wide">
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-violet-600 dark:text-violet-400 bg-violet-50 px-2 py-0.5 rounded-full uppercase tracking-wide">
                         Reply
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full uppercase tracking-wide">
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 px-2 py-0.5 rounded-full uppercase tracking-wide">
                         Comment
                       </span>
                     )}
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-gray-400 dark:text-gray-500">
                       {n.timestamp || 'Recently'}
                     </span>
                   </div>
@@ -250,11 +221,7 @@ export default function NotificationsPage() {
                       e.stopPropagation();
                       removeNotification(n.id);
                     }}
-<<<<<<< Updated upstream
-                    className="opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-500 p-1.5 -m-1.5 rounded-lg hover:bg-red-50 transition-all cursor-pointer"
-=======
                     className="opacity-0 group-hover:opacity-100 text-gray-300 dark:text-gray-600 hover:text-red-500 dark:hover:text-red-400 p-1.5 -m-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 dark:bg-red-900/20 transition-all cursor-pointer"
->>>>>>> Stashed changes
                     title="Remove notification"
                     aria-label="Remove notification"
                   >
@@ -263,7 +230,7 @@ export default function NotificationsPage() {
                     </svg>
                   </button>
                   {!n.read && (
-                    <span className="w-3 h-3 rounded-full bg-[#FF4F00] ring-4 ring-orange-100" />
+                    <span className="w-3 h-3 rounded-full bg-[#FF4F00] ring-4 ring-orange-100 dark:ring-orange-900/30" />
                   )}
                 </div>
               </div>

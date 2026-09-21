@@ -3,6 +3,7 @@ import { NavLink, Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { CreatePostModal } from '@/components/post/CreatePostModal';
 import { useAuth } from '@/context/AuthContext';
 import { useSocket } from '@/context/SocketContext';
+import { useTheme } from '@/context/ThemeContext';
 import { notificationsApi, postsApi, tagsApi } from "@/lib/api";
 import { normalizeNotification } from "@/lib/adapters";
 import { getApiErrorMessage } from "@/lib/apiClient";
@@ -13,8 +14,9 @@ export default function Navbar() {
   const activeTag = searchParams.get('tag');
 
   // Consume shared auth state and actions from AuthContext
-  const { user, logout } = useAuth();
-  const { on, off, isConnected } = useSocket();
+   const { user, logout } = useAuth();
+   const { on, off, isConnected } = useSocket();
+   const { theme, toggleTheme } = useTheme();
 
   // Modal & Panel visibility states
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
@@ -161,18 +163,13 @@ export default function Navbar() {
   const getNavLinkClass = ({ isActive }) =>
     `flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-colors ${
       isActive && !activeTag
-<<<<<<< Updated upstream
-        ? 'bg-[#FFF4F0] text-[#FF4F00]'
-        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium'
-=======
         ? 'bg-[#FFF4F0] dark:bg-orange-900/20 text-[#FF4F00]'
         : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-100 font-medium'
->>>>>>> Stashed changes
     }`;
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-white border-b border-gray-200">
+      <header className="sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
         <div className="w-full px-4 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-3 sm:gap-6">
           
           {/* 1. Left: Sidebar Toggle Icon + Logo */}
@@ -180,11 +177,7 @@ export default function Navbar() {
             <button
               type="button"
               onClick={() => setIsSidebarDrawerOpen(true)}
-<<<<<<< Updated upstream
-              className="lg:hidden p-2 rounded-xl text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors border border-transparent hover:border-gray-200 cursor-pointer"
-=======
               className="lg:hidden p-2 rounded-xl text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-800 transition-colors border border-transparent hover:border-gray-200 dark:border-gray-800 cursor-pointer"
->>>>>>> Stashed changes
               title="Open Navigation Menu"
               aria-label="Open sidebar navigation"
             >
@@ -204,21 +197,21 @@ export default function Navbar() {
 
           {/* 2. Center: Desktop Search Bar */}
           <div className="hidden md:flex flex-1 max-w-xl mx-2">
-            <div className="relative flex items-center w-full h-10 rounded-xl border border-gray-200 bg-[#FAFAFA] focus-within:bg-white focus-within:border-[#FF4F00] focus-within:ring-1 focus-within:ring-[#FF4F00] transition-all">
-              <div className="grid place-items-center h-full w-10 text-gray-400">
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={handleSearchSubmit}
-                placeholder="Search topics, skills ...."
-                className="w-full h-full outline-none text-xs text-gray-800 placeholder-gray-400 bg-transparent pr-4 font-medium"
-              />
-            </div>
+             <div className="relative flex items-center w-full h-10 rounded-xl border border-gray-200 dark:border-gray-700 bg-[#FAFAFA] dark:bg-gray-800 focus-within:bg-white dark:focus-within:bg-gray-700 focus-within:border-[#FF4F00] focus-within:ring-1 focus-within:ring-[#FF4F00] transition-all">
+               <div className="grid place-items-center h-full w-10 text-gray-400 dark:text-gray-500">
+                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                   <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                 </svg>
+               </div>
+               <input
+                 type="text"
+                 value={searchQuery}
+                 onChange={(e) => setSearchQuery(e.target.value)}
+                 onKeyDown={handleSearchSubmit}
+                 placeholder="Search topics, skills ...."
+                 className="w-full h-full outline-none text-xs text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 bg-transparent pr-4 font-medium"
+               />
+             </div>
           </div>
 
           {/* 3. Right: Action CTAs */}
@@ -228,11 +221,7 @@ export default function Navbar() {
             <button
               type="button"
               onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
-<<<<<<< Updated upstream
-              className="md:hidden p-2 rounded-xl text-gray-500 hover:bg-gray-100 transition-colors cursor-pointer"
-=======
               className="md:hidden p-2 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-800 transition-colors cursor-pointer"
->>>>>>> Stashed changes
               aria-label="Open search input"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -240,25 +229,6 @@ export default function Navbar() {
               </svg>
             </button>
 
-<<<<<<< Updated upstream
-            {/* Create Post Button */}
-            <button
-              type="button"
-              onClick={() => {
-                if (!user) {
-                  navigate('/auth/login');
-                } else {
-                  setIsPostModalOpen(true);
-                }
-              }}
-              className="flex items-center gap-1 px-3 sm:px-4 py-2 bg-[#FF4F00] text-white text-xs font-bold rounded-xl hover:bg-[#E64700] transition-colors shadow-xs cursor-pointer active:scale-95"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-              </svg>
-              <span>Post</span>
-            </button>
-=======
              {/* Theme Toggle */}
              <button
                type="button"
@@ -299,27 +269,18 @@ export default function Navbar() {
                </svg>
                <span>Post</span>
              </button>
->>>>>>> Stashed changes
 
             {!user ? (
               <div className="flex items-center gap-1 sm:gap-2">
                 <Link
                   to="/auth/login"
-<<<<<<< Updated upstream
-                  className="px-2.5 sm:px-3 py-2 text-xs font-bold text-gray-700 hover:text-gray-900 transition-colors"
-=======
                   className="px-2.5 sm:px-3 py-2 text-xs font-bold text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
->>>>>>> Stashed changes
                 >
                   Log in
                 </Link>
                 <Link
                   to="/auth/signup"
-<<<<<<< Updated upstream
-                  className="px-3 sm:px-4 py-2 bg-white text-[#FF4F00] border border-[#FF4F00] text-xs font-bold rounded-xl hover:bg-orange-50 transition-colors"
-=======
                   className="px-3 sm:px-4 py-2 bg-white dark:bg-gray-900 text-[#FF4F00] border border-[#FF4F00] text-xs font-bold rounded-xl hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors"
->>>>>>> Stashed changes
                 >
                   Sign up
                 </Link>
@@ -337,13 +298,8 @@ export default function Navbar() {
                     }}
                     className={`relative p-2 rounded-xl border transition-all cursor-pointer ${
                       isNotificationsOpen
-<<<<<<< Updated upstream
-                        ? 'bg-orange-50 border-orange-200 text-[#FF4F00]'
-                        : 'bg-[#FAFAFA] hover:bg-gray-100 border-gray-200 text-gray-600'
-=======
                         ? 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-900/30 text-[#FF4F00]'
                         : 'bg-[#FAFAFA] dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400'
->>>>>>> Stashed changes
                     }`}
                     aria-label="Notifications"
                   >
@@ -364,15 +320,11 @@ export default function Navbar() {
 
                   {/* Notifications Flyout */}
                   {isNotificationsOpen && (
-                    <div className="fixed sm:absolute top-16 sm:top-auto sm:right-0 inset-x-4 sm:inset-x-auto sm:w-105 bg-white border border-gray-200 rounded-2xl shadow-2xl z-50 overflow-hidden">
+                    <div className="fixed sm:absolute top-16 sm:top-auto sm:right-0 inset-x-4 sm:inset-x-auto sm:w-105 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-2xl z-50 overflow-hidden">
                       {/* Header */}
-<<<<<<< Updated upstream
-                      <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100 bg-gray-50/50">
-=======
                       <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
->>>>>>> Stashed changes
                         <div className="flex items-center gap-2.5">
-                          <h3 className="text-sm font-bold text-gray-900">Notifications</h3>
+                          <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">Notifications</h3>
                           {unreadCount > 0 && (
                             <span className="bg-[#FF4F00] text-white text-[10px] font-bold px-2 py-0.5 rounded-full leading-none">
                               {unreadCount}
@@ -384,11 +336,7 @@ export default function Navbar() {
                             <button
                               type="button"
                               onClick={handleClearRead}
-<<<<<<< Updated upstream
-                              className="text-[11px] font-medium text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
-=======
                               className="text-[11px] font-medium text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 transition-colors cursor-pointer"
->>>>>>> Stashed changes
                             >
                               Clear read
                             </button>
@@ -397,7 +345,7 @@ export default function Navbar() {
                             <button
                               type="button"
                               onClick={handleMarkAllRead}
-                              className="text-[11px] font-semibold text-[#FF4F00] hover:text-orange-700 transition-colors cursor-pointer"
+                              className="text-[11px] font-semibold text-[#FF4F00] hover:text-orange-700 dark:hover:text-orange-300 transition-colors cursor-pointer"
                             >
                               Mark all read
                             </button>
@@ -409,24 +357,19 @@ export default function Navbar() {
                       <div className="max-h-95 overflow-y-auto">
                         {notifications.length === 0 ? (
                           <div className="py-12 flex flex-col items-center gap-2">
-                            <svg className="w-10 h-10 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                            <svg className="w-10 h-10 text-gray-200 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                             </svg>
-                            <p className="text-xs text-gray-400 font-medium">No notifications yet</p>
-                            <p className="text-[11px] text-gray-300">When someone comments or replies, you'll see it here.</p>
+                            <p className="text-xs text-gray-400 dark:text-gray-500 font-medium">No notifications yet</p>
+                            <p className="text-[11px] text-gray-300 dark:text-gray-600">When someone comments or replies, you'll see it here.</p>
                           </div>
                         ) : (
                           notifications.map((notif) => (
                             <div
                               key={notif.id}
                               onClick={() => handleNotificationClick(notif)}
-<<<<<<< Updated upstream
-                              className={`group flex items-start gap-3.5 px-5 py-3.5 hover:bg-gray-50 transition-colors cursor-pointer border-b border-gray-50 last:border-b-0 ${
-                                !notif.read ? 'bg-orange-50/40' : ''
-=======
                               className={`group flex items-start gap-3.5 px-5 py-3.5 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 transition-colors cursor-pointer border-b border-gray-50 dark:border-gray-800 last:border-b-0 ${
                                 !notif.read ? 'bg-orange-50 dark:bg-orange-900/20' : ''
->>>>>>> Stashed changes
                               }`}
                             >
                               {/* Avatar with type icon */}
@@ -439,18 +382,18 @@ export default function Navbar() {
                                   {notif.actorInitials || 'U'}
                                 </div>
                                 <div className={`absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full border-2 border-white flex items-center justify-center ${
-                                  notif.type === 'vote' ? 'bg-green-100' : notif.isReply ? 'bg-violet-100' : 'bg-orange-100'
+                                  notif.type === 'vote' ? 'bg-green-100 dark:bg-green-900/30' : notif.isReply ? 'bg-violet-100 dark:bg-violet-900/30' : 'bg-orange-100 dark:bg-orange-900/30'
                                 }`}>
                                   {notif.type === 'vote' ? (
-                                    <svg className="w-2.5 h-2.5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                                    <svg className="w-2.5 h-2.5 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                                       <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
                                     </svg>
                                   ) : notif.isReply ? (
-                                    <svg className="w-2.5 h-2.5 text-violet-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                                    <svg className="w-2.5 h-2.5 text-violet-600 dark:text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                                       <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
                                     </svg>
                                   ) : (
-                                    <svg className="w-2.5 h-2.5 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                                    <svg className="w-2.5 h-2.5 text-orange-500 dark:text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                                       <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                                     </svg>
                                   )}
@@ -459,36 +402,28 @@ export default function Navbar() {
 
                               {/* Content */}
                               <div className="flex-1 min-w-0">
-                                <p className="text-[13px] text-gray-900 leading-snug">
+                                <p className="text-[13px] text-gray-900 dark:text-gray-100 leading-snug">
                                   <span className="font-semibold">{notif.actorName}</span>
                                   {' '}
-<<<<<<< Updated upstream
-                                  <span className="text-gray-600">
-=======
                                   <span className="text-gray-600 dark:text-gray-400">
->>>>>>> Stashed changes
                                     {notif.type === 'vote' ? 'upvoted your post' : notif.type === 'reply' && notif.isReply ? 'replied to your comment' : notif.type === 'reply' ? 'commented on your post' : notif.title}
                                   </span>
                                 </p>
                                 {notif.message && (
-<<<<<<< Updated upstream
-                                  <p className="text-xs text-gray-500 mt-1 line-clamp-2 leading-relaxed">
-=======
                                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2 leading-relaxed">
->>>>>>> Stashed changes
                                     "{notif.message}"
                                   </p>
                                 )}
                                 <div className="flex items-center gap-1.5 mt-1.5">
                                   {notif.isReply && (
-                                    <span className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-violet-600 bg-violet-50 px-1.5 py-0.5 rounded">
+                                    <span className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-violet-600 dark:text-violet-400 bg-violet-50 px-1.5 py-0.5 rounded">
                                       <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
                                       </svg>
                                       Reply
                                     </span>
                                   )}
-                                  <span className="text-[11px] text-gray-400">
+                                  <span className="text-[11px] text-gray-400 dark:text-gray-500">
                                     {notif.timestamp || 'Recently'}
                                   </span>
                                 </div>
@@ -497,7 +432,7 @@ export default function Navbar() {
                               {/* Actions */}
                               <div className="flex flex-col items-center gap-1 shrink-0">
                                 {!notif.read && (
-                                  <span className="w-2.5 h-2.5 rounded-full bg-[#FF4F00] ring-4 ring-orange-100" />
+                                  <span className="w-2.5 h-2.5 rounded-full bg-[#FF4F00] ring-4 ring-orange-100 dark:ring-orange-900/30" />
                                 )}
                                 <button
                                   type="button"
@@ -505,11 +440,7 @@ export default function Navbar() {
                                     e.stopPropagation();
                                     handleDeleteNotification(notif.id);
                                   }}
-<<<<<<< Updated upstream
-                                  className="opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-500 p-1 -m-1 transition-all cursor-pointer"
-=======
                                   className="opacity-0 group-hover:opacity-100 text-gray-300 dark:text-gray-600 hover:text-red-500 dark:hover:text-red-400 p-1 -m-1 transition-all cursor-pointer"
->>>>>>> Stashed changes
                                   title="Remove notification"
                                   aria-label="Remove notification"
                                 >
@@ -525,15 +456,11 @@ export default function Navbar() {
 
                       {/* Footer */}
                       {notifications.length > 0 && (
-<<<<<<< Updated upstream
-                        <div className="border-t border-gray-100 px-5 py-2.5 bg-gray-50/50 text-center">
-=======
                         <div className="border-t border-gray-100 dark:border-gray-800 px-5 py-2.5 bg-gray-50 dark:bg-gray-800/50 text-center">
->>>>>>> Stashed changes
                           <Link
                             to="/notifications"
                             onClick={() => setIsNotificationsOpen(false)}
-                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#FF4F00] hover:text-orange-700 transition-colors"
+                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#FF4F00] hover:text-orange-700 dark:hover:text-orange-300 transition-colors"
                           >
                             View all notifications
                             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -565,12 +492,12 @@ export default function Navbar() {
                   </button>
 
                   {isMenuOpen && (
-                    <div className="fixed sm:absolute top-16 sm:top-auto sm:right-0 inset-x-4 sm:inset-x-auto sm:w-56 bg-white border border-gray-200 rounded-2xl shadow-xl py-1.5 z-50 animate-in fade-in zoom-in-95 duration-100">
-                      <div className="px-4 py-2.5 border-b border-gray-100">
-                        <p className="text-xs font-bold text-gray-900 truncate">
+                    <div className="fixed sm:absolute top-16 sm:top-auto sm:right-0 inset-x-4 sm:inset-x-auto sm:w-56 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-xl py-1.5 z-50 animate-in fade-in zoom-in-95 duration-100">
+                      <div className="px-4 py-2.5 border-b border-gray-100 dark:border-gray-800">
+                        <p className="text-xs font-bold text-gray-900 dark:text-gray-100 truncate">
                           {user.displayName || user.name || 'Student'}
                         </p>
-                        <p className="text-[11px] text-gray-400 truncate mt-0.5 font-medium">
+                        <p className="text-[11px] text-gray-400 dark:text-gray-500 truncate mt-0.5 font-medium">
                           {user.email}
                         </p>
                       </div>
@@ -578,13 +505,9 @@ export default function Navbar() {
                       <Link
                         to={`/user/${user.handle || 'me'}`}
                         onClick={() => setIsMenuOpen(false)}
-<<<<<<< Updated upstream
-                        className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
-=======
                         className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
->>>>>>> Stashed changes
                       >
-                        <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                        <svg className="w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
                         <span>View Profile</span>
@@ -593,13 +516,9 @@ export default function Navbar() {
                       <Link
                         to="/settings"
                         onClick={() => setIsMenuOpen(false)}
-<<<<<<< Updated upstream
-                        className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
-=======
                         className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
->>>>>>> Stashed changes
                       >
-                        <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                        <svg className="w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                           <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
@@ -610,7 +529,7 @@ export default function Navbar() {
                         <Link
                           to="/admin"
                           onClick={() => setIsMenuOpen(false)}
-                          className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-orange-600 hover:bg-orange-50 transition-colors"
+                          className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 dark:bg-orange-900/20 transition-colors"
                         >
                           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
@@ -619,13 +538,13 @@ export default function Navbar() {
                         </Link>
                       ) : null}
 
-                      <div className="border-t border-gray-100 pt-1 mt-1">
+                      <div className="border-t border-gray-100 dark:border-gray-800 pt-1 mt-1">
                         <button
                           type="button"
                           onClick={handleLogout}
-                          className="w-full flex items-center gap-2.5 text-left px-4 py-2 text-xs font-bold text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                          className="w-full flex items-center gap-2.5 text-left px-4 py-2 text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 dark:bg-red-900/20 transition-colors cursor-pointer"
                         >
-                          <svg className="w-4 h-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                          <svg className="w-4 h-4 text-red-500 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                           </svg>
                           <span>Log out</span>
@@ -642,13 +561,8 @@ export default function Navbar() {
 
         {/* Mobile Full-Width Search Input Row */}
         {isMobileSearchOpen && (
-<<<<<<< Updated upstream
-          <div className="md:hidden px-4 pb-3 pt-1 border-t border-gray-100 animate-in fade-in duration-150">
-            <div className="relative flex items-center w-full h-10 rounded-xl border border-gray-200 bg-[#FAFAFA] focus-within:bg-white focus-within:border-[#FF4F00] transition-all">
-=======
           <div className="md:hidden px-4 pb-3 pt-1 border-t border-gray-100 dark:border-gray-800 animate-in fade-in duration-150">
             <div className="relative flex items-center w-full h-10 rounded-xl border border-gray-200 dark:border-gray-800 bg-[#FAFAFA] dark:bg-gray-800 focus-within:bg-white dark:focus-within:bg-gray-800 focus-within:border-[#FF4F00] transition-all">
->>>>>>> Stashed changes
               <input
                 autoFocus
                 type="text"
@@ -656,20 +570,12 @@ export default function Navbar() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleSearchSubmit}
                 placeholder="Search topics, skills, or mentors..."
-<<<<<<< Updated upstream
-                className="w-full h-full pl-3 pr-8 outline-none text-xs text-gray-800 placeholder-gray-400 bg-transparent font-medium"
-=======
                 className="w-full h-full pl-3 pr-8 outline-none text-xs text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 bg-transparent font-medium"
->>>>>>> Stashed changes
               />
               <button
                 type="button"
                 onClick={() => setIsMobileSearchOpen(false)}
-<<<<<<< Updated upstream
-                className="absolute right-2.5 text-gray-400 hover:text-gray-600 text-xs font-bold cursor-pointer"
-=======
                 className="absolute right-2.5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 text-xs font-bold cursor-pointer"
->>>>>>> Stashed changes
               >
                 ✕
               </button>
@@ -689,10 +595,10 @@ export default function Navbar() {
           <div className="fixed inset-y-0 left-0 max-w-full flex">
             <div
               ref={sidebarDrawerRef}
-              className="w-72 sm:w-80 bg-white shadow-2xl border-r border-gray-200 flex flex-col justify-between p-5 animate-in slide-in-from-left duration-200 overflow-y-auto"
+              className="w-72 sm:w-80 bg-white dark:bg-gray-900 shadow-2xl border-r border-gray-200 dark:border-gray-800 flex flex-col justify-between p-5 animate-in slide-in-from-left duration-200 overflow-y-auto"
             >
               <div className="space-y-6">
-                <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+                <div className="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-gray-800">
                   <Link
                     to="/"
                     onClick={() => setIsSidebarDrawerOpen(false)}
@@ -707,11 +613,7 @@ export default function Navbar() {
                   <button
                     type="button"
                     onClick={() => setIsSidebarDrawerOpen(false)}
-<<<<<<< Updated upstream
-                    className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer"
-=======
                     className="p-1.5 rounded-lg text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-800 transition-colors cursor-pointer"
->>>>>>> Stashed changes
                   >
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -720,7 +622,7 @@ export default function Navbar() {
                 </div>
 
                 <div>
-                  <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2 px-3">
+                  <p className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 px-3">
                     Navigation
                   </p>
                   <nav className="space-y-1">
@@ -781,7 +683,7 @@ export default function Navbar() {
                 </div>
 
                 <div>
-                  <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2 px-3">
+                  <p className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 px-3">
                     Skill Tags
                   </p>
                   <div className="flex flex-col space-y-1">
@@ -794,13 +696,8 @@ export default function Navbar() {
                           onClick={() => handleTagClick(tag)}
                           className={`text-left px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                             isSelected
-<<<<<<< Updated upstream
-                              ? 'bg-[#FFF4F0] text-[#FF4F00] font-bold'
-                              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-=======
                               ? 'bg-[#FFF4F0] dark:bg-orange-900/20 text-[#FF4F00] font-bold'
                               : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800/50'
->>>>>>> Stashed changes
                           }`}
                         >
                           #{tag}
@@ -811,21 +708,14 @@ export default function Navbar() {
                 </div>
               </div>
 
-              <div className="pt-5 border-t border-gray-100 text-[11px] text-gray-400 space-y-2">
+              <div className="pt-5 border-t border-gray-100 dark:border-gray-800 text-[11px] text-gray-400 dark:text-gray-500 space-y-2">
                 <div className="flex flex-wrap gap-x-3 gap-y-1 font-medium">
-<<<<<<< Updated upstream
-                  <Link to="/about" onClick={() => setIsSidebarDrawerOpen(false)} className="hover:text-gray-700">About Us</Link>
-                  <Link to="/contact" onClick={() => setIsSidebarDrawerOpen(false)} className="hover:text-gray-700">Contact</Link>
-                  <Link to="/privacy" onClick={() => setIsSidebarDrawerOpen(false)} className="hover:text-gray-700">Privacy</Link>
-                  <Link to="/terms" onClick={() => setIsSidebarDrawerOpen(false)} className="hover:text-gray-700">Terms</Link>
-=======
                   <Link to="/about" onClick={() => setIsSidebarDrawerOpen(false)} className="hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300">About Us</Link>
                   <Link to="/contact" onClick={() => setIsSidebarDrawerOpen(false)} className="hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300">Contact</Link>
                   <Link to="/privacy" onClick={() => setIsSidebarDrawerOpen(false)} className="hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300">Privacy</Link>
                   <Link to="/terms" onClick={() => setIsSidebarDrawerOpen(false)} className="hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-300">Terms</Link>
->>>>>>> Stashed changes
                 </div>
-                <p className="text-[10px] text-gray-400">© 2026 JorJek Campus. All rights reserved.</p>
+                <p className="text-[10px] text-gray-400 dark:text-gray-500">© 2026 JorJek Campus. All rights reserved.</p>
               </div>
 
             </div>

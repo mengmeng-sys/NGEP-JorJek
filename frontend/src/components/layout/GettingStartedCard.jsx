@@ -34,31 +34,23 @@ export function GettingStartedCard({ onOpenAuth }) {
   const progressPercent = (completedCount / tasks.length) * 100;
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
+    <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 shadow-sm">
       {/* Header */}
       <div className="flex items-center justify-between mb-1">
-        <h3 className="text-xs font-bold text-gray-900 uppercase tracking-wider">
+        <h3 className="text-xs font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider">
           Getting Started
         </h3>
-<<<<<<< Updated upstream
-        <span className={`text-xs font-bold ${completedCount > 0 ? 'text-[#FF4F00]' : 'text-gray-400'}`}>
-=======
         <span className={`text-xs font-bold ${completedCount > 0 ? 'text-[#FF4F00]' : 'text-gray-400 dark:text-gray-500'}`}>
->>>>>>> Stashed changes
           {completedCount}/{tasks.length} Completed
         </span>
       </div>
 
-<<<<<<< Updated upstream
-      <p className="text-xs text-gray-500 mb-4 leading-relaxed">
-=======
       <p className="text-xs text-gray-500 dark:text-gray-400 mb-4 leading-relaxed">
->>>>>>> Stashed changes
         Complete your setup to unlock the Top Mentors leaderboard.
       </p>
 
       {/* Dynamic Progress Bar */}
-      <div className="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden mb-5">
+      <div className="w-full bg-gray-100 dark:bg-gray-800 h-1.5 rounded-full overflow-hidden mb-5">
         <div
           className="bg-[#FF4F00] h-full transition-all duration-500 ease-out"
           style={{ width: `${progressPercent}%` }}
@@ -78,19 +70,14 @@ export function GettingStartedCard({ onOpenAuth }) {
               </div>
             ) : (
               // Incomplete Icon (Empty Circle)
-              <div className="w-5 h-5 rounded-full border-2 border-gray-200 flex-shrink-0" />
+              <div className="w-5 h-5 rounded-full border-2 border-gray-200 dark:border-gray-800 flex-shrink-0" />
             )}
 
-            <span
+             <span
               className={`text-xs font-medium ${
                 task.completed
-<<<<<<< Updated upstream
-                  ? 'text-gray-400 line-through'
-                  : 'text-gray-700'
-=======
                   ? 'text-gray-400 dark:text-gray-500 line-through'
                   : 'text-gray-700 dark:text-gray-300'
->>>>>>> Stashed changes
               }`}
             >
               {task.label}

@@ -34,22 +34,17 @@ export default function AboutPage() {
 
   return (
     <ThreeColumnLayout>
-      <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 shadow-xs space-y-6 sm:space-y-8">
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 shadow-xs space-y-6 sm:space-y-8">
         {/* Header Banner */}
         <div>
           <span className="text-[10px] sm:text-xs font-black text-[#FF4F00] uppercase tracking-wider">
             About the Platform
           </span>
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-gray-900 mt-1 leading-tight tracking-tight">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-gray-100 mt-1 leading-tight tracking-tight">
             Empowering Campus Academic Collaboration
           </h1>
-<<<<<<< Updated upstream
-          <p className="text-xs sm:text-sm text-gray-600 mt-2.5 sm:mt-3 leading-relaxed">
-            <strong className="text-gray-900 font-semibold">JorJek</strong> is an academic community platform designed specifically for students and faculty. It combines modern forum discussions with a structured peer mentoring network to make technical help accessible anytime.
-=======
           <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-2.5 sm:mt-3 leading-relaxed">
             <strong className="text-gray-900 dark:text-gray-100 font-semibold">JorJek</strong> is an academic community platform designed specifically for students and faculty. It combines modern forum discussions with a structured peer mentoring network to make technical help accessible anytime.
->>>>>>> Stashed changes
           </p>
         </div>
 
@@ -58,23 +53,15 @@ export default function AboutPage() {
           {values.map((val) => (
             <div
               key={val.title}
-<<<<<<< Updated upstream
-              className="bg-[#FAFAFA] border border-gray-200 rounded-xl p-4 sm:p-5 flex flex-col justify-start hover:border-gray-300 transition-colors"
-=======
               className="bg-[#FAFAFA] dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl p-4 sm:p-5 flex flex-col justify-start hover:border-gray-300 transition-colors"
->>>>>>> Stashed changes
             >
-              <div className="w-8 h-8 rounded-lg bg-orange-50 border border-orange-100 flex items-center justify-center mb-3">
+              <div className="w-8 h-8 rounded-lg bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-900/30 flex items-center justify-center mb-3">
                 {val.icon}
               </div>
-              <h2 className="text-xs sm:text-sm font-bold text-gray-900 mb-1 leading-snug">
+              <h2 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-gray-100 mb-1 leading-snug">
                 {val.title}
               </h2>
-<<<<<<< Updated upstream
-              <p className="text-[11px] sm:text-xs text-gray-500 leading-relaxed">
-=======
               <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
->>>>>>> Stashed changes
                 {val.desc}
               </p>
             </div>
@@ -82,15 +69,11 @@ export default function AboutPage() {
         </div>
 
         {/* Mission Statement */}
-        <div className="border-t border-gray-100 pt-5 sm:pt-6">
-          <h2 className="text-xs sm:text-sm font-bold text-gray-900 mb-1.5 sm:mb-2 uppercase tracking-wide">
+        <div className="border-t border-gray-100 dark:border-gray-800 pt-5 sm:pt-6">
+          <h2 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-gray-100 mb-1.5 sm:mb-2 uppercase tracking-wide">
             Our Mission
           </h2>
-<<<<<<< Updated upstream
-          <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
-=======
           <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
->>>>>>> Stashed changes
             We believe that no student should be blocked on a problem simply because office hours ended. By bridging the gap between juniors seeking guidance and seniors or professors eager to mentor, JorJek strengthens our academic ecosystem.
           </p>
         </div>

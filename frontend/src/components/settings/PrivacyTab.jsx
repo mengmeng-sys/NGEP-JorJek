@@ -69,21 +69,17 @@ export function PrivacyTab() {
   return (
     <div className="w-full">
       {/* Section Header */}
-      <div className="border-b border-gray-100 pb-4 sm:pb-5 mb-4 sm:mb-6">
-        <h2 className="text-base sm:text-lg font-bold text-gray-900 leading-tight">
+      <div className="border-b border-gray-100 dark:border-gray-800 pb-4 sm:pb-5 mb-4 sm:mb-6">
+        <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 leading-tight">
           Privacy
         </h2>
-<<<<<<< Updated upstream
-        <p className="text-[11px] sm:text-xs text-gray-500 mt-0.5 leading-snug">
-=======
         <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 mt-0.5 leading-snug">
->>>>>>> Stashed changes
           Control who can see your activity and contact you.
         </p>
       </div>
 
       {/* Toggles Container */}
-      <div className="divide-y divide-gray-100">
+      <div className="divide-y divide-gray-100 dark:divide-gray-800">
         {toggles.map((item) => {
           const isChecked = privacySettings[item.key];
 
@@ -95,14 +91,10 @@ export function PrivacyTab() {
             >
               {/* Setting Description */}
               <div className="min-w-0 pr-1 sm:pr-2">
-<<<<<<< Updated upstream
-                <h3 className="text-xs sm:text-sm font-bold text-gray-900 group-hover:text-gray-700 transition-colors leading-snug">
-=======
                 <h3 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:hover:text-gray-300 transition-colors leading-snug">
->>>>>>> Stashed changes
                   {item.title}
                 </h3>
-                <p className="text-[11px] sm:text-xs text-gray-400 mt-0.5 sm:mt-1 leading-relaxed break-words">
+                <p className="text-[11px] sm:text-xs text-gray-400 dark:text-gray-500 mt-0.5 sm:mt-1 leading-relaxed break-words">
                   {item.desc}
                 </p>
               </div>
@@ -116,11 +108,11 @@ export function PrivacyTab() {
                   aria-checked={isChecked}
                   onClick={() => togglePrivacy(item.key)}
                   className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#FF4F00] focus:ring-offset-2 ${
-                    isChecked ? 'bg-[#FF4F00]' : 'bg-gray-200'
+                    isChecked ? 'bg-[#FF4F00]' : 'bg-gray-200 dark:bg-gray-700'
                   }`}
                 >
                   <span
-                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-xs ring-0 transition duration-200 ease-in-out ${
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white dark:bg-gray-900 shadow-xs ring-0 transition duration-200 ease-in-out ${
                       isChecked ? 'translate-x-5' : 'translate-x-0'
                     }`}
                   />
@@ -132,9 +124,9 @@ export function PrivacyTab() {
       </div>
 
       {/* Action Footer */}
-      <div className="pt-5 sm:pt-6 mt-2 border-t border-gray-100 flex items-center justify-end gap-3">
+      <div className="pt-5 sm:pt-6 mt-2 border-t border-gray-100 dark:border-gray-800 flex items-center justify-end gap-3">
         {saved && (
-          <span className="text-[11px] font-bold text-emerald-600 flex items-center gap-1">
+          <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
             </svg>

@@ -126,23 +126,19 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#FBFBFB] flex flex-col justify-center items-center px-3.5 sm:px-6 py-6 sm:py-12 relative">
+    <div className="min-h-screen w-full bg-[#FBFBFB] dark:bg-gray-950 flex flex-col justify-center items-center px-3.5 sm:px-6 py-6 sm:py-12 relative">
       <div className="absolute top-4 sm:top-6 left-4 sm:left-6">
         <BackHomeArrow />
       </div>
-      <div className="w-full max-w-md sm:max-w-lg bg-white border border-gray-200 rounded-xl sm:rounded-2xl shadow-xs p-5 sm:p-8">
+      <div className="w-full max-w-md sm:max-w-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl sm:rounded-2xl shadow-xs p-5 sm:p-8">
         <div className="text-center mb-5 sm:mb-6">
           <Link to="/" className="inline-block group">
             <img src="/jorjek_logo.jpg" alt="JorJek" className="h-9 sm:h-11 w-auto mx-auto object-contain transition-transform group-hover:scale-105" />
           </Link>
-          <h1 className="text-lg sm:text-xl font-bold text-gray-900 mt-2.5 sm:mt-3 leading-tight">
+          <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100 mt-2.5 sm:mt-3 leading-tight">
             {account ? 'Complete Your Profile' : 'Create CADT Account'}
           </h1>
-<<<<<<< Updated upstream
-          <p className="text-[11px] sm:text-xs text-gray-500 mt-1 max-w-xs mx-auto leading-relaxed">
-=======
           <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 mt-1 max-w-xs mx-auto leading-relaxed">
->>>>>>> Stashed changes
             {account ? 'Fill in your details to finish signing up' : 'Sign in with your Microsoft school account to begin'}
           </p>
         </div>
@@ -153,11 +149,7 @@ export default function SignupPage() {
               type="button"
               onClick={handleMicrosoftLogin}
               disabled={inProgress !== 'none'}
-<<<<<<< Updated upstream
-              className="w-full flex items-center justify-center gap-2 bg-white border border-gray-300 rounded-xl px-4 py-2.5 sm:py-3 text-xs font-bold text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all shadow-xs cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
-=======
               className="w-full flex items-center justify-center gap-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 sm:py-3 text-xs font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-gray-400 transition-all shadow-xs cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
->>>>>>> Stashed changes
             >
               <svg width="18" height="18" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M1 1h10v10H1z" fill="#F25022"/>
@@ -167,13 +159,8 @@ export default function SignupPage() {
               </svg>
               {inProgress !== 'none' ? 'Redirecting…' : 'Sign up with Microsoft'}
             </button>
-<<<<<<< Updated upstream
-            <div className="text-center mt-5 sm:mt-6 pt-5 border-t border-gray-100">
-              <p className="text-xs text-gray-500">
-=======
             <div className="text-center mt-5 sm:mt-6 pt-5 border-t border-gray-100 dark:border-gray-800">
               <p className="text-xs text-gray-500 dark:text-gray-400">
->>>>>>> Stashed changes
                 Already have an account?{' '}
                 <Link to="/auth/login" className="text-[#FF4F00] font-bold hover:underline">Sign in</Link>
               </p>
@@ -182,62 +169,38 @@ export default function SignupPage() {
         ) : (
           <form onSubmit={handleSignup} className="space-y-3.5 sm:space-y-4">
             <div>
-<<<<<<< Updated upstream
-              <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">University Email</label>
-              <input type="email" disabled value={msEmail} className="w-full bg-gray-100 border border-gray-200 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs text-gray-500 cursor-not-allowed" />
-            </div>
-            <div>
-              <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">Full Name / Username</label>
-              <input type="text" required value={username} onChange={(e) => setUsername(e.target.value)} placeholder="e.g. Srun Vireak" className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs text-gray-900 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs" />
-=======
               <label className="block text-[11px] font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider mb-1.5">University Email</label>
               <input type="email" disabled value={msEmail} className="w-full bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs text-gray-500 dark:text-gray-400 cursor-not-allowed" />
             </div>
             <div>
               <label className="block text-[11px] font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider mb-1.5">Full Name / Username</label>
               <input type="text" required value={username} onChange={(e) => setUsername(e.target.value)} placeholder="e.g. Srun Vireak" className="w-full bg-[#FAFAFA] dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs text-gray-900 dark:text-gray-100 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs" />
->>>>>>> Stashed changes
             </div>
             <div>
-              <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">Password</label>
+              <label className="block text-[11px] font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider mb-1.5">Password</label>
               <div className="relative">
-<<<<<<< Updated upstream
-                <input type={showPassword ? 'text' : 'password'} required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Create strong password" className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs text-gray-900 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs pr-14" />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 text-xs font-bold p-1 cursor-pointer">
-=======
                 <input type={showPassword ? 'text' : 'password'} required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Create strong password" className="w-full bg-[#FAFAFA] dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs text-gray-900 dark:text-gray-100 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs pr-14" />
                 <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-xs font-bold p-1 cursor-pointer">
->>>>>>> Stashed changes
                   {showPassword ? 'Hide' : 'Show'}
                 </button>
               </div>
-              <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 mt-2.5 bg-[#FAFAFA] p-2.5 sm:p-3 rounded-xl border border-gray-100 text-[10px] sm:text-[11px]">
-                <span className={`flex items-center gap-1.5 ${passwordCriteria.minLength ? 'text-emerald-600 font-bold' : 'text-gray-400'}`}><span>{passwordCriteria.minLength ? '✓' : '○'}</span> Min 8 characters</span>
-                <span className={`flex items-center gap-1.5 ${passwordCriteria.hasUpper ? 'text-emerald-600 font-bold' : 'text-gray-400'}`}><span>{passwordCriteria.hasUpper ? '✓' : '○'}</span> Uppercase letter</span>
-                <span className={`flex items-center gap-1.5 ${passwordCriteria.hasNumber ? 'text-emerald-600 font-bold' : 'text-gray-400'}`}><span>{passwordCriteria.hasNumber ? '✓' : '○'}</span> At least 1 number</span>
-                <span className={`flex items-center gap-1.5 ${passwordCriteria.hasSpecial ? 'text-emerald-600 font-bold' : 'text-gray-400'}`}><span>{passwordCriteria.hasSpecial ? '✓' : '○'}</span> Special character</span>
+              <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 mt-2.5 bg-[#FAFAFA] dark:bg-gray-800 p-2.5 sm:p-3 rounded-xl border border-gray-100 dark:border-gray-800 text-[10px] sm:text-[11px]">
+                <span className={`flex items-center gap-1.5 ${passwordCriteria.minLength ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-gray-400 dark:text-gray-500'}`}><span>{passwordCriteria.minLength ? '✓' : '○'}</span> Min 8 characters</span>
+                <span className={`flex items-center gap-1.5 ${passwordCriteria.hasUpper ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-gray-400 dark:text-gray-500'}`}><span>{passwordCriteria.hasUpper ? '✓' : '○'}</span> Uppercase letter</span>
+                <span className={`flex items-center gap-1.5 ${passwordCriteria.hasNumber ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-gray-400 dark:text-gray-500'}`}><span>{passwordCriteria.hasNumber ? '✓' : '○'}</span> At least 1 number</span>
+                <span className={`flex items-center gap-1.5 ${passwordCriteria.hasSpecial ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-gray-400 dark:text-gray-500'}`}><span>{passwordCriteria.hasSpecial ? '✓' : '○'}</span> Special character</span>
               </div>
             </div>
             <div>
-<<<<<<< Updated upstream
-              <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">Generation (Gen)</label>
-              <input type="number" min="1" max={maxGen} value={gen} onChange={(e) => { const val = e.target.value; if (val === '' || (Number(val) >= 1 && Number(val) <= maxGen)) setGen(val); }} placeholder={maxGen <= 1 ? "1" : `1 - ${maxGen}`} className="w-full bg-[#FAFAFA] border border-gray-200 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs text-gray-900 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs" />
-              <p className="text-[10px] text-gray-400 mt-1">CADT started in 2014. Max: Gen {maxGen}</p>
-=======
               <label className="block text-[11px] font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider mb-1.5">Generation (Gen)</label>
               <input type="number" min="1" max={maxGen} value={gen} onChange={(e) => { const val = e.target.value; if (val === '' || (Number(val) >= 1 && Number(val) <= maxGen)) setGen(val); }} placeholder={maxGen <= 1 ? "1" : `1 - ${maxGen}`} className="w-full bg-[#FAFAFA] dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs text-gray-900 dark:text-gray-100 outline-none focus:bg-white focus:border-[#FF4F00] focus:ring-1 focus:ring-[#FF4F00] transition-all shadow-2xs" />
               <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">CADT started in 2014. Max: Gen {maxGen}</p>
->>>>>>> Stashed changes
             </div>
             <div>
-              <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">Department</label>
+              <label className="block text-[11px] font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider mb-1.5">Department</label>
               <div className="grid grid-cols-1 gap-2">
                 {departmentOptions.map((dept) => (
-<<<<<<< Updated upstream
-                  <button key={dept.name} type="button" onClick={() => handleDepartmentChange(dept.name)} className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${department === dept.name ? 'bg-[#FF4F00] border-[#FF4F00] text-white' : 'bg-white border-gray-200 text-gray-600 hover:border-[#FF4F00] hover:text-[#FF4F00]'}`}>
-=======
                   <button key={dept.name} type="button" onClick={() => handleDepartmentChange(dept.name)} className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${department === dept.name ? 'bg-[#FF4F00] border-[#FF4F00] text-white' : 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:border-[#FF4F00] hover:text-[#FF4F00]'}`}>
->>>>>>> Stashed changes
                     {dept.name}
                   </button>
                 ))}
@@ -245,14 +208,10 @@ export default function SignupPage() {
             </div>
             {department && availableSpecializations.length > 0 && (
               <div>
-                <label className="block text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-1.5">Specialization</label>
+                <label className="block text-[11px] font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider mb-1.5">Specialization</label>
                 <div className="grid grid-cols-1 gap-2">
                   {availableSpecializations.map((spec) => (
-<<<<<<< Updated upstream
-                    <button key={spec} type="button" onClick={() => setSpecialization(spec === specialization ? '' : spec)} className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${specialization === spec ? 'bg-[#FF4F00] border-[#FF4F00] text-white' : 'bg-white border-gray-200 text-gray-600 hover:border-[#FF4F00] hover:text-[#FF4F00]'}`}>
-=======
                     <button key={spec} type="button" onClick={() => setSpecialization(spec === specialization ? '' : spec)} className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${specialization === spec ? 'bg-[#FF4F00] border-[#FF4F00] text-white' : 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:border-[#FF4F00] hover:text-[#FF4F00]'}`}>
->>>>>>> Stashed changes
                       {spec}
                     </button>
                   ))}
@@ -260,7 +219,7 @@ export default function SignupPage() {
               </div>
             )}
             {submitError && (
-              <p className="text-[11px] text-red-600 font-semibold bg-red-50 border border-red-100 rounded-lg px-3 py-2">{submitError}</p>
+              <p className="text-[11px] text-red-600 dark:text-red-400 font-semibold bg-red-50 dark:bg-red-900/20 border border-red-100 rounded-lg px-3 py-2">{submitError}</p>
             )}
             <button type="submit" disabled={!isFormValid || submitting} className={`w-full text-xs font-bold py-3 sm:py-3.5 rounded-xl transition-all shadow-xs mt-2 ${isFormValid && !submitting ? 'bg-[#FF4F00] hover:bg-[#E64700] text-white cursor-pointer active:scale-98' : 'bg-orange-200 text-white/90 cursor-not-allowed'}`}>
               {submitting ? 'Creating account…' : 'Create Account'}

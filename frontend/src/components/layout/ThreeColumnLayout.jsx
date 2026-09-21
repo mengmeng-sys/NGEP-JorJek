@@ -13,7 +13,7 @@ export function ThreeColumnLayout({ children, onOpenAuth }) {
   }, []);
 
   return (
-    <div className="w-full bg-[#FBFBFB] relative h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] overflow-hidden">
+    <div className="w-full bg-[#FBFBFB] dark:bg-gray-950 relative h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] overflow-hidden">
       <div className="w-full h-full px-3 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 h-full items-start">
           
@@ -47,17 +47,13 @@ export function ThreeColumnLayout({ children, onOpenAuth }) {
 
       {isMobileSidebarOpen && (
         <div className="fixed inset-0 z-50 lg:hidden flex items-end justify-center bg-black/60 backdrop-blur-xs p-0">
-          <div className="bg-white rounded-t-2xl w-full max-h-[85vh] overflow-y-auto p-4 sm:p-5 space-y-5 animate-in slide-in-from-bottom duration-200">
-            <div className="flex justify-between items-center pb-2.5 border-b border-gray-100">
-              <span className="font-bold text-sm text-gray-900">Rules & Top Users</span>
+          <div className="bg-white dark:bg-gray-900 rounded-t-2xl w-full max-h-[85vh] overflow-y-auto p-4 sm:p-5 space-y-5 animate-in slide-in-from-bottom duration-200">
+            <div className="flex justify-between items-center pb-2.5 border-b border-gray-100 dark:border-gray-800">
+              <span className="font-bold text-sm text-gray-900 dark:text-gray-100">Rules & Top Users</span>
               <button
                 type="button"
                 onClick={() => setIsMobileSidebarOpen(false)}
-<<<<<<< Updated upstream
-                className="text-xs font-bold text-gray-400 hover:text-gray-700 p-1 cursor-pointer"
-=======
                 className="text-xs font-bold text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 p-1 cursor-pointer"
->>>>>>> Stashed changes
               >
                 Close ✕
               </button>
@@ -65,7 +61,7 @@ export function ThreeColumnLayout({ children, onOpenAuth }) {
 
             <CommunityRulesCard />
             <div>
-              <h3 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-3">Top Users</h3>
+              <h3 className="text-xs font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider mb-3">Top Users</h3>
               <TopUsersList />
             </div>
           </div>
