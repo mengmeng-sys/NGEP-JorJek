@@ -76,7 +76,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="min-h-screen w-full bg-[#FBFBFB] dark:bg-gray-950 flex flex-col justify-center items-center px-4 sm:px-6 py-8 sm:py-12">
-      <div className="w-full max-w-sm sm:max-w-md bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl sm:rounded-2xl shadow-xs p-5 sm:p-8">
+      <div className="w-full max-w-md sm:max-w-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl sm:rounded-2xl shadow-xs p-6 sm:p-10">
         <div className="text-center mb-5 sm:mb-6">
           <Link to="/" className="inline-block group">
             <img src="/jorjek_logo.jpg" alt="JorJek" className="h-9 sm:h-11 w-auto mx-auto object-contain transition-transform group-hover:scale-105" />

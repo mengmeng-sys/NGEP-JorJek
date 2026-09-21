@@ -148,7 +148,7 @@ export default function LoginPage() {
         <div className="absolute top-4 sm:top-6 left-4 sm:left-6">
           <BackHomeArrow />
         </div>
-        <div className="w-full max-w-sm sm:max-w-md bg-white dark:bg-gray-900 sm:bg-transparent border sm:border-0 border-gray-200 dark:border-gray-800 rounded-2xl p-6 sm:p-0 shadow-xs sm:shadow-none space-y-5 sm:space-y-6">
+        <div className="w-full max-w-md sm:max-w-lg bg-white dark:bg-gray-900 sm:bg-transparent border sm:border-0 border-gray-200 dark:border-gray-800 rounded-2xl p-7 sm:p-0 shadow-xs sm:shadow-none space-y-5 sm:space-y-6">
 
           {/* Mobile Header Brand */}
           <div className="lg:hidden text-center mb-4">
