@@ -189,12 +189,17 @@ function CommentThread({ comment, postId, currentUser, onRefresh }) {
     <div id={`comment-${comment.id}`} className="border-b border-gray-100 dark:border-gray-800 pb-5 sm:pb-6 last:border-b-0">
       <div className="flex items-center justify-between gap-2 mb-2">
         <div className="flex items-center gap-2 min-w-0 flex-wrap">
-          <UserAvatar
-            initials={comment.author?.initials || initialsFrom(comment.author?.displayName || 'U')}
-            userId={comment.author?.id || comment.authorId}
-            size="sm"
-          />
-          <span className="font-bold text-gray-900 dark:text-gray-100 text-xs sm:text-sm truncate">{comment.author?.displayName || 'Student'}</span>
+          <Link to={`/user/${comment.author?.handle || (comment.author?.displayName || '').toLowerCase().replace(/\s+/g, '')}`} className="shrink-0">
+            <UserAvatar
+              initials={comment.author?.initials || initialsFrom(comment.author?.displayName || 'U')}
+              userId={comment.author?.id || comment.authorId}
+              avatarUrl={comment.author?.avatarUrl}
+              size="sm"
+            />
+          </Link>
+          <Link to={`/user/${comment.author?.handle || (comment.author?.displayName || '').toLowerCase().replace(/\s+/g, '')}`} className="font-bold text-gray-900 dark:text-gray-100 text-xs sm:text-sm truncate hover:text-[#FF4F00] dark:hover:text-[#FF4F00] transition-colors">
+            {comment.author?.displayName || 'Student'}
+          </Link>
           <span
             className={`text-[8px] sm:text-[9px] uppercase font-bold px-1.5 py-0.5 rounded tracking-wide shrink-0 ${
               comment.author?.role === 'PROFESSOR'
@@ -534,12 +539,17 @@ function NestedReply({ reply, postId, currentUser, onReplyClick, onRefresh }) {
     <div id={`comment-${reply.id}`}>
       <div className="flex items-center justify-between gap-2 mb-1">
         <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-wrap">
-          <UserAvatar
-            initials={reply.author?.initials || initialsFrom(reply.author?.displayName || 'U')}
-            userId={reply.author?.id || reply.authorId}
-            size="xs"
-          />
-          <span className="font-bold text-gray-900 dark:text-gray-100 text-xs truncate">{reply.author?.displayName || 'Student'}</span>
+          <Link to={`/user/${reply.author?.handle || (reply.author?.displayName || '').toLowerCase().replace(/\s+/g, '')}`} className="shrink-0">
+            <UserAvatar
+              initials={reply.author?.initials || initialsFrom(reply.author?.displayName || 'U')}
+              userId={reply.author?.id || reply.authorId}
+              avatarUrl={reply.author?.avatarUrl}
+              size="xs"
+            />
+          </Link>
+          <Link to={`/user/${reply.author?.handle || (reply.author?.displayName || '').toLowerCase().replace(/\s+/g, '')}`} className="font-bold text-gray-900 dark:text-gray-100 text-xs truncate hover:text-[#FF4F00] dark:hover:text-[#FF4F00] transition-colors">
+            {reply.author?.displayName || 'Student'}
+          </Link>
           <span
             className={`text-[8px] uppercase font-bold px-1.5 py-0.5 rounded tracking-wide shrink-0 ${
               reply.author?.role === 'PROFESSOR'

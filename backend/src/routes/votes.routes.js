@@ -282,16 +282,18 @@ votesRouter.post("/vote", requireAuth, requireVerifiedEmail, voteLimiter, async 
     if (authorId && authorId !== req.userId && isUpvote && !existing) {
       const { data: actor } = await supabase
         .from("users")
-        .select("display_name")
+        .select("display_name, avatar_url")
         .eq("id", req.userId)
         .maybeSingle();
       const actorName = actor?.display_name || "Someone";
+      const actorAvatar = actor?.avatar_url || null;
 
       if (postId) {
         await notify(authorId, "vote", {
           postId,
           actorId: req.userId,
           actorName,
+          actorAvatar,
           snippet: "",
           isReply: false,
         });
@@ -307,6 +309,7 @@ votesRouter.post("/vote", requireAuth, requireVerifiedEmail, voteLimiter, async 
             commentId,
             actorId: req.userId,
             actorName,
+            actorAvatar,
             snippet: "",
             isReply: false,
           });
