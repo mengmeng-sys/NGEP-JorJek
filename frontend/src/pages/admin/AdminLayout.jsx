@@ -77,7 +77,6 @@ const NAV = [
   { to: "/admin/moderation", end: false, label: "Moderation Feed", icon: ShieldIcon },
   { to: "/admin/mentors", end: false, label: "Mentor Pipeline", icon: CapIcon },
   { to: "/admin/tags", end: false, label: "Tags & Topics", icon: TagIcon },
-  { to: "/", end: false, label: "Back to Home", icon: HomeIcon },
 ];
 
 function initialsOf(name) {
@@ -111,12 +110,12 @@ export default function AdminLayout() {
           <img src="/jorjek_logo.jpg" alt="JorJek" className="admin-logo" />
         </div>
 
-        <button type="button" className="admin-side-link" onClick={() => setSidebarOpen(false)} style={{ marginBottom: 4 }}>
-          <span className="admin-nav-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
-          </span>
-          <span>Close</span>
-        </button>
+         <NavLink to="/" end className="admin-side-link" onClick={() => setSidebarOpen(false)} style={{ marginBottom: 4 }}>
+           <span className="admin-nav-icon">
+             <HomeIcon />
+           </span>
+           <span>User</span>
+         </NavLink>
 
         <nav className="admin-nav">
           {NAV.map(({ to, end, label, icon: Icon }) => (
