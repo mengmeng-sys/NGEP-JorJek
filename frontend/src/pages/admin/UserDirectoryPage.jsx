@@ -253,7 +253,7 @@ export default function UserDirectoryPage() {
                 Cancel
               </button>
               {!(selected.status === "BANNED" || selected.status === "SUSPENDED") && (
-                <button className="jd-btn jd-btn-primary" disabled={saving} onClick={submitEnforcement}>
+                <button className="jd-btn jd-btn-primary" disabled={saving} onClick={() => submitEnforcement()}>
                   {saving ? "Applying…" : action === "ban" ? "Ban account" : "Suspend for duration"}
                 </button>
               )}
