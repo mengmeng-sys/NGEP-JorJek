@@ -25,8 +25,10 @@ export function useMicrosoftAuth() {
   const acquireToken = async () => {
     try {
       const result = await instance.acquireTokenSilent(loginRequest);
-    } catch (err) {
+      return result;
+    } catch {
       await instance.acquireTokenRedirect(loginRequest);
+      return null;
     }
   };
 

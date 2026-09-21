@@ -1,7 +1,6 @@
 const { Router } = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const crypto = require("crypto");
 const { supabase } = require("../config/db");
 const { env } = require("../config/env");
 const { requireAuth } = require("../middleware/auth.middleware");
@@ -11,6 +10,8 @@ const { sendMail } = require("../config/mailer");
 const { generateOtp, otpEmailHtml } = require("../utils/otp");
 const { getIO } = require("../lib/socket");
 const { signupLimiter } = require("../middleware/rateLimit.middleware");
+const { signMfaTempToken } = require("./mfa.routes");
+
 
 const authRouter = Router();
 
@@ -22,19 +23,7 @@ function otpExpiry() {
   return d.toISOString();
 }
 
-function hashToken(token) {
-  return crypto.createHash("sha256").update(token).digest("hex");
-}
-
-async function storeRefreshToken(userId, token) {
-  const tokenHash = hashToken(token);
-  const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-  await supabase.from("refresh_tokens").insert({
-    token_hash: tokenHash,
-    user_id: userId,
-    expires_at: expiresAt.toISOString(),
-  });
-}
+const { hashToken, storeRefreshToken } = require("../lib/tokenStore");
 
 authRouter.post("/signup", signupLimiter, requireCadtEmail, async (req, res, next) => {
   try {
@@ -106,11 +95,13 @@ authRouter.post("/login", async (req, res, next) => {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    const token = signAccessToken(user.id, user.token_version);
-    const refreshToken = signRefreshToken(user.id, user.token_version);
-    await storeRefreshToken(user.id, refreshToken);
+    const mfaToken = signMfaTempToken(user.id);
 
-    res.json({ token, refreshToken, user: userSafe(user) });
+    if (user.totp_enabled) {
+      return res.json({ mfaRequired: true, mfaToken });
+    }
+
+    return res.json({ mfaSetupRequired: true, mfaToken });
   } catch (err) {
     next(err);
   }

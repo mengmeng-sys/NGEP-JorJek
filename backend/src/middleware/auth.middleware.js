@@ -15,6 +15,9 @@ async function requireAuth(req, res, next) {
   }
   try {
     const payload = jwt.verify(header.slice(7), env.jwtSecret);
+    if (payload.mfa_pending) {
+      return res.status(403).json({ error: "MFA setup or verification required" });
+    }
     const { data: user, error } = await supabase
       .from("users")
       .select("id, token_version, email_verified")
@@ -48,6 +51,7 @@ async function optionalAuth(req, res, next) {
   }
   try {
     const payload = jwt.verify(header.slice(7), env.jwtSecret);
+    if (payload.mfa_pending) return next();
     const { data: user, error } = await supabase
       .from("users")
       .select("id, token_version, email_verified")

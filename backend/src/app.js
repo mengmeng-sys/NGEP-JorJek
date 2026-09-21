@@ -3,6 +3,7 @@ const cors = require("cors");
 const swaggerUi = require("swagger-ui-express");
 const { authRouter } = require("./routes/auth.routes");
 const { microsoftAuthRouter } = require("./routes/microsoftAuth.routes");
+const { mfaRouter } = require("./routes/mfa.routes");
 const { postsRouter } = require("./routes/posts.routes");
 const { commentsRouter } = require("./routes/comments.routes");
 const { votesRouter } = require("./routes/votes.routes");
@@ -91,6 +92,7 @@ app.get("/health", (_req, res) =>
 app.use("/sessions", sessionsRouter);
 app.use("/auth", authLimiter, authRouter);
 app.use("/auth/microsoft", authLimiter, microsoftAuthRouter);
+app.use("/auth/mfa", authLimiter, mfaRouter);
 app.use("/posts", postsRouter);
 app.use("/", commentsRouter);
 app.use("/", votesRouter);

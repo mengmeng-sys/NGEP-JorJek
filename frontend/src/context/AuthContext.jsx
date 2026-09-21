@@ -150,6 +150,26 @@ export function AuthProvider({ children }) {
 
   const login = async (cadtEmail, password) => {
     const data = await authApi.login(cadtEmail, password);
+    if (data.mfaRequired) {
+      return { mfaRequired: true, mfaToken: data.mfaToken };
+    }
+    storeSession(data);
+    const nextUser = withUserMeta(normalizeUser(data.user));
+    setUser(nextUser);
+    persist(nextUser);
+    return nextUser;
+  };
+
+  const verifyMfa = async (mfaToken, totpCode) => {
+    const data = await authApi.mfaValidate(mfaToken, totpCode);
+    storeSession(data);
+    const nextUser = withUserMeta(normalizeUser(data.user));
+    setUser(nextUser);
+    persist(nextUser);
+    return nextUser;
+  };
+
+  const completeMfaSetup = (data) => {
     storeSession(data);
     const nextUser = withUserMeta(normalizeUser(data.user));
     setUser(nextUser);
@@ -239,6 +259,9 @@ export function AuthProvider({ children }) {
         signupMicrosoft,
         loginMicrosoft,
         resetPasswordMicrosoft,
+        verifyMfa,
+        storeSession,
+        completeMfaSetup,
         onboarding,
         markOnboardingComplete,
         isOnboardingComplete,

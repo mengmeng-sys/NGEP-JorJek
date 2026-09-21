@@ -90,8 +90,19 @@ export default function SignupPage() {
     setSubmitError('');
     setSubmitting(true);
     try {
-      const tokenResult = await instance.acquireTokenSilent(loginRequest).catch(() => null);
-      const idToken = tokenResult?.idToken || '';
+      let idToken = '';
+      try {
+        const tokenResult = await instance.acquireTokenSilent(loginRequest, { account });
+        idToken = tokenResult.idToken;
+      } catch {
+        await instance.acquireTokenRedirect(loginRequest);
+        return;
+      }
+      if (!idToken) {
+        setSubmitError('Could not verify your identity. Please try again.');
+        setSubmitting(false);
+        return;
+      }
       await signupMicrosoft({
         idToken,
         displayName: username.trim(),
