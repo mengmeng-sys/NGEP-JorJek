@@ -20,12 +20,22 @@ async function requireAuth(req, res, next) {
     }
     const { data: user, error } = await supabase
       .from("users")
-      .select("id, token_version, email_verified")
+      .select("id, token_version, email_verified, status, suspended_until")
       .eq("id", payload.sub)
       .maybeSingle();
     if (error) throw error;
     if (!user || (user.token_version ?? 0) !== payload.ver) {
       return res.status(401).json({ error: "Invalid or expired token" });
+    }
+    if (user.status === "BANNED") {
+      return res.status(403).json({ error: "This account has been banned" });
+    }
+    if (user.status === "SUSPENDED") {
+      if (user.suspended_until && new Date(user.suspended_until) < new Date()) {
+        await supabase.from("users").update({ status: "ACTIVE", suspended_until: null }).eq("id", user.id);
+      } else {
+        return res.status(403).json({ error: "This account is currently suspended" });
+      }
     }
     req.userId = user.id;
     req.user = { id: user.id, emailVerified: user.email_verified };

@@ -95,6 +95,18 @@ authRouter.post("/login", async (req, res, next) => {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
+    if (user.status === "BANNED") {
+      return res.status(403).json({ error: "This account has been banned" });
+    }
+    if (user.status === "SUSPENDED") {
+      if (user.suspended_until && new Date(user.suspended_until) < new Date()) {
+        await supabase.from("users").update({ status: "ACTIVE", suspended_until: null }).eq("id", user.id);
+      } else {
+        const until = user.suspended_until ? ` until ${new Date(user.suspended_until).toLocaleDateString()}` : "";
+        return res.status(403).json({ error: `This account is suspended${until}` });
+      }
+    }
+
     if (user.totp_enabled) {
       const mfaToken = signMfaTempToken(user.id);
       return res.json({ mfaRequired: true, mfaToken });
@@ -124,12 +136,23 @@ authRouter.post("/refresh", async (req, res, next) => {
 
     const { data: user, error } = await supabase
       .from("users")
-      .select("id, token_version")
+      .select("id, token_version, status, suspended_until")
       .eq("id", payload.sub)
       .maybeSingle();
     if (error) throw error;
     if (!user || user.token_version !== payload.ver) {
       return res.status(401).json({ error: "Token revoked — please log in again" });
+    }
+
+    if (user.status === "BANNED") {
+      return res.status(403).json({ error: "This account has been banned" });
+    }
+    if (user.status === "SUSPENDED") {
+      if (user.suspended_until && new Date(user.suspended_until) < new Date()) {
+        await supabase.from("users").update({ status: "ACTIVE", suspended_until: null }).eq("id", user.id);
+      } else {
+        return res.status(403).json({ error: "This account is currently suspended" });
+      }
     }
 
     const tokenHash = hashToken(refreshToken);
