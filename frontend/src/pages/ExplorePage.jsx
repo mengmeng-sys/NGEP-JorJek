@@ -238,8 +238,8 @@ export default function ExplorePage() {
             <span className="text-[10px] text-gray-400 font-medium">Swipe to browse →</span>
           </div>
 
-          {/* Horizontal scroll container with native touch momentum & snap alignment */}
-           <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-4 pt-1 -mx-3 px-3 sm:-mx-4 sm:px-4 lg:mx-0 lg:px-0 scroll-smooth snap-x snap-mandatory">
+           {/* Horizontal scroll container with native touch momentum & snap alignment */}
+            <div className="flex gap-3 sm:gap-4 overflow-x-auto no-scrollbar pb-4 pt-1 -mx-3 px-3 sm:-mx-4 sm:px-4 lg:mx-0 lg:px-0 scroll-smooth snap-x snap-mandatory">
              {suggestedMentors.length === 0 && !loading ? (
                <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-8 text-center text-xs text-gray-400 w-full">
                  No peer mentors found yet.
