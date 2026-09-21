@@ -134,7 +134,16 @@ export default function Navbar() {
       notificationsApi.markRead(notif.id).catch(() => {});
     }
     setIsNotificationsOpen(false);
-    if (notif.link) navigate(notif.link);
+    if (notif.link) {
+      const hashIndex = notif.link.indexOf("#");
+      if (hashIndex !== -1) {
+        const pathname = notif.link.slice(0, hashIndex);
+        const hash = notif.link.slice(hashIndex);
+        navigate(pathname, { hash, replace: false });
+      } else {
+        navigate(notif.link);
+      }
+    }
   };
 
   const handleDeleteNotification = async (id) => {
