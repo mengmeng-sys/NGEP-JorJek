@@ -236,3 +236,18 @@ export const adminApi = {
   updateRole: (id, role) =>
     apiFetch(`/api/admin/users/${id}/role`, { method: "POST", body: JSON.stringify({ role }) }),
 };
+
+export const backupApi = {
+  create: () =>
+    apiFetch("/api/admin/backup", { method: "POST", body: JSON.stringify({}) }),
+  list: () => apiFetch("/api/admin/backups"),
+  remove: (name) =>
+    apiFetch(`/api/admin/backups/${encodeURIComponent(name)}`, { method: "DELETE" }),
+  restore: (name) =>
+    apiFetch(`/api/admin/backups/${encodeURIComponent(name)}/restore`, { method: "POST", body: JSON.stringify({}) }),
+  migrations: () => apiFetch("/api/admin/migrations"),
+  migrationSql: (name) =>
+    apiFetch(`/api/admin/migrations/${encodeURIComponent(name)}/sql`),
+  applyMigration: (name) =>
+    apiFetch(`/api/admin/migrations/${encodeURIComponent(name)}/apply`, { method: "POST", body: JSON.stringify({}) }),
+};

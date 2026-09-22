@@ -3,6 +3,7 @@ const { supabase } = require("../config/db");
 const { requireAuth } = require("../middleware/auth.middleware");
 const { requireRole } = require("../middleware/role.middleware");
 const { notify } = require("../services/notification.service");
+const { backupRouter } = require("./backup.routes");
 
 const COMMUNITY_RULES = {
   "Rule 1": "Be Respectful",
@@ -506,5 +507,7 @@ adminRouter.delete("/tags/:id", async (req, res, next) => {
     next(err);
   }
 });
+
+adminRouter.use(backupRouter);
 
 module.exports = { adminRouter };

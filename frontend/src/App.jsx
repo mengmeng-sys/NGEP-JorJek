@@ -38,6 +38,7 @@ import UserDirectoryPage from "@/pages/admin/UserDirectoryPage";
 import ModerationFeedPage from "@/pages/admin/ModerationFeedPage";
 import MentorPipelinePage from "@/pages/admin/MentorPipelinePage";
 import TagsTopicsPage from "@/pages/admin/TagsTopicsPage";
+import BackupRecoveryPage from "@/pages/admin/BackupRecoveryPage";
 
 export default function App() {
   return (
@@ -121,6 +122,7 @@ function AppRoutes() {
           <Route path="moderation" element={<ModerationFeedPage />} />
           <Route path="mentors" element={<MentorPipelinePage />} />
           <Route path="tags" element={<TagsTopicsPage />} />
+          <Route path="backup" element={<BackupRecoveryPage />} />
         </Route>
 
         {/* 404 Fallback */}
