@@ -21,6 +21,7 @@ const { logger } = require("./middleware/logger.middleware");
 const { swaggerSpec } = require("./config/swagger");
 const { env } = require("./config/env");
 const {
+  authLimiter,
   searchLimiter,
   uploadLimiter,
   generalLimiter,
