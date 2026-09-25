@@ -2,7 +2,7 @@ const { Router } = require("express");
 const { supabase } = require("../config/db");
 const { requireAuth, optionalAuth } = require("../middleware/auth.middleware");
 const { requireVerifiedEmail } = require("../middleware/verifiedEmail.middleware");
-const { contentLimiter } = require("../middleware/rateLimit.middleware");
+
 const { getIO } = require("../lib/socket");
 const { recalculateKarma } = require("../services/karma.service");
 
@@ -217,7 +217,7 @@ postsRouter.get("/:id", optionalAuth, async (req, res, next) => {
  *             schema:
  *               $ref: "#/components/schemas/Error"
  */
-postsRouter.post("/", requireAuth, requireVerifiedEmail, contentLimiter, async (req, res, next) => {
+postsRouter.post("/", requireAuth, requireVerifiedEmail, async (req, res, next) => {
   try {
     const { type, title, body, tagNames, allowMentoring, image_url: imageUrl } = req.body;
 

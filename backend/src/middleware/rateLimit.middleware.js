@@ -18,29 +18,7 @@ const otpLimiter = rateLimit({
   message: { error: "Too many OTP attempts, please try again later." },
 });
 
-const contentLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000,
-  max: 15,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { error: "Too many posts created, please slow down." },
-});
 
-const commentLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000,
-  max: 20,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { error: "Too many comments, please slow down." },
-});
-
-const voteLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000,
-  max: 60,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { error: "Too many votes, please slow down." },
-});
 
 const searchLimiter = rateLimit({
   windowMs: 60 * 1000,
@@ -94,9 +72,6 @@ const generalLimiter = rateLimit({
 module.exports = {
   authLimiter,
   otpLimiter,
-  contentLimiter,
-  commentLimiter,
-  voteLimiter,
   searchLimiter,
   uploadLimiter,
   adminLimiter,

@@ -2,7 +2,7 @@ const { Router } = require("express");
 const { supabase } = require("../config/db");
 const { requireAuth } = require("../middleware/auth.middleware");
 const { requireVerifiedEmail } = require("../middleware/verifiedEmail.middleware");
-const { commentLimiter } = require("../middleware/rateLimit.middleware");
+
 const { notify } = require("../services/notification.service");
 const { recalculateKarma } = require("../services/karma.service");
 const { getIO } = require("../lib/socket");
@@ -168,7 +168,7 @@ commentsRouter.get("/comments/:id", async (req, res, next) => {
  *             schema:
  *               $ref: "#/components/schemas/Error"
  */
-commentsRouter.post("/posts/:postId/comments", requireAuth, requireVerifiedEmail, commentLimiter, async (req, res, next) => {
+commentsRouter.post("/posts/:postId/comments", requireAuth, requireVerifiedEmail, async (req, res, next) => {
   try {
     const { body, parentId } = req.body;
 
