@@ -28,7 +28,7 @@ const {
 
 const app = express();
 
-app.set("trust proxy", 1);
+app.set("trust proxy", true);
 
 const ALLOWED_ORIGINS = [
   "https://jorjek-frontend.onrender.com",
