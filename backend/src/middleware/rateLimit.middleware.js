@@ -7,12 +7,14 @@ const authLimiter = rateLimit({
   legacyHeaders: false,
   message: { error: "Too many authentication attempts, please try again later." },
   keyGenerator: (req) => {
-    return (
-      req.headers["x-forwarded-for"]?.split(",")[0]?.trim() ||
-      req.ip ||
-      req.socket?.remoteAddress ||
-      "unknown"
-    );
+    var fwd = req.headers["x-forwarded-for"];
+    if (fwd) {
+      var first = fwd.split(",")[0];
+      if (first) return first.trim();
+    }
+    if (req.ip) return req.ip;
+    if (req.socket && req.socket.remoteAddress) return req.socket.remoteAddress;
+    return "unknown";
   },
 });
 
