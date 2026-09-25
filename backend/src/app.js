@@ -21,8 +21,6 @@ const { logger } = require("./middleware/logger.middleware");
 const { swaggerSpec } = require("./config/swagger");
 const { env } = require("./config/env");
 const {
-  authLimiter,
-  signupLimiter,
   searchLimiter,
   uploadLimiter,
   generalLimiter,
@@ -90,7 +88,7 @@ app.get("/health", (_req, res) =>
 );
 
 app.use("/sessions", sessionsRouter);
-app.use("/auth", authLimiter, authRouter);
+app.use("/auth", authRouter);
 app.use("/auth/microsoft", authLimiter, microsoftAuthRouter);
 app.use("/auth/mfa", authLimiter, mfaRouter);
 app.use("/posts", postsRouter);

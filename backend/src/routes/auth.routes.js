@@ -4,12 +4,13 @@ const jwt = require("jsonwebtoken");
 const { supabase } = require("../config/db");
 const { env } = require("../config/env");
 const { requireAuth } = require("../middleware/auth.middleware");
+const { authLimiter } = require("../middleware/rateLimit.middleware");
 const { requireCadtEmail } = require("../middleware/cadtEmailGate.middleware");
 const { signAccessToken, signRefreshToken, userSafe } = require("../lib/token");
 const { sendMail } = require("../config/mailer");
 const { generateOtp, otpEmailHtml } = require("../utils/otp");
 const { getIO } = require("../lib/socket");
-const { signupLimiter } = require("../middleware/rateLimit.middleware");
+
 const { signMfaTempToken } = require("./mfa.routes");
 
 
@@ -25,7 +26,7 @@ function otpExpiry() {
 
 const { hashToken, storeRefreshToken } = require("../lib/tokenStore");
 
-authRouter.post("/signup", signupLimiter, requireCadtEmail, async (req, res, next) => {
+authRouter.post("/signup", requireCadtEmail, async (req, res, next) => {
   try {
     const { cadtEmail, password, displayName, gen, department, specialization } = req.body;
     if (!password || password.length < 6) {
@@ -82,7 +83,7 @@ authRouter.post("/signup", signupLimiter, requireCadtEmail, async (req, res, nex
   }
 });
 
-authRouter.post("/login", async (req, res, next) => {
+authRouter.post("/login", authLimiter, async (req, res, next) => {
   try {
     const { cadtEmail, password } = req.body;
     const { data: user, error } = await supabase

@@ -8,13 +8,7 @@ const authLimiter = rateLimit({
   message: { error: "Too many authentication attempts, please try again later." },
 });
 
-const signupLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 3,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { error: "Too many signup attempts, please try again later." },
-});
+
 
 const otpLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -99,7 +93,6 @@ const generalLimiter = rateLimit({
 
 module.exports = {
   authLimiter,
-  signupLimiter,
   otpLimiter,
   contentLimiter,
   commentLimiter,
