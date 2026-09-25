@@ -28,6 +28,8 @@ const {
 
 const app = express();
 
+app.set("trust proxy", 1);
+
 const ALLOWED_ORIGINS = [
   "https://jorjek-frontend.onrender.com",
   "https://ngep-jor-jek.vercel.app",
